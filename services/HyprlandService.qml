@@ -33,24 +33,22 @@ Item {
   // Initialization
   function initialize() {
     if (initialized)
-      return
-
+      return;
     try {
-      Hyprland.refreshWorkspaces()
-      Hyprland.refreshToplevels()
+      Hyprland.refreshWorkspaces();
+      Hyprland.refreshToplevels();
       Qt.callLater(() => {
-                     safeUpdateWorkspaces()
-                     safeUpdateWindows()
-                     queryDisplayScales()
-                   })
-      initialized = true
-    } catch (e) {
-    }
+        safeUpdateWorkspaces();
+        safeUpdateWindows();
+        queryDisplayScales();
+      });
+      initialized = true;
+    } catch (e) {}
   }
 
   // Query display scales
   function queryDisplayScales() {
-    hyprlandMonitorsProcess.running = true
+    hyprlandMonitorsProcess.running = true;
   }
 
   // Hyprland monitors process for display scale detection
@@ -65,19 +63,19 @@ Item {
     stdout: SplitParser {
       onRead: function (line) {
         // Accumulate lines instead of parsing each one
-        hyprlandMonitorsProcess.accumulatedOutput += line
+        hyprlandMonitorsProcess.accumulatedOutput += line;
       }
     }
 
     onExited: function (exitCode) {
       if (exitCode !== 0 || !accumulatedOutput) {
-        accumulatedOutput = ""
-        return
+        accumulatedOutput = "";
+        return;
       }
 
       try {
-        const monitorsData = JSON.parse(accumulatedOutput)
-        const scales = {}
+        const monitorsData = JSON.parse(accumulatedOutput);
+        const scales = {};
 
         for (const monitor of monitorsData) {
           if (monitor.name) {
@@ -92,46 +90,44 @@ Item {
               "active_workspace": monitor.activeWorkspace ? monitor.activeWorkspace.id : -1,
               "vrr": monitor.vrr || false,
               "focused": monitor.focused || false
-            }
+            };
           }
         }
 
         // Notify CompositorService (it will emit displayScalesChanged)
         if (CompositorService && CompositorService.onDisplayScalesUpdated) {
-          CompositorService.onDisplayScalesUpdated(scales)
+          CompositorService.onDisplayScalesUpdated(scales);
         }
-      } catch (e) {
-      } finally {
+      } catch (e) {} finally {
         // Clear accumulated output for next query
-        accumulatedOutput = ""
+        accumulatedOutput = "";
       }
     }
   }
   // Safe update wrapper
   function safeUpdate() {
-    safeUpdateWindows()
-    safeUpdateWorkspaces()
-    windowListChanged()
+    safeUpdateWindows();
+    safeUpdateWorkspaces();
+    windowListChanged();
   }
 
   // Safe workspace update
   function safeUpdateWorkspaces() {
     try {
-      workspaces.clear()
-      workspaceCache = {}
+      workspaces.clear();
+      workspaceCache = {};
 
       if (!Hyprland.workspaces || !Hyprland.workspaces.values) {
-        return
+        return;
       }
 
-      const hlWorkspaces = Hyprland.workspaces.values
-      const occupiedIds = getOccupiedWorkspaceIds()
+      const hlWorkspaces = Hyprland.workspaces.values;
+      const occupiedIds = getOccupiedWorkspaceIds();
 
       for (var i = 0; i < hlWorkspaces.length; i++) {
-        const ws = hlWorkspaces[i]
+        const ws = hlWorkspaces[i];
         if (!ws || ws.id < 1)
-          continue
-
+          continue;
         const wsData = {
           "id": ws.id,
           "idx": ws.id,
@@ -141,34 +137,32 @@ Item {
           "isFocused": ws.focused === true,
           "isUrgent": ws.urgent === true,
           "isOccupied": occupiedIds[ws.id] === true
-        }
+        };
 
-        workspaceCache[ws.id] = wsData
-        workspaces.append(wsData)
+        workspaceCache[ws.id] = wsData;
+        workspaces.append(wsData);
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   // Get occupied workspace IDs safely
   function getOccupiedWorkspaceIds() {
-    const occupiedIds = {}
+    const occupiedIds = {};
 
     try {
       if (!Hyprland.toplevels || !Hyprland.toplevels.values) {
-        return occupiedIds
+        return occupiedIds;
       }
 
-      const hlToplevels = Hyprland.toplevels.values
+      const hlToplevels = Hyprland.toplevels.values;
       for (var i = 0; i < hlToplevels.length; i++) {
-        const toplevel = hlToplevels[i]
+        const toplevel = hlToplevels[i];
         if (!toplevel)
-          continue
-
+          continue;
         try {
-          const wsId = toplevel.workspace ? toplevel.workspace.id : null
+          const wsId = toplevel.workspace ? toplevel.workspace.id : null;
           if (wsId !== null && wsId !== undefined) {
-            occupiedIds[wsId] = true
+            occupiedIds[wsId] = true;
           }
         } catch (e) {
 
@@ -180,66 +174,64 @@ Item {
       // Return empty if we can't determine occupancy
     }
 
-    return occupiedIds
+    return occupiedIds;
   }
 
   // Safe window update
   function safeUpdateWindows() {
     try {
-      const windowsList = []
-      windowCache = {}
+      const windowsList = [];
+      windowCache = {};
 
       if (!Hyprland.toplevels || !Hyprland.toplevels.values) {
-        windows = []
-        focusedWindowIndex = -1
-        return
+        windows = [];
+        focusedWindowIndex = -1;
+        return;
       }
 
-      const hlToplevels = Hyprland.toplevels.values
-      let newFocusedIndex = -1
+      const hlToplevels = Hyprland.toplevels.values;
+      let newFocusedIndex = -1;
 
       for (var i = 0; i < hlToplevels.length; i++) {
-        const toplevel = hlToplevels[i]
+        const toplevel = hlToplevels[i];
         if (!toplevel)
-          continue
-
-        const windowData = extractWindowData(toplevel)
+          continue;
+        const windowData = extractWindowData(toplevel);
         if (windowData) {
-          windowsList.push(windowData)
-          windowCache[windowData.id] = windowData
+          windowsList.push(windowData);
+          windowCache[windowData.id] = windowData;
 
           if (windowData.isFocused) {
-            newFocusedIndex = windowsList.length - 1
+            newFocusedIndex = windowsList.length - 1;
           }
         }
       }
 
-      windows = windowsList
+      windows = windowsList;
 
       if (newFocusedIndex !== focusedWindowIndex) {
-        focusedWindowIndex = newFocusedIndex
-        activeWindowChanged()
+        focusedWindowIndex = newFocusedIndex;
+        activeWindowChanged();
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   // Extract window data safely from a toplevel
   function extractWindowData(toplevel) {
     if (!toplevel)
-      return null
+      return null;
 
     try {
       // Safely extract properties
-      const windowId = safeGetProperty(toplevel, "address", "")
+      const windowId = safeGetProperty(toplevel, "address", "");
       if (!windowId)
-        return null
+        return null;
 
-      const appId = getAppId(toplevel)
-      const title = getAppTitle(toplevel)
-      const wsId = toplevel.workspace ? toplevel.workspace.id : null
-      const focused = toplevel.activated === true
-      const output = toplevel.monitor?.name || ""
+      const appId = getAppId(toplevel);
+      const title = getAppTitle(toplevel);
+      const wsId = toplevel.workspace ? toplevel.workspace.id : null;
+      const focused = toplevel.activated === true;
+      const output = toplevel.monitor?.name || "";
 
       return {
         "id": windowId,
@@ -248,79 +240,73 @@ Item {
         "workspaceId": wsId || -1,
         "isFocused": focused,
         "output": output
-      }
+      };
     } catch (e) {
-      return null
+      return null;
     }
   }
 
   function getAppTitle(toplevel) {
     try {
-      var title = toplevel.wayland.title
+      var title = toplevel.wayland.title;
       if (title)
-        return title
-    } catch (e) {
+        return title;
+    } catch (e) {}
 
-    }
-
-    return safeGetProperty(toplevel, "title", "")
+    return safeGetProperty(toplevel, "title", "");
   }
 
   function getAppId(toplevel) {
     if (!toplevel)
-      return ""
+      return "";
 
-    var appId = ""
+    var appId = "";
 
     // Try the wayland object first!
     // From my (Lemmy) testing it works fine so we could probably get rid of all the other attempts below.
     // Leaving them in for now, just in case...
     try {
-      appId = toplevel.wayland.appId
+      appId = toplevel.wayland.appId;
       if (appId)
-        return appId
-    } catch (e) {
-
-    }
+        return appId;
+    } catch (e) {}
 
     // Try direct properties
-    appId = safeGetProperty(toplevel, "class", "")
+    appId = safeGetProperty(toplevel, "class", "");
     if (appId)
-      return appId
+      return appId;
 
-    appId = safeGetProperty(toplevel, "initialClass", "")
+    appId = safeGetProperty(toplevel, "initialClass", "");
     if (appId)
-      return appId
+      return appId;
 
-    appId = safeGetProperty(toplevel, "appId", "")
+    appId = safeGetProperty(toplevel, "appId", "");
     if (appId)
-      return appId
+      return appId;
 
     // Try lastIpcObject
     try {
-      const ipcData = toplevel.lastIpcObject
+      const ipcData = toplevel.lastIpcObject;
       if (ipcData) {
-        return String(ipcData.class || ipcData.initialClass || ipcData.appId || ipcData.wm_class || "")
+        return String(ipcData.class || ipcData.initialClass || ipcData.appId || ipcData.wm_class || "");
       }
-    } catch (e) {
+    } catch (e) {}
 
-    }
-
-    return ""
+    return "";
   }
 
   // Safe property getter
   function safeGetProperty(obj, prop, defaultValue) {
     try {
-      const value = obj[prop]
+      const value = obj[prop];
       if (value !== undefined && value !== null) {
-        return String(value)
+        return String(value);
       }
     } catch (e) {
 
       // Property access failed
     }
-    return defaultValue
+    return defaultValue;
   }
 
   // Connections to Hyprland
@@ -328,8 +314,8 @@ Item {
     target: Hyprland.workspaces
     enabled: initialized
     function onValuesChanged() {
-      safeUpdateWorkspaces()
-      workspaceChanged()
+      safeUpdateWorkspaces();
+      workspaceChanged();
     }
   }
 
@@ -337,7 +323,7 @@ Item {
     target: Hyprland.toplevels
     enabled: initialized
     function onValuesChanged() {
-      updateTimer.restart()
+      updateTimer.restart();
     }
   }
 
@@ -345,14 +331,14 @@ Item {
     target: Hyprland
     enabled: initialized
     function onRawEvent(event) {
-      Hyprland.refreshWorkspaces()
-      safeUpdateWorkspaces()
-      workspaceChanged()
-      updateTimer.restart()
+      Hyprland.refreshWorkspaces();
+      safeUpdateWorkspaces();
+      workspaceChanged();
+      updateTimer.restart();
 
-      const monitorsEvents = ["configreloaded", "monitoradded", "monitorremoved", "monitoraddedv2", "monitorremovedv2"]
+      const monitorsEvents = ["configreloaded", "monitoradded", "monitorremoved", "monitoraddedv2", "monitorremovedv2"];
       if (monitorsEvents.includes(event.name)) {
-        Qt.callLater(queryDisplayScales)
+        Qt.callLater(queryDisplayScales);
       }
     }
   }
@@ -360,29 +346,25 @@ Item {
   // Public functions
   function switchToWorkspace(workspace) {
     try {
-      Hyprland.dispatch(`workspace ${workspace.idx}`)
-    } catch (e) {
-    }
+      Hyprland.dispatch(`workspace ${workspace.idx}`);
+    } catch (e) {}
   }
 
   function focusWindow(window) {
     try {
-      Hyprland.dispatch(`focuswindow address:0x${window.id.toString()}`)
-    } catch (e) {
-    }
+      Hyprland.dispatch(`focuswindow address:0x${window.id.toString()}`);
+    } catch (e) {}
   }
 
   function closeWindow(window) {
     try {
-      Hyprland.dispatch(`killwindow address:0x${window.id}`)
-    } catch (e) {
-    }
+      Hyprland.dispatch(`killwindow address:0x${window.id}`);
+    } catch (e) {}
   }
 
   function logout() {
     try {
-      Quickshell.execDetached(["hyprctl", "dispatch", "exit"])
-    } catch (e) {
-    }
+      Quickshell.execDetached(["hyprctl", "dispatch", "exit"]);
+    } catch (e) {}
   }
 }

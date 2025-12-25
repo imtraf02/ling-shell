@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import qs.services
 
 Scope {
   property alias lock: lock
@@ -30,7 +31,7 @@ Scope {
     target: "lock"
 
     function lock(): void {
-      lock.locked = true;
+      CompositorService.lock();
     }
 
     function unlock(): void {
