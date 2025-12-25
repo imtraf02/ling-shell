@@ -16,6 +16,11 @@
   imagemagick,
   wget,
   gpu-screen-recorder, # optional
+  # fonts
+  makeFontsConf,
+  material-symbols,
+  rubik,
+  nerd-fonts,
 }: let
   src = lib.cleanSourceWith {
     src = ../.;
@@ -48,6 +53,14 @@
     ++ lib.optionals (stdenvNoCC.hostPlatform.system == "x86_64-linux") [
       gpu-screen-recorder
     ];
+
+  fontconfig = makeFontsConf {
+    fontDirectories = [
+      material-symbols
+      rubik
+      nerd-fonts.caskaydia-cove
+    ];
+  };
 in
   stdenvNoCC.mkDerivation {
     pname = "ling-shell";
@@ -71,6 +84,7 @@ in
     preFixup = ''
       qtWrapperArgs+=(
         --prefix PATH : ${lib.makeBinPath runtimeDeps}
+        --set FONTCONFIG_FILE ${fontconfig}
         --add-flags "-p $out/share/ling-shell"
       )
     '';

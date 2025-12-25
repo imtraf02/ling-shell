@@ -18,7 +18,7 @@ IText {
     }
     return icon;
   }
-  font.family: MaterialIcons.fontFamily
+  font.family: "Material Symbols Rounded"
   font.pointSize: root.pointSize
   font.weight: root.fill === 1 ? Font.DemiBold : Font.Medium
   color: ThemeService.palette.mOnSurface
