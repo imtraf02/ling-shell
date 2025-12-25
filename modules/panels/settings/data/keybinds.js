@@ -25,12 +25,12 @@ const keybinds = [
 		actions: [
 			{
 				fn: "Volume Up",
-				command: "ling-shell ipc call audio volume raise",
+				command: "ling-shell ipc call audio volume increase",
 				description: "Increase the volume",
 			},
 			{
 				fn: "Volume Down",
-				command: "ling-shell ipc call audio volume lower",
+				command: "ling-shell ipc call audio volume decrease",
 				description: "Decrease the volume",
 			},
 			{
@@ -42,6 +42,22 @@ const keybinds = [
 				fn: "Mute Microphone",
 				command: "ling-shell ipc call audio mic mute",
 				description: "Toggle microphone mute",
+			},
+		],
+	},
+
+	{
+		title: "Brightness",
+		actions: [
+			{
+				fn: "Brightness Up",
+				command: "ling-shell ipc call brightness increase",
+				description: "Increase screen brightness",
+			},
+			{
+				fn: "Brightness Down",
+				command: "ling-shell ipc call brightness decrease",
+				description: "Decrease screen brightness",
 			},
 		],
 	},

@@ -74,23 +74,6 @@ ColumnLayout {
         label: keybindItem.modelData.title
       }
 
-      RowLayout {
-        spacing: Config.appearance.spacing.small
-
-        IText {
-          Layout.preferredWidth: 200
-          text: "Function"
-        }
-        IText {
-          Layout.fillWidth: true
-          text: "Command"
-        }
-        IText {
-          Layout.preferredWidth: 360
-          text: "Description"
-        }
-      }
-
       Repeater {
         id: keybindActions
 
@@ -106,6 +89,7 @@ ColumnLayout {
             Layout.preferredWidth: 200
             Layout.alignment: Qt.AlignTop
             text: keybindActionItem.modelData.fn
+            padding: Config.appearance.padding.smaller
             wrapMode: Text.WordWrap
           }
 
@@ -134,6 +118,7 @@ ColumnLayout {
             Layout.preferredWidth: 360
             Layout.alignment: Qt.AlignTop
             text: keybindActionItem.modelData.description
+            padding: Config.appearance.padding.smaller
             wrapMode: Text.WordWrap
           }
         }

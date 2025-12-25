@@ -46,19 +46,39 @@ Scope {
     target: "audio"
 
     function volume(action: string) {
-      if (["raise", "increase"].includes(action)) {
+      switch (action) {
+      case "increase":
         AudioService.increaseVolume();
-      } else if (["lower", "decrease"].includes(action)) {
+        break;
+      case "decrease":
         AudioService.decreaseVolume();
-      } else if (["mute", "toggle"].includes(action)) {
+        break;
+      case "mute":
         AudioService.setOutputMuted(!AudioService.muted);
+        break;
       }
     }
 
     function mic(action: string) {
-      if (["mute", "toggle"].includes(action)) {
+      if (action === "mute") {
         AudioService.source.audio.muted = !AudioService.source.audio.muted;
       }
+    }
+  }
+
+  IpcHandler {
+    target: "brightness"
+
+    function increase() {
+      root.withTargetScreen(screen => {
+        BrightnessService.getMonitorForScreen(screen)?.increaseBrightness();
+      });
+    }
+
+    function decrease() {
+      root.withTargetScreen(screen => {
+        BrightnessService.getMonitorForScreen(screen)?.decreaseBrightness();
+      });
     }
   }
 
