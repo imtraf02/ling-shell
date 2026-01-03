@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 pragma Singleton
 
 import QtQuick
@@ -36,10 +37,6 @@ Singleton {
     monitors.forEach(m => m.decreaseBrightness());
   }
 
-  function getDetectedDisplays(): list<var> {
-    return detectedDisplays;
-  }
-
   signal monitorBrightnessChanged(var monitor, real newBrightness)
 
   Component.onCompleted: {
@@ -59,10 +56,10 @@ Singleton {
     target: Settings.brightness
     function onEnableDdcSupportChanged() {
       if (Settings.brightness.enableDdcSupport) {
-        ddcMonitors = [];
+        root.ddcMonitors = [];
         ddcProc.running = true;
       } else {
-        ddcMonitors = [];
+        root.ddcMonitors = [];
       }
     }
   }

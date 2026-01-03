@@ -6,6 +6,7 @@ import qs.modules
 import qs.modules.drawers
 import qs.modules.background
 import qs.modules.lock
+import qs.modules.osd
 
 ShellRoot {
   id: root
@@ -29,6 +30,7 @@ ShellRoot {
           VisibilityService.lock = lock.lock;
         }
       }
+      OSD {}
       Shortcuts {}
     }
   }
