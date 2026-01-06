@@ -78,12 +78,17 @@ Item {
     id: timer
     interval: Config.appearance.anim.durations.extraLarge
     onRunningChanged: {
-      root.contentWidth = content.implicitWidth;
-      content.active = Qt.binding(() => root.shouldBeActive || root.visible);
-      content.visible = true;
-      if (showAnim.running) {
-        showAnim.stop();
-        showAnim.start();
+      if (running && !root.shouldBeActive) {
+        content.visible = false;
+        content.active = true;
+      } else {
+        root.contentWidth = content.implicitWidth;
+        content.active = Qt.binding(() => root.shouldBeActive || root.visible);
+        content.visible = true;
+        if (showAnim.running) {
+          showAnim.stop();
+          showAnim.start();
+        }
       }
     }
   }
@@ -94,6 +99,7 @@ Item {
     anchors.left: parent.left
     visible: false
     active: false
+    Component.onCompleted: timer.start()
     sourceComponent: Content {
       panel: root
     }

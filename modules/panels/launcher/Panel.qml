@@ -85,12 +85,17 @@ Item {
 
     interval: Config.appearance.anim.durations.extraLarge
     onRunningChanged: {
-      root.contentHeight = Math.min(root.maxHeight, content.implicitHeight);
-      content.active = Qt.binding(() => root.shouldBeActive || root.visible);
-      content.visible = true;
-      if (showAnim.running) {
-        showAnim.stop();
-        showAnim.start();
+      if (running && !root.shouldBeActive) {
+        content.visible = false;
+        content.active = true;
+      } else {
+        root.contentHeight = Math.min(root.maxHeight, content.implicitHeight);
+        content.active = Qt.binding(() => root.shouldBeActive || root.visible);
+        content.visible = true;
+        if (showAnim.running) {
+          showAnim.stop();
+          showAnim.start();
+        }
       }
     }
   }
@@ -101,6 +106,8 @@ Item {
     anchors.horizontalCenter: parent.horizontalCenter
     visible: false
     active: false
+    Component.onCompleted: timer.start()
+
     sourceComponent: Content {
       panel: root
       maxHeight: root.maxHeight
