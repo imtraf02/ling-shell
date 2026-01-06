@@ -11,11 +11,7 @@
   cliphist,
   ddcutil,
   matugen,
-  wlsunset,
-  wl-clipboard,
-  imagemagick,
   wget,
-  gpu-screen-recorder, # optional
   # fonts
   makeFontsConf,
   material-symbols,
@@ -45,13 +41,10 @@
       cliphist
       ddcutil
       matugen
-      wlsunset
-      wl-clipboard
-      imagemagick
       wget
     ]
     ++ lib.optionals (stdenvNoCC.hostPlatform.system == "x86_64-linux") [
-      gpu-screen-recorder
+
     ];
 
   fontconfig = makeFontsConf {

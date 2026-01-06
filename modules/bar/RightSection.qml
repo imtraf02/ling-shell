@@ -19,7 +19,7 @@ RowLayout {
     delegate: Loader {
       required property string modelData
 
-      asynchronous: false
+      asynchronous: true
       sourceComponent: widgetFactory.createComponent(modelData)
     }
   }

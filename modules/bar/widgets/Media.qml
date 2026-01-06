@@ -69,7 +69,7 @@ Item {
 
       Loader {
         anchors.centerIn: parent
-        active: true
+        active: MediaService.isPlaying
         z: 0
         sourceComponent: ILinearSpectrum {
           width: mainContainer.width - root.spacing

@@ -139,7 +139,7 @@ Variants {
 
       anchor.window: panel
       anchor.rect.x: parentWindow.width / 2 - implicitWidth / 2
-      anchor.rect.y: parentWindow.height - implicitHeight - 80
+      anchor.rect.y: parentWindow.height - implicitHeight - 40
       implicitWidth: 320
       implicitHeight: 48
       visible: false
