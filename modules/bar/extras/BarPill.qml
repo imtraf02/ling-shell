@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -24,9 +23,9 @@ Item {
 
   readonly property bool revealed: !forceClose && (forceOpen || showPill)
 
-  readonly property int pillHeight: Config.bar.sizes.innerHeight
-  readonly property int pillPadding: Math.round(Config.bar.sizes.innerHeight * 0.2)
-  readonly property int pillOverlap: Math.round(Config.bar.sizes.innerHeight * 0.5)
+  readonly property int pillHeight: Style.bar.innerHeight
+  readonly property int pillPadding: Math.round(Style.bar.innerHeight * 0.2)
+  readonly property int pillOverlap: Math.round(Style.bar.innerHeight * 0.5)
   readonly property int pillMaxWidth: Math.max(1, Math.round(textItem.implicitWidth + pillPadding * 2 + pillOverlap))
 
   readonly property real textSize: Math.max(1, Math.round(pillHeight * 0.33))
@@ -75,10 +74,10 @@ Item {
       anchors.verticalCenter: parent.verticalCenter
       x: {
         var centerX = (parent.width - width) / 2;
-        var offset = root.oppositeDirection ? Config.appearance.padding.small : -Config.appearance.padding.small;
+        var offset = root.oppositeDirection ? Style.appearance.padding.small : -Style.appearance.padding.small;
         if (root.forceOpen) {
           // If its force open, the icon disc background is the same color as the bg pill move text slightly
-          offset += root.oppositeDirection ? -Config.appearance.padding.small : Config.appearance.padding.small;
+          offset += root.oppositeDirection ? -Style.appearance.padding.small : Style.appearance.padding.small;
         }
         return centerX + offset;
       }
@@ -149,7 +148,7 @@ Item {
 
   Timer {
     id: showTimer
-    interval: Config.delay.pill
+    interval: Settings.delay.pill
     onTriggered: {
       if (!root.showPill) {
         showAnim.start();
@@ -195,7 +194,7 @@ Item {
       property: "width"
       from: 1
       to: root.pillMaxWidth
-      duration: Config.appearance.anim.durations.normal
+      duration: Style.appearance.anim.durations.normal
       easing.type: Easing.OutCubic
     }
     NumberAnimation {
@@ -203,7 +202,7 @@ Item {
       property: "opacity"
       from: 0
       to: 1
-      duration: Config.appearance.anim.durations.normal
+      duration: Style.appearance.anim.durations.normal
       easing.type: Easing.OutCubic
     }
     onStarted: {
@@ -236,7 +235,7 @@ Item {
       property: "width"
       from: root.pillMaxWidth
       to: 1
-      duration: Config.appearance.anim.durations.normal
+      duration: Style.appearance.anim.durations.normal
       easing.type: Easing.InCubic
     }
     NumberAnimation {
@@ -244,7 +243,7 @@ Item {
       property: "opacity"
       from: 1
       to: 0
-      duration: Config.appearance.anim.durations.normal
+      duration: Style.appearance.anim.durations.normal
       easing.type: Easing.InCubic
     }
     onStopped: {

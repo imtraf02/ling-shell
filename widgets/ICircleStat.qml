@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -19,8 +18,8 @@ Rectangle {
   property real circleWidth: 6
   property bool circleGradient: true
 
-  property real valueFontSize: Config.appearance.font.size.smaller * 0.9
-  property real iconSize: Config.appearance.font.size.smaller
+  property real valueFontSize: Style.appearance.font.size.smaller * 0.9
+  property real iconSize: Style.appearance.font.size.smaller
 
   width: 68
   height: 92
@@ -40,7 +39,7 @@ Rectangle {
   ColumnLayout {
     id: mainLayout
     anchors.fill: parent
-    anchors.margins: Config.appearance.padding.small * root.contentScale
+    anchors.margins: Style.appearance.padding.small * root.contentScale
     spacing: 0
 
     Item {

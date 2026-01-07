@@ -7,37 +7,33 @@ import Quickshell
 import qs.utils
 
 Singleton {
-  // XDG Dirs, with "file://"
-  readonly property string home: StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
-  readonly property string config: StandardPaths.standardLocations(StandardPaths.ConfigLocation)[0]
-  readonly property string state: StandardPaths.standardLocations(StandardPaths.StateLocation)[0]
-  readonly property string cache: StandardPaths.standardLocations(StandardPaths.CacheLocation)[0]
-  readonly property string genericCache: StandardPaths.standardLocations(StandardPaths.GenericCacheLocation)[0]
-  readonly property string documents: StandardPaths.standardLocations(StandardPaths.DocumentsLocation)[0]
-  readonly property string downloads: StandardPaths.standardLocations(StandardPaths.DownloadLocation)[0]
-  readonly property string pictures: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
-  readonly property string music: StandardPaths.standardLocations(StandardPaths.MusicLocation)[0]
-  readonly property string videos: StandardPaths.standardLocations(StandardPaths.MoviesLocation)[0]
-
-  // Other dirs used by the shell, without "file://"
   property string shellName: "ling"
+
+  readonly property string home: Quickshell.env("HOME")
+  readonly property string pictures: Quickshell.env("XDG_PICTURES_DIR") || `${home}/Pictures`
+  readonly property string videos: Quickshell.env("XDG_VIDEOS_DIR") || `${home}/Videos`
+
+  readonly property string data: `${Quickshell.env("XDG_DATA_HOME") || `${home}/.local/share`}/${shellName}`
+  readonly property string state: `${Quickshell.env("XDG_STATE_HOME") || `${home}/.local/state`}/${shellName}`
+  readonly property string cache: `${Quickshell.env("XDG_CACHE_HOME") || `${home}/.cache`}/${shellName}`
+  readonly property string config: `${Quickshell.env("XDG_CONFIG_HOME") || `${home}/.config`}/${shellName}`
+
   property string assetsPath: Quickshell.shellPath("assets")
-  property string defaultAvatarPath: FileUtils.trimFileProtocol(`${Directories.home}/.face`)
-  property string defaultWallpaperDir: FileUtils.trimFileProtocol(`${Directories.pictures}/Wallpapers`)
-  property string shellConfig: FileUtils.trimFileProtocol(`${Directories.config}/${shellName}`)
-  property string shellConfigPath: `${Directories.shellConfig}/config.json`
-  property string shellState: FileUtils.trimFileProtocol(`${Directories.state}/${shellName}`)
-  property string shellStateColoursPath: `${Directories.shellState}/colours.json`
-  property string shellStateSettingsPath: `${Directories.shellState}/settings.json`
-  property string shellStateNetworkPath: `${Directories.shellState}/network.json`
-  property string shellStateNotificationsPath: `${Directories.shellState}/notifications.json`
-  property string shellCache: FileUtils.trimFileProtocol(`${Directories.cache}/${shellName}`)
-  property string shellCacheImagesDir: `${Directories.shellCache}/images`
-  property string shellCacheWallpaperDir: `${Directories.shellCacheImagesDir}/wallpapers`
-  property string shellCacheNotificationsDir: `${Directories.shellCacheImagesDir}/notifications`
-  property string shellCacheThumbnailDir: `${Directories.shellCacheImagesDir}/thumbnails`
-  property string shellCacheLauncherAppUsagePath: `${Directories.shellCache}/launcher_app_usage.json`
-  property string shellDisplayCachePath: `${Directories.shellCache}/display.json`
+  property string defaultAvatarPath: `${home}/.face`
+  property string defaultWallpaperDir: `${pictures}/Wallpapers`
+  property string shellConfig: `${config}/${shellName}`
+  property string shellConfigColoursPath: `${shellConfig}/colours.json`
+  property string shellConfigSettingsPath: `${shellConfig}/settings.json`
+  property string shellConfigNetworkPath: `${shellConfig}/network.json`
+  property string shellConfigNotificationsPath: `${shellConfig}/notifications.json`
+  property string shellState: `${state}/${shellName}`
+  property string shellCache: `${cache}/${shellName}`
+  property string shellCacheImagesDir: `${shellCache}/images`
+  property string shellCacheWallpaperDir: `${shellCacheImagesDir}/wallpapers`
+  property string shellCacheNotificationsDir: `${shellCacheImagesDir}/notifications`
+  property string shellCacheThumbnailDir: `${shellCacheImagesDir}/thumbnails`
+  property string shellCacheLauncherAppUsagePath: `${shellCache}/launcher_app_usage.json`
+  property string shellDisplayCachePath: `${shellCache}/display.json`
 
   Component.onCompleted: {
     Quickshell.execDetached(["mkdir", "-p", `${shellConfig}`]);

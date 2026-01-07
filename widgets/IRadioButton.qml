@@ -1,18 +1,18 @@
 import QtQuick
 import QtQuick.Controls
-import qs.config
+import qs.commons
 import qs.services
 
 RadioButton {
   id: root
 
-  property int pointSize: Config.appearance.font.size.small
+  property int pointSize: Style.appearance.font.size.small
 
   indicator: Rectangle {
     id: outerCircle
 
-    implicitWidth: Config.appearance.widget.size * 0.625 * root.pointSize / Config.appearance.font.size.small
-    implicitHeight: Config.appearance.widget.size * 0.625 * root.pointSize / Config.appearance.font.size.small
+    implicitWidth: Style.appearance.widget.size * 0.625 * root.pointSize / Style.appearance.font.size.small
+    implicitHeight: Style.appearance.widget.size * 0.625 * root.pointSize / Style.appearance.font.size.small
     radius: width * 0.5
     color: "transparent"
     border.color: root.checked ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface
@@ -42,6 +42,6 @@ RadioButton {
     anchors.verticalCenter: parent.verticalCenter
     anchors.left: outerCircle.right
     anchors.right: parent.right
-    anchors.leftMargin: Config.appearance.spacing.small
+    anchors.leftMargin: Style.appearance.spacing.small
   }
 }

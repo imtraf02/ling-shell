@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -15,8 +14,8 @@ Rectangle {
   property bool isActive: false
   property bool enable: true
 
-  readonly property int padding: Config.appearance.padding.normal
-  readonly property int spacing: Config.appearance.spacing.small
+  readonly property int padding: Style.appearance.padding.normal
+  readonly property int spacing: Style.appearance.spacing.small
 
   radius: Settings.appearance.cornerRadius
   color: enable ? (mouse.containsMouse ? ThemeService.palette.mSurfaceContainerHigh : ThemeService.palette.mSurfaceContainer) : Qt.alpha(ThemeService.palette.mSurfaceContainer, 0.5)
@@ -95,7 +94,7 @@ Rectangle {
           Layout.fillWidth: true
           elide: Text.ElideRight
           maximumLineCount: 1
-          pointSize: Config.appearance.font.size.small
+          pointSize: Style.appearance.font.size.small
           color: root.enable ? ThemeService.palette.mOutline : Qt.alpha(ThemeService.palette.mOutline, 0.5)
         }
       }

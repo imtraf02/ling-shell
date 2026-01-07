@@ -5,7 +5,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications
 import QtQuick
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -76,7 +75,7 @@ Singleton {
 
   FileView {
     id: storage
-    path: Directories.shellStateNotificationsPath
+    path: Directories.shellConfigNotificationsPath
 
     onLoaded: {
       const data = JSON.parse(text());
@@ -133,7 +132,7 @@ ${Directories.shellCacheNotificationsDir}"*`]);
     property string appIcon
     property string appName
     property string image
-    property real expireTimeout: Config.notifications.defaultExpireTimeout
+    property real expireTimeout: Settings.notifications.defaultExpireTimeout
     property int urgency: NotificationUrgency.Normal
     property bool resident
     property bool hasActionIcons
@@ -141,9 +140,9 @@ ${Directories.shellCacheNotificationsDir}"*`]);
 
     readonly property Timer timer: Timer {
       running: true
-      interval: notif.expireTimeout > 0 ? notif.expireTimeout : Config.notifications.defaultExpireTimeout
+      interval: notif.expireTimeout > 0 ? notif.expireTimeout : Settings.notifications.defaultExpireTimeout
       onTriggered: {
-        if (Config.notifications.expire)
+        if (Settings.notifications.expire)
           notif.popup = false;
       }
     }
@@ -151,8 +150,8 @@ ${Directories.shellCacheNotificationsDir}"*`]);
     readonly property LazyLoader dummyImageLoader: LazyLoader {
       active: false
       PanelWindow {
-        implicitWidth: Config.notifications.sizes.image
-        implicitHeight: Config.notifications.sizes.image
+        implicitWidth: Style.notifications.image
+        implicitHeight: Style.notifications.image
         color: "transparent"
         mask: Region {}
         IImageCached {

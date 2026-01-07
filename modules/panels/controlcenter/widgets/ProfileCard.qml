@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -25,8 +24,8 @@ IBox {
     spacing: root.spacing
 
     IImageCircled {
-      Layout.preferredWidth: Math.round(Config.appearance.widget.size * 1.25)
-      Layout.preferredHeight: Math.round(Config.appearance.widget.size * 1.25)
+      Layout.preferredWidth: Math.round(Style.appearance.widget.size * 1.25)
+      Layout.preferredHeight: Math.round(Style.appearance.widget.size * 1.25)
       imagePath: FileUtils.trimFileProtocol(Settings.general.avatarImage)
       fallbackIcon: "person"
       borderColor: ThemeService.palette.mPrimary
@@ -42,7 +41,7 @@ IBox {
       }
       IText {
         text: "Uptime: " + DistroService.uptime
-        pointSize: Config.appearance.font.size.small
+        pointSize: Style.appearance.font.size.small
         color: ThemeService.palette.mOutline
       }
     }

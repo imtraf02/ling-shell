@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -21,11 +20,11 @@ RowLayout {
   property string searchPlaceholder: "Search..."
   property Component delegate: null
 
-  readonly property real preferredHeight: Config.appearance.widget.size * 1.1
+  readonly property real preferredHeight: Style.appearance.widget.size * 1.1
 
   signal selected(string key)
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
   Layout.fillWidth: true
 
   property ListModel filteredModel: ListModel {}
@@ -106,7 +105,7 @@ RowLayout {
     }
 
     background: Rectangle {
-      implicitWidth: Config.appearance.widget.size * 3.75
+      implicitWidth: Style.appearance.widget.size * 3.75
       implicitHeight: preferredHeight
       color: ThemeService.palette.mSurfaceVariant
       border.color: combo.activeFocus ? ThemeService.palette.mSecondary : Qt.alpha(ThemeService.palette.mOutline, 0.2)
@@ -119,8 +118,8 @@ RowLayout {
     }
 
     contentItem: IText {
-      leftPadding: Config.appearance.padding.normal
-      rightPadding: combo.indicator.width + Config.appearance.padding.normal
+      leftPadding: Style.appearance.padding.normal
+      rightPadding: combo.indicator.width + Style.appearance.padding.normal
       verticalAlignment: Text.AlignVCenter
       elide: Text.ElideRight
       color: combo.currentIndex >= 0 && combo.currentIndex < filteredModel.count ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSurfaceVariant
@@ -128,7 +127,7 @@ RowLayout {
     }
 
     indicator: IIcon {
-      x: combo.width - width - Config.appearance.padding.normal
+      x: combo.width - width - Style.appearance.padding.normal
       y: combo.topPadding + (combo.availableHeight - height) / 2
       icon: "arrow_drop_down"
     }
@@ -137,13 +136,13 @@ RowLayout {
       y: combo.height
       width: combo.width
       height: root.popupHeight + 60
-      padding: Config.appearance.padding.normal
+      padding: Style.appearance.padding.normal
 
       onOpened: VisibilityService.willOpenPopup(root)
       onClosed: VisibilityService.willClosePopup(root)
 
       contentItem: ColumnLayout {
-        spacing: Config.appearance.spacing.small
+        spacing: Style.appearance.spacing.small
 
         ITextInput {
           id: searchInput
@@ -152,7 +151,7 @@ RowLayout {
           placeholderText: root.searchPlaceholder
           text: root.searchText
           onTextChanged: root.searchText = text
-          fontSize: Config.appearance.font.size.small
+          fontSize: Style.appearance.font.size.small
         }
 
         IListView {
@@ -186,7 +185,7 @@ RowLayout {
 
               contentItem: RowLayout {
                 width: parent.width
-                spacing: Config.appearance.padding.normal
+                spacing: Style.appearance.padding.normal
 
                 IText {
                   text: name
@@ -201,15 +200,15 @@ RowLayout {
                 }
 
                 RowLayout {
-                  spacing: Config.appearance.spacing.small
+                  spacing: Style.appearance.spacing.small
                   Layout.alignment: Qt.AlignRight
 
                   Repeater {
                     model: typeof badgeLocations !== "undefined" ? badgeLocations : []
 
                     delegate: Item {
-                      width: Config.appearance.widget.size * 0.7
-                      height: Config.appearance.widget.size * 0.7
+                      width: Style.appearance.widget.size * 0.7
+                      height: Style.appearance.widget.size * 0.7
 
                       IText {
                         anchors.centerIn: parent

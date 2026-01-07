@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -15,7 +14,7 @@ BarPanel {
   contentComponent: Item {
     id: content
 
-    implicitWidth: Config.bar.sizes.batteryWidth
+    implicitWidth: Style.bar.batteryWidth
     implicitHeight: batteryBox.implicitHeight + (root.padding * 2)
 
     IBox {
@@ -162,9 +161,9 @@ BarPanel {
 
             transitions: Transition {
               AnchorAnimation {
-                duration: Config.appearance.anim.durations.normal
+                duration: Style.appearance.anim.durations.normal
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: Config.appearance.anim.curves.emphasized
+                easing.bezierCurve: Style.appearance.anim.curves.emphasized
               }
             }
           }

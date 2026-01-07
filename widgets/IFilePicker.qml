@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Qt.labs.folderlistmodel
 import Quickshell
-import qs.config
 import qs.commons
 import qs.services
 
@@ -146,7 +145,7 @@ Popup {
   Rectangle {
     id: filePickerPanel
     anchors.fill: parent
-    anchors.margins: Config.appearance.padding.normal
+    anchors.margins: Style.appearance.padding.normal
     color: "transparent"
 
     property string filterText: ""
@@ -174,20 +173,20 @@ Popup {
 
     ColumnLayout {
       anchors.fill: parent
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
 
       RowLayout {
         Layout.fillWidth: true
-        spacing: Config.appearance.spacing.small
+        spacing: Style.appearance.spacing.small
 
         IIcon {
           icon: "folder"
           color: ThemeService.palette.mPrimary
-          pointSize: Config.appearance.font.size.extraLarge
+          pointSize: Style.appearance.font.size.extraLarge
         }
         IText {
           text: root.title
-          pointSize: Config.appearance.font.size.large
+          pointSize: Style.appearance.font.size.large
           font.weight: Font.DemiBold
           color: ThemeService.palette.mPrimary
           Layout.fillWidth: true
@@ -237,13 +236,13 @@ Popup {
           anchors.left: parent.left
           anchors.right: parent.right
           anchors.verticalCenter: parent.verticalCenter
-          anchors.leftMargin: Config.appearance.padding.normal
-          anchors.rightMargin: Config.appearance.padding.normal
-          spacing: Config.appearance.padding.normal
+          anchors.leftMargin: Style.appearance.padding.normal
+          anchors.rightMargin: Style.appearance.padding.normal
+          spacing: Style.appearance.padding.normal
 
           IIconButton {
             icon: "arrow_upward"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             enabled: folderModel.folder.toString() !== "file:///"
             onClicked: {
               const parentPath = folderModel.parentFolder.toString().replace("file://", "");
@@ -254,7 +253,7 @@ Popup {
 
           IIconButton {
             icon: "home"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: {
               const homePath = Quickshell.env("HOME") || "/home";
               folderModel.folder = "file://" + homePath;
@@ -264,7 +263,7 @@ Popup {
 
           IIconButton {
             icon: filePickerPanel.showSearchBar ? "close" : "search"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: {
               filePickerPanel.showSearchBar = !filePickerPanel.showSearchBar;
               if (!filePickerPanel.showSearchBar) {
@@ -327,12 +326,12 @@ Popup {
 
           IIconButton {
             icon: filePickerPanel.viewMode ? "view_list" : "grid_view"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: filePickerPanel.viewMode = !filePickerPanel.viewMode
           }
           IIconButton {
             icon: root.showHiddenFiles ? "visibility_off" : "visibility"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: {
               root.showHiddenFiles = !root.showHiddenFiles;
               const currentFolder = folderModel.folder;
@@ -394,22 +393,22 @@ Popup {
         GridView {
           id: gridView
           anchors.fill: parent
-          anchors.margins: Config.appearance.padding.normal
+          anchors.margins: Style.appearance.padding.normal
           model: filteredModel
           visible: filePickerPanel.viewMode
           clip: true
           reuseItems: true
 
           property int columns: Math.max(1, Math.floor(width / (120)))
-          property int itemSize: Math.floor((width - leftMargin - rightMargin - (columns * Config.appearance.padding.normal)) / columns)
+          property int itemSize: Math.floor((width - leftMargin - rightMargin - (columns * Style.appearance.padding.normal)) / columns)
 
           cellWidth: Math.floor((width - leftMargin - rightMargin) / columns)
-          cellHeight: Math.floor(itemSize * 0.8) + Config.appearance.spacing.small + Config.appearance.font.size.small + Config.appearance.padding.normal
+          cellHeight: Math.floor(itemSize * 0.8) + Style.appearance.spacing.small + Style.appearance.font.size.small + Style.appearance.padding.normal
 
-          leftMargin: Config.appearance.padding.normal
-          rightMargin: Config.appearance.padding.normal
-          topMargin: Config.appearance.padding.normal
-          bottomMargin: Config.appearance.padding.normal
+          leftMargin: Style.appearance.padding.normal
+          rightMargin: Style.appearance.padding.normal
+          topMargin: Style.appearance.padding.normal
+          bottomMargin: Style.appearance.padding.normal
 
           ScrollBar.vertical: ScrollBar {
             policy: ScrollBar.AsNeeded
@@ -485,8 +484,8 @@ Popup {
 
             ColumnLayout {
               anchors.fill: parent
-              anchors.margins: Config.appearance.padding.normal
-              spacing: Config.appearance.spacing.small
+              anchors.margins: Style.appearance.padding.normal
+              spacing: Style.appearance.spacing.small
 
               Rectangle {
                 id: iconContainer
@@ -504,7 +503,7 @@ Popup {
                 Image {
                   id: thumbnail
                   anchors.fill: parent
-                  anchors.margins: Config.appearance.spacing.small
+                  anchors.margins: Style.appearance.spacing.small
                   source: iconContainer.isImage ? "file://" + gridItem.filePath : ""
                   fillMode: Image.PreserveAspectFit
                   visible: iconContainer.isImage && status === Image.Ready
@@ -525,7 +524,7 @@ Popup {
                     visible: thumbnail.status === Image.Loading
                     IIcon {
                       icon: "photo"
-                      pointSize: Config.appearance.font.size.large
+                      pointSize: Style.appearance.font.size.large
                       color: ThemeService.palette.mOnSurfaceVariant
                       anchors.centerIn: parent
                     }
@@ -534,7 +533,7 @@ Popup {
 
                 IIcon {
                   icon: gridItem.fileIsDir ? "folder" : root.getFileIcon(gridItem.fileName)
-                  pointSize: Config.appearance.font.size.large * 2
+                  pointSize: Style.appearance.font.size.large * 2
                   color: {
                     if (gridItem.isSelected)
                       return ThemeService.palette.mSecondary;
@@ -550,7 +549,7 @@ Popup {
                 Rectangle {
                   anchors.top: parent.top
                   anchors.right: parent.right
-                  anchors.margins: Config.appearance.padding.normal
+                  anchors.margins: Style.appearance.padding.normal
                   width: 24
                   height: 24
                   radius: width / 2
@@ -560,7 +559,7 @@ Popup {
                   visible: gridItem.isSelected
                   IIcon {
                     icon: "check"
-                    pointSize: Config.appearance.font.size.small
+                    pointSize: Style.appearance.font.size.small
                     color: ThemeService.palette.mOnSecondary
                     anchors.centerIn: parent
                   }
@@ -577,7 +576,7 @@ Popup {
                   else
                     return ThemeService.palette.mOnSurfaceVariant;
                 }
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 font.weight: gridItem.isSelected ? Font.DemiBold : Font.Medium
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
@@ -627,7 +626,7 @@ Popup {
         IListView {
           id: listView
           anchors.fill: parent
-          anchors.margins: Config.appearance.padding.normal
+          anchors.margins: Style.appearance.padding.normal
           model: filteredModel
           visible: !filePickerPanel.viewMode
 
@@ -654,13 +653,13 @@ Popup {
 
             RowLayout {
               anchors.fill: parent
-              anchors.leftMargin: Config.appearance.padding.normal
-              anchors.rightMargin: Config.appearance.padding.normal
-              spacing: Config.appearance.spacing.small
+              anchors.leftMargin: Style.appearance.padding.normal
+              anchors.rightMargin: Style.appearance.padding.normal
+              spacing: Style.appearance.spacing.small
 
               IIcon {
                 icon: listItem.fileIsDir ? "folder" : root.getFileIcon(listItem.fileName)
-                pointSize: Config.appearance.font.size.large
+                pointSize: Style.appearance.font.size.large
                 color: listItem.fileIsDir ? (filePickerPanel.currentSelection.includes(listItem.filePath) ? ThemeService.palette.mOnSecondary : ThemeService.palette.mPrimary) : ThemeService.palette.mOnSurfaceVariant
               }
 
@@ -675,7 +674,7 @@ Popup {
               IText {
                 text: listItem.fileIsDir ? "" : root.formatFileSize(listItem.fileSize)
                 color: filePickerPanel.currentSelection.includes(listItem.filePath) ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurfaceVariant
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 visible: !listItem.fileIsDir
                 Layout.preferredWidth: implicitWidth
               }
@@ -721,7 +720,7 @@ Popup {
 
       RowLayout {
         Layout.fillWidth: true
-        spacing: Config.appearance.spacing.small
+        spacing: Style.appearance.spacing.small
 
         IText {
           text: {
@@ -736,7 +735,7 @@ Popup {
           }
           color: filePickerPanel.searchText.length > 0 ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurfaceVariant
 
-          pointSize: Config.appearance.font.size.small
+          pointSize: Style.appearance.font.size.small
           Layout.fillWidth: true
         }
 

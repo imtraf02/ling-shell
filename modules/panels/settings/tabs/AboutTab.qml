@@ -1,14 +1,14 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.widgets
 import qs.services
 
 ColumnLayout {
   id: root
 
-  readonly property int padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.larger
+  readonly property int padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.larger
 
   IBox {
     Layout.fillWidth: true
@@ -19,7 +19,7 @@ ColumnLayout {
       anchors.fill: parent
       anchors.topMargin: root.padding
       anchors.bottomMargin: root.padding
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
 
       IText {
         id: asciiText
@@ -32,7 +32,7 @@ ColumnLayout {
       IText {
         text: "Ling Shell"
         color: ThemeService.palette.mPrimary
-        pointSize: Config.appearance.font.size.larger
+        pointSize: Style.appearance.font.size.larger
         Layout.alignment: Qt.AlignHCenter
       }
     }

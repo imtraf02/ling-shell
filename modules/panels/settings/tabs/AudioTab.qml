@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Services.Pipewire
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -12,8 +11,8 @@ import qs.services
 ColumnLayout {
   id: root
 
-  readonly property int padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.larger
+  readonly property int padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.larger
 
   property real localVolume: AudioService.volume
 
@@ -27,8 +26,8 @@ ColumnLayout {
   ILabel {
     label: "Volumes"
     description: "Adjust volume controls and audio levels."
-    labelSize: Config.appearance.font.size.large
-    descriptionSize: Config.appearance.font.size.smaller
+    labelSize: Style.appearance.font.size.large
+    descriptionSize: Style.appearance.font.size.smaller
   }
 
   ILabel {
@@ -118,8 +117,8 @@ ColumnLayout {
   ILabel {
     label: "Audio devices"
     description: "Configure available audio input and output devices."
-    labelSize: Config.appearance.font.size.large
-    descriptionSize: Config.appearance.font.size.smaller
+    labelSize: Style.appearance.font.size.large
+    descriptionSize: Style.appearance.font.size.smaller
   }
 
   ButtonGroup {

@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -16,13 +15,13 @@ Item {
   property string placeholderText: "No active player"
 
   readonly property bool hasActivePlayer: MediaService.currentPlayer !== null
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
   readonly property real maxWidth: 280
   readonly property real buttonSize: 28
 
   implicitWidth: Math.min(calculateContentWidth(), maxWidth)
-  implicitHeight: Config.bar.sizes.innerHeight
+  implicitHeight: Style.bar.innerHeight
 
   Behavior on implicitWidth {
     IAnim {}
@@ -48,7 +47,7 @@ Item {
     id: fullTitleMetrics
     visible: false
     text: root.hasActivePlayer ? root.getTitle() : root.placeholderText
-    pointSize: Config.appearance.font.size.small
+    pointSize: Style.appearance.font.size.small
   }
 
   Rectangle {
@@ -56,7 +55,7 @@ Item {
     anchors.left: parent.left
     anchors.verticalCenter: parent.verticalCenter
     width: parent.width
-    height: Config.bar.sizes.innerHeight
+    height: Style.bar.innerHeight
     color: ThemeService.palette.mSurfaceContainer
     radius: Settings.appearance.cornerRadius
 
@@ -145,7 +144,7 @@ Item {
               IText {
                 id: titleText
                 text: root.hasActivePlayer ? root.getTitle() : root.placeholderText
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: root.hasActivePlayer ? Text.AlignLeft : Text.AlignHCenter
 
@@ -160,7 +159,7 @@ Item {
               IText {
                 text: root.getTitle()
                 font: titleText.font
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
                 visible: root.hasActivePlayer && titleContainer.needsScrolling && titleContainer.isScrolling

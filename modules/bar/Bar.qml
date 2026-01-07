@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -12,8 +11,8 @@ Item {
 
   required property ShellScreen screen
 
-  readonly property int padding: Math.max(Config.appearance.padding.small, Settings.appearance.thickness)
-  readonly property int contentHeight: Config.bar.sizes.innerHeight + padding * 2
+  readonly property int padding: Math.max(Style.appearance.padding.small, Settings.appearance.thickness)
+  readonly property int contentHeight: Style.bar.innerHeight + padding * 2
   readonly property int exclusiveZone: Settings.bar.persistent || VisibilityService.bar ? contentHeight : Settings.appearance.thickness
 
   readonly property bool shouldBeVisible: Settings.bar.persistent || VisibilityService.bar || VisibilityService.barIsHovered
@@ -36,8 +35,8 @@ Item {
       IAnim {
         target: root
         property: "implicitHeight"
-        duration: Config.appearance.anim.durations.normal
-        easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+        duration: Style.appearance.anim.durations.normal
+        easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
       }
     },
     Transition {
@@ -46,7 +45,7 @@ Item {
       IAnim {
         target: root
         property: "implicitHeight"
-        easing.bezierCurve: Config.appearance.anim.curves.emphasized
+        easing.bezierCurve: Style.appearance.anim.curves.emphasized
       }
     }
   ]

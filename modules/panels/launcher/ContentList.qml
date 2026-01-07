@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import qs.config
+import qs.commons
 import qs.services
 import qs.widgets
 
@@ -14,7 +14,7 @@ Item {
 
   required property real maxHeight
 
-  readonly property bool showWallpapers: searchInput.inputItem.text.startsWith(`${Config.launcher.actionPrefix}wallpaper `)
+  readonly property bool showWallpapers: searchInput.inputItem.text.startsWith(`${Settings.launcher.actionPrefix}wallpaper `)
   readonly property var currentList: showWallpapers ? wallpaperList.item : appList.item
 
   anchors.horizontalCenter: parent.horizontalCenter
@@ -29,7 +29,7 @@ Item {
       name: "apps"
 
       PropertyChanges {
-        root.implicitWidth: Config.launcher.sizes.itemWidth
+        root.implicitWidth: Style.launcher.itemWidth
         root.implicitHeight: Math.min(root.maxHeight, appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight)
         appList.active: true
       }
@@ -57,7 +57,7 @@ Item {
         property: "opacity"
         from: 1
         to: 0
-        duration: Config.appearance.anim.durations.small
+        duration: Style.appearance.anim.durations.small
       }
       PropertyAction {}
       IAnim {
@@ -65,7 +65,7 @@ Item {
         property: "opacity"
         from: 0
         to: 1
-        duration: Config.appearance.anim.durations.small
+        duration: Style.appearance.anim.durations.small
       }
     }
   }
@@ -104,8 +104,8 @@ Item {
     opacity: root.currentList?.count === 0 ? 1 : 0
     scale: root.currentList?.count === 0 ? 1 : 0.5
 
-    spacing: Config.appearance.spacing.small
-    padding: Config.appearance.padding.larger
+    spacing: Style.appearance.spacing.small
+    padding: Style.appearance.padding.larger
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
@@ -113,7 +113,7 @@ Item {
     IIcon {
       icon: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
       color: ThemeService.palette.mOnSurfaceVariant
-      pointSize: Config.appearance.font.size.extraLarge
+      pointSize: Style.appearance.font.size.extraLarge
 
       anchors.verticalCenter: parent.verticalCenter
     }
@@ -124,13 +124,13 @@ Item {
       IText {
         text: root.state === "wallpapers" ? "No wallpapers found" : "No results"
         color: ThemeService.palette.mOnSurfaceVariant
-        pointSize: Config.appearance.font.size.large
+        pointSize: Style.appearance.font.size.large
       }
 
       IText {
         text: "Try searching for something else"
         color: ThemeService.palette.mOnSurfaceVariant
-        pointSize: Config.appearance.font.size.normal
+        pointSize: Style.appearance.font.size.normal
       }
     }
 
@@ -147,8 +147,8 @@ Item {
     enabled: root.panel.shouldBeActive
 
     IAnim {
-      duration: Config.appearance.anim.durations.large
-      easing.bezierCurve: Config.appearance.anim.curves.emphasizedDecel
+      duration: Style.appearance.anim.durations.large
+      easing.bezierCurve: Style.appearance.anim.curves.emphasizedDecel
     }
   }
 
@@ -156,8 +156,8 @@ Item {
     enabled: root.panel.shouldBeActive
 
     IAnim {
-      duration: Config.appearance.anim.durations.large
-      easing.bezierCurve: Config.appearance.anim.curves.emphasizedDecel
+      duration: Style.appearance.anim.durations.large
+      easing.bezierCurve: Style.appearance.anim.curves.emphasizedDecel
     }
   }
 }

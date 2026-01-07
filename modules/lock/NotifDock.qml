@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -12,8 +11,8 @@ import qs.widgets
 ColumnLayout {
   id: root
 
-  readonly property real padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.small
 
   anchors.fill: parent
   anchors.margins: padding
@@ -23,7 +22,7 @@ ColumnLayout {
     text: NotificationService.list.length > 0 ? `${NotificationService.list.length} notification
 ${NotificationService.list.length === 1 ? "" : "s"}` : "Notifications"
     color: ThemeService.palette.mOutline
-    font.family: Config.appearance.font.family.mono
+    font.family: Settings.appearance.font.mono
     elide: Text.ElideRight
   }
 
@@ -62,14 +61,14 @@ ${NotificationService.list.length === 1 ? "" : "s"}` : "Notifications"
           Layout.alignment: Qt.AlignHCenter
           text: "No notifications"
           color: ThemeService.palette.mOutline
-          font.pointSize: Config.appearance.font.size.large
-          font.family: Config.appearance.font.family.mono
+          font.pointSize: Style.appearance.font.size.large
+          font.family: Settings.appearance.font.mono
         }
       }
 
       Behavior on opacity {
         IAnim {
-          duration: Config.appearance.anim.durations.extraLarge
+          duration: Style.appearance.anim.durations.extraLarge
         }
       }
     }
@@ -99,8 +98,8 @@ ${NotificationService.list.length === 1 ? "" : "s"}` : "Notifications"
           property: "scale"
           from: 0
           to: 1
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
 
@@ -122,8 +121,8 @@ ${NotificationService.list.length === 1 ? "" : "s"}` : "Notifications"
         }
         IAnim {
           property: "y"
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
 
@@ -134,8 +133,8 @@ ${NotificationService.list.length === 1 ? "" : "s"}` : "Notifications"
         }
         IAnim {
           property: "y"
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
     }

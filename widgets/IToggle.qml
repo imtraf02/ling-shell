@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 
 RowLayout {
   id: root
@@ -15,7 +15,7 @@ RowLayout {
 
   Layout.fillWidth: true
   opacity: enabled ? 1.0 : 0.6
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
 
   ILabel {
     label: root.label

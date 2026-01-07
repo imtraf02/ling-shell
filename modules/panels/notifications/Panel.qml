@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -25,7 +24,7 @@ BarPanel {
   contentComponent: Item {
     id: content
 
-    implicitWidth: Config.bar.sizes.audioWidth
+    implicitWidth: Style.bar.audioWidth
     implicitHeight: mainColumn.implicitHeight + root.padding * 2
 
     ColumnLayout {
@@ -50,8 +49,8 @@ BarPanel {
             Layout.fillWidth: true
             text: root.notifCount > 0 ? root.notifCount + " notifications" : "Notifications"
             color: ThemeService.palette.mOutline
-            font.pointSize: Config.appearance.font.size.normal
-            font.family: Config.appearance.font.family.mono
+            font.pointSize: Style.appearance.font.size.normal
+            font.family: Settings.appearance.font.mono
           }
 
           ISwitch {
@@ -63,14 +62,14 @@ BarPanel {
 
           IIconButton {
             icon: "delete"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             enabled: root.notifCount > 0
             onClicked: NotificationService.clear()
           }
 
           IIconButton {
             icon: "close"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: root.close()
           }
         }
@@ -88,7 +87,7 @@ BarPanel {
           opacity: root.notifCount > 0 ? 0 : 1
 
           sourceComponent: ColumnLayout {
-            spacing: Config.appearance.spacing.large
+            spacing: Style.appearance.spacing.large
 
             Image {
               asynchronous: true
@@ -112,15 +111,15 @@ BarPanel {
               Layout.alignment: Qt.AlignHCenter
               text: "No notifications"
               color: ThemeService.palette.mOutline
-              font.pointSize: Config.appearance.font.size.large
-              font.family: Config.appearance.font.family.mono
+              font.pointSize: Style.appearance.font.size.large
+              font.family: Settings.appearance.font.mono
               font.weight: 500
             }
           }
 
           Behavior on opacity {
             IAnim {
-              duration: Config.appearance.anim.durations.extraLarge
+              duration: Style.appearance.anim.durations.extraLarge
             }
           }
         }

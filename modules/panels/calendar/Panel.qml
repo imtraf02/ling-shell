@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.widgets
 import qs.services
 import ".."
@@ -13,7 +13,7 @@ BarPanel {
   contentComponent: Item {
     id: content
 
-    implicitWidth: Config.bar.sizes.calendarWidth
+    implicitWidth: Style.bar.calendarWidth
     implicitHeight: calendar.implicitHeight + root.padding * 2
 
     IBox {
@@ -131,7 +131,7 @@ BarPanel {
               anchors.centerIn: parent
               text: Qt.locale().monthName(calendar.month, Locale.LongFormat) + " " + calendar.year
               color: ThemeService.palette.mPrimary
-              pointSize: Config.appearance.font.size.normal
+              pointSize: Style.appearance.font.size.normal
               font.weight: 500
               font.capitalization: Font.Capitalize
             }
@@ -210,7 +210,7 @@ BarPanel {
                   width: Math.min(parent.width, parent.height)
                   height: width
                   anchors.centerIn: parent
-                  radius: Config.appearance.rounding.full
+                  radius: Style.appearance.rounding.full
                   color: parent.modelData.today ? ThemeService.palette.mPrimary : "transparent"
 
                   Behavior on color {
@@ -234,7 +234,7 @@ BarPanel {
                       return ThemeService.palette.mOnSurfaceVariant;
                     }
                     opacity: dayItem.modelData.currentMonth ? 1.0 : 0.4
-                    pointSize: Config.appearance.font.size.normal
+                    pointSize: Style.appearance.font.size.normal
                     font.weight: dayItem.modelData.today ? 600 : 500
                   }
                 }

@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.services
 
 ColumnLayout {
@@ -10,10 +10,10 @@ ColumnLayout {
   property string description: ""
   property color labelColor: ThemeService.palette.mOnSurface
   property color descriptionColor: ThemeService.palette.mOutline
-  property int labelSize: Config.appearance.font.size.larger
-  property int descriptionSize: Config.appearance.font.size.small
+  property int labelSize: Style.appearance.font.size.larger
+  property int descriptionSize: Style.appearance.font.size.small
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
   Layout.fillWidth: true
 
   IText {

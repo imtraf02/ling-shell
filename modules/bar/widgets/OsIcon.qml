@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -12,7 +11,7 @@ Rectangle {
 
   property bool hovered: false
 
-  readonly property int size: Config.bar.sizes.innerHeight
+  readonly property int size: Style.bar.innerHeight
   readonly property int iconSize: Math.max(1, Math.round(size * 0.66))
 
   implicitWidth: size

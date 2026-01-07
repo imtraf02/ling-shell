@@ -11,7 +11,7 @@ Singleton {
   id: root
 
   readonly property string themesDirectory: Quickshell.shellDir + "/assets/themes"
-  readonly property string stateFilePath: Directories.shellStateColoursPath
+  readonly property string stateFilePath: Directories.shellConfigColoursPath
 
   property list<string> themeFiles: []
   property bool loading: false

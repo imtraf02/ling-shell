@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Window
 import Quickshell
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -18,8 +17,8 @@ Item {
   property bool effectsActive: false
   property color effectColor: ThemeService.palette.mPrimary
 
-  property int horizontalPadding: Config.appearance.padding.small
-  property int spacingBetweenPills: Config.appearance.spacing.small
+  property int horizontalPadding: Style.appearance.padding.small
+  property int spacingBetweenPills: Style.appearance.spacing.small
 
   property int wheelAccumulatedDelta: 0
   property bool wheelCooldown: false
@@ -34,7 +33,7 @@ Item {
     total += horizontalPadding * 2;
     return Math.round(total);
   }
-  implicitHeight: Config.bar.sizes.innerHeight
+  implicitHeight: Style.bar.innerHeight
 
   signal workspaceChanged(int workspaceId, color accentColor)
 
@@ -77,7 +76,7 @@ Item {
   }
 
   function getWorkspaceWidth(ws) {
-    const d = Config.bar.sizes.innerHeight;
+    const d = Style.bar.innerHeight;
     const factor = ws.isActive ? 2.2 : 1;
 
     return d * factor;
@@ -122,7 +121,7 @@ Item {
       property: "masterProgress"
       from: 0.0
       to: 1.0
-      duration: Config.appearance.anim.durations.large * 2
+      duration: Style.appearance.anim.durations.large * 2
       easing.type: Easing.OutQuint
     }
     PropertyAction {

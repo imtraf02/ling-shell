@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -20,10 +19,10 @@ ColumnLayout {
   property int cacheVersion: 0
   property string specificFolderMonitorName: ""
 
-  property int padding: Config.appearance.padding.normal
+  property int padding: Style.appearance.padding.normal
   property string wallpaperPath: WallpaperService.getWallpaper(panel.screen.name)
 
-  spacing: Config.appearance.spacing.larger
+  spacing: Style.appearance.spacing.larger
 
   function themeLoaded(themeName, jsonData) {
     const value = jsonData || {};
@@ -57,8 +56,8 @@ ColumnLayout {
   ILabel {
     label: "Wallpapers"
     description: "Customize your desktop background."
-    labelSize: Config.appearance.font.size.large
-    descriptionSize: Config.appearance.font.size.smaller
+    labelSize: Style.appearance.font.size.large
+    descriptionSize: Style.appearance.font.size.smaller
   }
 
   RowLayout {
@@ -89,14 +88,14 @@ ColumnLayout {
     }
 
     ColumnLayout {
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
       Layout.fillWidth: true
       Layout.alignment: Qt.AlignTop
 
       IText {
         Layout.fillWidth: true
         text: root.wallpaperPath.split("/").pop() + " (" + root.panel.screen.name + ")" || "No wallpaper selected"
-        pointSize: Config.appearance.font.size.larger
+        pointSize: Style.appearance.font.size.larger
         maximumLineCount: 1
       }
 
@@ -141,7 +140,7 @@ ColumnLayout {
           id: contentCol
           anchors.fill: parent
           anchors.margins: root.padding
-          spacing: Config.appearance.spacing.small
+          spacing: Style.appearance.spacing.small
 
           Repeater {
             model: Quickshell.screens || []
@@ -150,7 +149,7 @@ ColumnLayout {
               required property ShellScreen modelData
 
               Layout.fillWidth: true
-              spacing: Config.appearance.spacing.small
+              spacing: Style.appearance.spacing.small
 
               IText {
                 text: (monitorLayout.modelData.name || "Unknown")
@@ -225,8 +224,8 @@ ColumnLayout {
     ILabel {
       label: "Theme source"
       description: "Main settings for themes."
-      labelSize: Config.appearance.font.size.large
-      descriptionSize: Config.appearance.font.size.smaller
+      labelSize: Style.appearance.font.size.large
+      descriptionSize: Style.appearance.font.size.smaller
     }
 
     IToggle {
@@ -490,8 +489,8 @@ ColumnLayout {
   ILabel {
     label: "UI font"
     description: "Font used for the interface elements."
-    labelSize: Config.appearance.font.size.large
-    descriptionSize: Config.appearance.font.size.smaller
+    labelSize: Style.appearance.font.size.large
+    descriptionSize: Style.appearance.font.size.smaller
   }
 
   ISearchableComboBox {

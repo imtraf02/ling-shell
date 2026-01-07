@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.widgets
 import qs.services
 
@@ -15,7 +15,7 @@ ColumnLayout {
   required property bool expanded
   required property Flickable container
 
-  readonly property int spacing: Math.round(Config.appearance.spacing.small / 2)
+  readonly property int spacing: Math.round(Style.appearance.spacing.small / 2)
   property bool showAllNotifs
   property bool flag
 
@@ -34,14 +34,14 @@ ColumnLayout {
 
   Timer {
     id: clearTimer
-    interval: Config.appearance.anim.durations.normal
+    interval: Style.appearance.anim.durations.normal
     onTriggered: root.showAllNotifs = false
   }
 
   Repeater {
     id: repeater
     model: ScriptModel {
-      values: root.showAllNotifs ? root.notifs : root.notifs.slice(0, Config.notifications.groupPreviewNum + 1)
+      values: root.showAllNotifs ? root.notifs : root.notifs.slice(0, Settings.notifications.groupPreviewNum + 1)
       onValuesChanged: root.flagChanged()
     }
 
@@ -58,7 +58,7 @@ ColumnLayout {
         for (let i = 0; i < index; i++)
           if (root.notifs[i].closed)
             extraHidden++;
-        return index >= Config.notifications.groupPreviewNum + extraHidden;
+        return index >= Settings.notifications.groupPreviewNum + extraHidden;
       }
 
       property int startY
@@ -97,13 +97,13 @@ ColumnLayout {
       onPositionChanged: event => {
         if (pressed && !root.expanded) {
           const diffY = event.y - startY;
-          if (Math.abs(diffY) > Config.notifications.expandThreshold)
+          if (Math.abs(diffY) > Settings.notifications.expandThreshold)
             root.requestToggleExpand(diffY > 0);
         }
       }
 
       onReleased: event => {
-        if (Math.abs(x) < width * Config.notifications.clearThreshold)
+        if (Math.abs(x) < width * Settings.notifications.clearThreshold)
           x = 0;
         else
           modelData.close();
@@ -153,15 +153,15 @@ ColumnLayout {
 
       Behavior on Layout.preferredHeight {
         IAnim {
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
 
       Behavior on Layout.topMargin {
         IAnim {
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
 
@@ -174,8 +174,8 @@ ColumnLayout {
 
       Behavior on x {
         IAnim {
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
     }

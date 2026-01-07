@@ -5,7 +5,7 @@ import Quickshell.Widgets
 import Quickshell.Services.Notifications
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.utils
 import qs.services
 import qs.widgets
@@ -13,20 +13,20 @@ import qs.widgets
 Rectangle {
   id: root
 
-  readonly property int padding: Config.appearance.padding.normal
-  readonly property int spacing: Config.appearance.spacing.small
+  readonly property int padding: Style.appearance.padding.normal
+  readonly property int spacing: Style.appearance.spacing.small
   required property NotificationService.Notif modelData
   readonly property bool hasImage: modelData.image.length > 0
   readonly property bool hasAppIcon: modelData.appIcon.length > 0
-  readonly property int nonAnimHeight: Math.max(summary.implicitHeight + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height), Config.notifications.sizes.image) + inner.anchors.margins * 2
+  readonly property int nonAnimHeight: Math.max(summary.implicitHeight + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height), Style.notifications.image) + inner.anchors.margins * 2
   property bool expanded
 
   color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mSecondary : ThemeService.palette.mSurfaceContainer
-  radius: Config.appearance.rounding.normal
-  implicitWidth: Config.notifications.sizes.width
+  radius: Style.appearance.rounding.normal
+  implicitWidth: Style.notifications.width
   implicitHeight: inner.implicitHeight
 
-  x: Config.notifications.sizes.width
+  x: Style.notifications.width
   Component.onCompleted: {
     x = 0;
     modelData.lock(this);
@@ -35,7 +35,7 @@ Rectangle {
 
   Behavior on x {
     IAnim {
-      easing.bezierCurve: Config.appearance.anim.curves.emphasizedDecel
+      easing.bezierCurve: Style.appearance.anim.curves.emphasizedDecel
     }
   }
 
@@ -67,7 +67,7 @@ Rectangle {
       if (!containsMouse)
         root.modelData.timer.start();
 
-      if (Math.abs(root.x) < Config.notifications.sizes.width * Config.notifications.clearThreshold)
+      if (Math.abs(root.x) < Style.notifications.width * Settings.notifications.clearThreshold)
         root.x = 0;
       else
         root.modelData.popup = false;
@@ -75,12 +75,12 @@ Rectangle {
     onPositionChanged: event => {
       if (pressed) {
         const diffY = event.y - startY;
-        if (Math.abs(diffY) > Config.notifications.expandThreshold)
+        if (Math.abs(diffY) > Settings.notifications.expandThreshold)
           root.expanded = diffY > 0;
       }
     }
     onClicked: event => {
-      if (!Config.notifications.actionOnClick || event.button !== Qt.LeftButton)
+      if (!Settings.notifications.actionOnClick || event.button !== Qt.LeftButton)
         return;
 
       const actions = root.modelData.actions;
@@ -100,8 +100,8 @@ Rectangle {
 
       Behavior on implicitHeight {
         IAnim {
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
 
@@ -113,14 +113,14 @@ Rectangle {
 
         anchors.left: parent.left
         anchors.top: parent.top
-        width: Config.notifications.sizes.image
-        height: Config.notifications.sizes.image
+        width: Style.notifications.image
+        height: Style.notifications.image
         visible: root.hasImage || root.hasAppIcon
 
         sourceComponent: ClippingRectangle {
-          radius: Config.appearance.rounding.full
-          implicitWidth: Config.notifications.sizes.image
-          implicitHeight: Config.notifications.sizes.image
+          radius: Style.appearance.rounding.full
+          implicitWidth: Style.notifications.image
+          implicitHeight: Style.notifications.image
 
           Image {
             anchors.fill: parent
@@ -144,10 +144,10 @@ Rectangle {
         anchors.bottom: root.hasImage ? image.bottom : undefined
 
         sourceComponent: Rectangle {
-          radius: Config.appearance.rounding.full
+          radius: Style.appearance.rounding.full
           color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mError : root.modelData.urgency === NotificationUrgency.Low ? ThemeService.palette.mSurfaceContainerHighest : ThemeService.palette.mSecondary
-          implicitWidth: root.hasImage ? Config.notifications.sizes.badge : Config.notifications.sizes.image
-          implicitHeight: root.hasImage ? Config.notifications.sizes.badge : Config.notifications.sizes.image
+          implicitWidth: root.hasImage ? Style.notifications.badge : Style.notifications.image
+          implicitHeight: root.hasImage ? Style.notifications.badge : Style.notifications.image
 
           Loader {
             id: icon
@@ -172,14 +172,14 @@ Rectangle {
             active: !root.hasAppIcon
             asynchronous: true
             anchors.centerIn: parent
-            anchors.horizontalCenterOffset: -Config.appearance.font.size.large * 0.02
-            anchors.verticalCenterOffset: Config.appearance.font.size.large * 0.02
+            anchors.horizontalCenterOffset: -Style.appearance.font.size.large * 0.02
+            anchors.verticalCenterOffset: Style.appearance.font.size.large * 0.02
 
             sourceComponent: IIcon {
               icon: Icons.getNotifIcon(root.modelData.summary, root.modelData.urgency)
 
               color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnError : root.modelData.urgency === NotificationUrgency.Low ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSecondary
-              font.pointSize: Config.appearance.font.size.large
+              font.pointSize: Style.appearance.font.size.large
             }
           }
         }
@@ -196,7 +196,7 @@ Rectangle {
         text: appNameMetrics.elidedText
         maximumLineCount: 1
         color: ThemeService.palette.mOnSurfaceVariant
-        font.pointSize: Config.appearance.font.size.small
+        font.pointSize: Style.appearance.font.size.small
 
         opacity: root.expanded ? 1 : 0
 
@@ -212,7 +212,7 @@ Rectangle {
         font.family: appName.font.family
         font.pointSize: appName.font.pointSize
         elide: Text.ElideRight
-        elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - Config.appearance.spacing.small * 3
+        elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - Style.appearance.spacing.small * 3
       }
 
       IText {
@@ -247,9 +247,9 @@ Rectangle {
             property: "maximumLineCount"
           }
           AnchorAnimation {
-            duration: Config.appearance.anim.durations.normal
+            duration: Style.appearance.anim.durations.normal
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: Config.appearance.anim.curves.standard
+            easing.bezierCurve: Style.appearance.anim.curves.standard
           }
         }
 
@@ -273,11 +273,11 @@ Rectangle {
 
         anchors.top: parent.top
         anchors.left: summary.right
-        anchors.leftMargin: Config.appearance.spacing.small
+        anchors.leftMargin: Style.appearance.spacing.small
 
         text: "•"
         color: ThemeService.palette.mOnSurfaceVariant
-        font.pointSize: Config.appearance.font.size.small
+        font.pointSize: Style.appearance.font.size.small
 
         states: State {
           name: "expanded"
@@ -291,9 +291,9 @@ Rectangle {
 
         transitions: Transition {
           AnchorAnimation {
-            duration: Config.appearance.anim.durations.normal
+            duration: Style.appearance.anim.durations.normal
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: Config.appearance.anim.curves.standard
+            easing.bezierCurve: Style.appearance.anim.curves.standard
           }
         }
       }
@@ -309,7 +309,7 @@ Rectangle {
         horizontalAlignment: Text.AlignLeft
         text: root.modelData.timeStr
         color: ThemeService.palette.mOnSurfaceVariant
-        font.pointSize: Config.appearance.font.size.small
+        font.pointSize: Style.appearance.font.size.small
       }
 
       Item {
@@ -322,7 +322,7 @@ Rectangle {
         implicitHeight: expandIcon.height
 
         IStateLayer {
-          radius: Config.appearance.rounding.full
+          radius: Style.appearance.rounding.full
           color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurface
 
           function onClicked() {
@@ -337,7 +337,7 @@ Rectangle {
 
           animate: true
           icon: root.expanded ? "expand_less" : "expand_more"
-          font.pointSize: Config.appearance.font.size.normal
+          font.pointSize: Style.appearance.font.size.normal
         }
       }
 
@@ -353,7 +353,7 @@ Rectangle {
         textFormat: Text.MarkdownText
         text: bodyPreviewMetrics.elidedText
         color: ThemeService.palette.mOnSurfaceVariant
-        font.pointSize: Config.appearance.font.size.small
+        font.pointSize: Style.appearance.font.size.small
 
         opacity: root.expanded ? 0 : 1
 
@@ -384,7 +384,7 @@ Rectangle {
         textFormat: Text.MarkdownText
         text: root.modelData.body
         color: ThemeService.palette.mOnSurfaceVariant
-        font.pointSize: Config.appearance.font.size.small
+        font.pointSize: Style.appearance.font.size.small
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         height: text ? implicitHeight : 0
 
@@ -443,7 +443,7 @@ Rectangle {
 
     required property var modelData
 
-    radius: Config.appearance.rounding.full
+    radius: Style.appearance.rounding.full
     color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mSecondary : ThemeService.palette.mSurfaceContainerHigh
 
     Layout.preferredWidth: actionText.width + root.padding * 2
@@ -452,7 +452,7 @@ Rectangle {
     implicitHeight: actionText.height + root.padding * 2
 
     IStateLayer {
-      radius: Config.appearance.rounding.full
+      radius: Style.appearance.rounding.full
       color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurface
 
       function onClicked(): void {
@@ -466,7 +466,7 @@ Rectangle {
       anchors.centerIn: parent
       text: actionTextMetrics.elidedText
       color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurfaceVariant
-      font.pointSize: Config.appearance.font.size.small
+      font.pointSize: Style.appearance.font.size.small
     }
 
     TextMetrics {

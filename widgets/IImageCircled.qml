@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import qs.config
+import qs.commons
 
 Rectangle {
   id: root
@@ -11,11 +11,11 @@ Rectangle {
   property color borderColor: "transparent"
   property real borderWidth: 0
   property string fallbackIcon: ""
-  property real fallbackIconSize: Config.appearance.font.size.extraLarge
+  property real fallbackIconSize: Style.appearance.font.size.extraLarge
 
   color: "transparent"
   radius: parent.width * 0.5
-  anchors.margins: Config.appearance.padding.small
+  anchors.margins: Style.appearance.padding.small
 
   Rectangle {
     color: "transparent"

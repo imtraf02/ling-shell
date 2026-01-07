@@ -1,14 +1,14 @@
 import QtQuick
-import qs.config
+import qs.commons
 import qs.services
 
 Item {
   id: root
   property bool running: true
   property color color: ThemeService.palette.mPrimary
-  property int size: Config.appearance.widget.size
+  property int size: Style.appearance.widget.size
   property int strokeWidth: 3
-  property int duration: Config.appearance.anim.durations.large * 2
+  property int duration: Style.appearance.anim.durations.large * 2
 
   property real internalStrokeWidth: strokeWidth
   property int animState: 0
@@ -44,7 +44,7 @@ Item {
   transitions: Transition {
     NumberAnimation {
       properties: "opacity,internalStrokeWidth"
-      duration: Config.appearance.anim.durations.normal
+      duration: Style.appearance.anim.durations.normal
       easing.type: Easing.InOutQuad
     }
   }

@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.UPower
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -14,8 +13,8 @@ import qs.widgets
 ColumnLayout {
   id: root
 
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   anchors.fill: parent
   anchors.margins: padding
@@ -23,7 +22,7 @@ ColumnLayout {
   RowLayout {
     Layout.fillWidth: true
     Layout.fillHeight: false
-    spacing: Config.appearance.spacing.normal
+    spacing: Style.appearance.spacing.normal
 
     Rectangle {
       implicitWidth: prompt.implicitWidth + root.padding * 2
@@ -37,7 +36,7 @@ ColumnLayout {
 
         anchors.centerIn: parent
         text: ">"
-        font.pointSize: root.width > 400 ? Config.appearance.font.size.larger : Config.appearance.font.size.normal
+        font.pointSize: root.width > 400 ? Style.appearance.font.size.larger : Style.appearance.font.size.normal
         color: ThemeService.palette.mOnPrimary
       }
     }
@@ -45,7 +44,7 @@ ColumnLayout {
     MonoText {
       Layout.fillWidth: true
       text: "LingShell"
-      font.pointSize: root.width > 400 ? Config.appearance.font.size.larger : Config.appearance.font.size.normal
+      font.pointSize: root.width > 400 ? Style.appearance.font.size.larger : Style.appearance.font.size.normal
       elide: Text.ElideRight
     }
   }
@@ -63,7 +62,7 @@ ColumnLayout {
       Layout.fillWidth: true
       Layout.topMargin: root.padding
       Layout.bottomMargin: root.padding
-      spacing: Config.appearance.spacing.normal
+      spacing: Style.appearance.spacing.normal
 
       FetchText {
         text: "OS: " + DistroService.osPretty
@@ -98,11 +97,11 @@ ColumnLayout {
 
   component FetchText: MonoText {
     Layout.fillWidth: true
-    font.pointSize: root.width > 400 ? Config.appearance.font.size.larger : Config.appearance.font.size.normal
+    font.pointSize: root.width > 400 ? Style.appearance.font.size.larger : Style.appearance.font.size.normal
     elide: Text.ElideRight
   }
 
   component MonoText: IText {
-    font.family: Config.appearance.font.family.mono
+    font.family: Settings.appearance.font.mono
   }
 }

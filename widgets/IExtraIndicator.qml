@@ -1,18 +1,18 @@
 import QtQuick
-import qs.config
+import qs.commons
 import qs.services
 
 Rectangle {
   required property int extra
 
   anchors.right: parent.right
-  anchors.margins: Config.appearance.padding.normal
+  anchors.margins: Style.appearance.padding.normal
 
   color: ThemeService.palette.mTertiary
-  radius: Config.appearance.rounding.small
+  radius: Style.appearance.rounding.small
 
-  implicitWidth: count.implicitWidth + Config.appearance.padding.normal * 2
-  implicitHeight: count.implicitHeight + Config.appearance.padding.small * 2
+  implicitWidth: count.implicitWidth + Style.appearance.padding.normal * 2
+  implicitHeight: count.implicitHeight + Style.appearance.padding.small * 2
 
   opacity: extra > 0 ? 1 : 0
   scale: extra > 0 ? 1 : 0.5
@@ -36,14 +36,14 @@ Rectangle {
 
   Behavior on opacity {
     IAnim {
-      duration: Config.appearance.anim.durations.expressiveFastSpatial
+      duration: Style.appearance.anim.durations.expressiveFastSpatial
     }
   }
 
   Behavior on scale {
     IAnim {
-      duration: Config.appearance.anim.durations.expressiveFastSpatial
-      easing.bezierCurve: Config.appearance.anim.curves.expressiveFastSpatial
+      duration: Style.appearance.anim.durations.expressiveFastSpatial
+      easing.bezierCurve: Style.appearance.anim.curves.expressiveFastSpatial
     }
   }
 }

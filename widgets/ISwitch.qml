@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Templates
 import QtQuick.Shapes
-import qs.config
 import qs.commons
 import qs.services
 
@@ -16,7 +15,7 @@ Switch {
     color: root.checked ? ThemeService.palette.mPrimary : ThemeService.palette.mSurfaceContainerHighest
 
     implicitWidth: implicitHeight * 2
-    implicitHeight: Config.appearance.font.size.normal + Config.appearance.padding.smaller * 2
+    implicitHeight: Style.appearance.font.size.normal + Style.appearance.padding.smaller * 2
 
     Rectangle {
       readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.3 : implicitHeight
@@ -24,9 +23,9 @@ Switch {
       radius: Settings.appearance.cornerRadius
       color: root.checked ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOutline
 
-      x: root.checked ? parent.implicitWidth - nonAnimWidth - Config.appearance.padding.small / 2 : Config.appearance.padding.small / 2
+      x: root.checked ? parent.implicitWidth - nonAnimWidth - Style.appearance.padding.small / 2 : Style.appearance.padding.small / 2
       implicitWidth: nonAnimWidth
-      implicitHeight: parent.implicitHeight - Config.appearance.padding.small
+      implicitHeight: parent.implicitHeight - Style.appearance.padding.small
       anchors.verticalCenter: parent.verticalCenter
 
       Rectangle {
@@ -81,12 +80,12 @@ Switch {
 
         anchors.centerIn: parent
         width: height
-        height: parent.implicitHeight - Config.appearance.padding.small * 2
+        height: parent.implicitHeight - Style.appearance.padding.small * 2
         preferredRendererType: Shape.CurveRenderer
         asynchronous: true
 
         ShapePath {
-          strokeWidth: Config.appearance.font.size.larger * 0.15
+          strokeWidth: Style.appearance.font.size.larger * 0.15
           strokeColor: root.checked ? ThemeService.palette.mPrimary : ThemeService.palette.mSurfaceContainerHighest
           fillColor: "transparent"
           capStyle: ShapePath.RoundCap
@@ -143,8 +142,8 @@ Switch {
   }
 
   component PropAnim: PropertyAnimation {
-    duration: Config.appearance.anim.durations.normal
+    duration: Style.appearance.anim.durations.normal
     easing.type: Easing.BezierSpline
-    easing.bezierCurve: Config.appearance.anim.curves.standard
+    easing.bezierCurve: Style.appearance.anim.curves.standard
   }
 }

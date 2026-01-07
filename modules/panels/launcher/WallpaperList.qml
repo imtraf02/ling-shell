@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -26,7 +25,7 @@ Item {
   }
   property var currentScreen: Quickshell.screens[currentScreenIndex]
 
-  implicitWidth: Math.max(Config.launcher.sizes.itemWidth * 1.2, list.implicitWidth)
+  implicitWidth: Math.max(Style.launcher.itemWidth * 1.2, list.implicitWidth)
   implicitHeight: content.height
 
   function incrementCurrentIndex() {
@@ -63,11 +62,11 @@ Item {
     RowLayout {
       id: header
       Layout.fillWidth: true
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
 
       IIcon {
         icon: "image"
-        pointSize: Config.appearance.widget.size * 0.8
+        pointSize: Style.appearance.widget.size * 0.8
         color: ThemeService.palette.mPrimary
       }
 
@@ -79,7 +78,7 @@ Item {
 
       IIconButton {
         icon: "refresh"
-        size: Config.appearance.widget.size * 0.8
+        size: Style.appearance.widget.size * 0.8
         onClicked: {
           WallpaperService.refreshWallpapersList();
         }
@@ -104,7 +103,7 @@ Item {
       Layout.fillWidth: true
       currentIndex: root.currentScreenIndex
       onCurrentIndexChanged: root.currentScreenIndex = currentIndex
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
 
       Repeater {
         model: Quickshell.screens
@@ -121,7 +120,7 @@ Item {
     Item {
       id: list
       Layout.fillWidth: true
-      Layout.preferredHeight: Config.launcher.sizes.wallpaperHeight
+      Layout.preferredHeight: Style.launcher.wallpaperHeight
 
       Repeater {
         id: screenRepeater
@@ -156,7 +155,7 @@ Item {
     property var wallpapersList: []
     property string currentWallpaper: ""
 
-    readonly property int itemWidth: Config.launcher.sizes.wallpaperWidth * 0.8 + Config.appearance.padding.larger * 2
+    readonly property int itemWidth: Style.launcher.wallpaperWidth * 0.8 + Style.appearance.padding.larger * 2
     readonly property int numItems: {
       if (!targetScreen)
         return 0;
@@ -165,7 +164,7 @@ Item {
       if (maxWidth <= 0)
         return 0;
       const maxItemsOnScreen = Math.floor(maxWidth / itemWidth);
-      const visible = Math.min(maxItemsOnScreen, Config.launcher.maxWallpapers, scriptModel.values.length);
+      const visible = Math.min(maxItemsOnScreen, Settings.launcher.maxWallpapers, scriptModel.values.length);
       if (visible === 2)
         return 1;
       if (visible > 1 && visible % 2 === 0)
@@ -280,8 +279,8 @@ Item {
       z: PathView.isCurrentItem ? 1 : 0
       scale: PathView.isCurrentItem ? 1 : PathView.onPath ? 0.8 : 0.5
       opacity: PathView.onPath ? 1 : 0
-      implicitWidth: image.width + Config.appearance.padding.larger * 2
-      implicitHeight: image.height + label.height + Config.appearance.padding.larger * 2
+      implicitWidth: image.width + Style.appearance.padding.larger * 2
+      implicitHeight: image.height + label.height + Style.appearance.padding.larger * 2
 
       IStateLayer {
         radius: Settings.appearance.cornerRadius
@@ -312,9 +311,9 @@ Item {
       ClippingRectangle {
         id: image
         anchors.horizontalCenter: parent.horizontalCenter
-        y: Config.appearance.padding.larger
+        y: Style.appearance.padding.larger
         color: delegateItem.isSelected ? ThemeService.palette.mPrimary : ThemeService.palette.mSurfaceVariant
-        implicitWidth: Config.launcher.sizes.wallpaperWidth
+        implicitWidth: Style.launcher.wallpaperWidth
         implicitHeight: implicitWidth / 16 * 9
         radius: Settings.appearance.cornerRadius
 

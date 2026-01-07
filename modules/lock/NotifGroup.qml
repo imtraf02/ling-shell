@@ -5,7 +5,7 @@ import Quickshell.Widgets
 import Quickshell.Services.Notifications
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.services
 import qs.utils
 import qs.widgets
@@ -19,8 +19,8 @@ Rectangle {
   readonly property string image: notifs.find(n => n.image.length > 0)?.image ?? ""
   readonly property string appIcon: notifs.find(n => n.appIcon.length > 0)?.appIcon ?? ""
   readonly property string urgency: notifs.some(n => n.urgency === NotificationUrgency.Critical) ? "critical" : notifs.some(n => n.urgency === NotificationUrgency.Normal) ? "normal" : "low"
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   property bool expanded
 
@@ -29,7 +29,7 @@ Rectangle {
   implicitHeight: content.implicitHeight + root.padding * 2
 
   clip: true
-  radius: Config.appearance.rounding.normal
+  radius: Style.appearance.rounding.normal
   color: root.urgency === "critical" ? ThemeService.palette.mSecondary : ThemeService.palette.mSurfaceContainerHigh
 
   RowLayout {
@@ -44,8 +44,8 @@ Rectangle {
 
     Item {
       Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-      implicitWidth: Config.notifications.sizes.image
-      implicitHeight: Config.notifications.sizes.image
+      implicitWidth: Style.notifications.image
+      implicitHeight: Style.notifications.image
 
       Component {
         id: imageComp
@@ -55,8 +55,8 @@ Rectangle {
           fillMode: Image.PreserveAspectCrop
           cache: false
           asynchronous: true
-          width: Config.notifications.sizes.image
-          height: Config.notifications.sizes.image
+          width: Style.notifications.image
+          height: Style.notifications.image
         }
       }
 
@@ -64,7 +64,7 @@ Rectangle {
         id: appIconComp
 
         IColouredIcon {
-          implicitSize: Math.round(Config.notifications.sizes.image * 0.6)
+          implicitSize: Math.round(Style.notifications.image * 0.6)
           source: Quickshell.iconPath(root.appIcon)
           colour: root.urgency === "critical" ? ThemeService.palette.mOnError : root.urgency === "low" ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSecondary
           layer.enabled: root.appIcon.endsWith("symbolic")
@@ -77,14 +77,14 @@ Rectangle {
         IIcon {
           icon: Icons.getNotifIcon(root.notifs[0]?.summary, root.urgency)
           color: root.urgency === "critical" ? ThemeService.palette.mOnError : root.urgency === "low" ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSecondary
-          font.pointSize: Config.appearance.font.size.large
+          font.pointSize: Style.appearance.font.size.large
         }
       }
 
       ClippingRectangle {
         anchors.fill: parent
         color: root.urgency === "critical" ? ThemeService.palette.mError : root.urgency === "low" ? ThemeService.palette.mSurfaceContainerHighest : ThemeService.palette.mSecondary
-        radius: Config.appearance.rounding.full
+        radius: Style.appearance.rounding.full
 
         Loader {
           anchors.centerIn: parent
@@ -100,15 +100,15 @@ Rectangle {
         active: root.appIcon && root.image
 
         sourceComponent: Rectangle {
-          implicitWidth: Config.notifications.sizes.badge
-          implicitHeight: Config.notifications.sizes.badge
+          implicitWidth: Style.notifications.badge
+          implicitHeight: Style.notifications.badge
 
           color: root.urgency === "critical" ? ThemeService.palette.mError : root.urgency === "low" ? ThemeService.palette.mSurfaceContainerHighest : ThemeService.palette.mSecondary
-          radius: Config.appearance.rounding.full
+          radius: Style.appearance.rounding.full
 
           IColouredIcon {
             anchors.centerIn: parent
-            implicitSize: Math.round(Config.notifications.sizes.badge * 0.6)
+            implicitSize: Math.round(Style.notifications.badge * 0.6)
             source: Quickshell.iconPath(root.appIcon)
             colour: root.urgency === "critical" ? ThemeService.palette.mOnError : root.urgency === "low" ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSecondary
             layer.enabled: root.appIcon.endsWith("symbolic")
@@ -118,21 +118,21 @@ Rectangle {
     }
 
     ColumnLayout {
-      Layout.topMargin: -Config.appearance.padding.small
-      Layout.bottomMargin: -Config.appearance.padding.small / 2 - (root.expanded ? 0 : spacing)
+      Layout.topMargin: -Style.appearance.padding.small
+      Layout.bottomMargin: -Style.appearance.padding.small / 2 - (root.expanded ? 0 : spacing)
       Layout.fillWidth: true
-      spacing: Math.round(Config.appearance.spacing.small / 2)
+      spacing: Math.round(Style.appearance.spacing.small / 2)
 
       RowLayout {
         Layout.bottomMargin: -parent.spacing
         Layout.fillWidth: true
-        spacing: Config.appearance.spacing.smaller
+        spacing: Style.appearance.spacing.smaller
 
         IText {
           Layout.fillWidth: true
           text: root.modelData
           color: ThemeService.palette.mOnSurfaceVariant
-          font.pointSize: Config.appearance.font.size.small
+          font.pointSize: Style.appearance.font.size.small
           elide: Text.ElideRight
         }
 
@@ -140,18 +140,18 @@ Rectangle {
           animate: true
           text: root.notifs[0]?.timeStr ?? ""
           color: ThemeService.palette.mOutline
-          font.pointSize: Config.appearance.font.size.small
+          font.pointSize: Style.appearance.font.size.small
         }
 
         Rectangle {
-          implicitWidth: expandBtn.implicitWidth + Config.appearance.padding.smaller * 2
-          implicitHeight: groupCount.implicitHeight + Config.appearance.padding.small
+          implicitWidth: expandBtn.implicitWidth + Style.appearance.padding.smaller * 2
+          implicitHeight: groupCount.implicitHeight + Style.appearance.padding.small
 
           color: root.urgency === "critical" ? ThemeService.palette.mError : ThemeService.palette.mSurfaceContainerHighest
-          radius: Config.appearance.rounding.full
+          radius: Style.appearance.rounding.full
 
-          opacity: root.notifs.length > Config.notifications.groupPreviewNum ? 1 : 0
-          Layout.preferredWidth: root.notifs.length > Config.notifications.groupPreviewNum ? implicitWidth : 0
+          opacity: root.notifs.length > Settings.notifications.groupPreviewNum ? 1 : 0
+          Layout.preferredWidth: root.notifs.length > Settings.notifications.groupPreviewNum ? implicitWidth : 0
 
           IStateLayer {
             color: root.urgency === "critical" ? ThemeService.palette.mOnError : ThemeService.palette.mOnSurface
@@ -165,20 +165,20 @@ Rectangle {
             id: expandBtn
 
             anchors.centerIn: parent
-            spacing: Config.appearance.spacing.small / 2
+            spacing: Style.appearance.spacing.small / 2
 
             IText {
               id: groupCount
 
-              Layout.leftMargin: Config.appearance.padding.small / 2
+              Layout.leftMargin: Style.appearance.padding.small / 2
               animate: true
               text: root.notifs.length
               color: root.urgency === "critical" ? ThemeService.palette.mOnError : ThemeService.palette.mOnSurface
-              font.pointSize: Config.appearance.font.size.small
+              font.pointSize: Style.appearance.font.size.small
             }
 
             IIcon {
-              Layout.rightMargin: -Config.appearance.padding.small / 2
+              Layout.rightMargin: -Style.appearance.padding.small / 2
               animate: true
               icon: root.expanded ? "expand_less" : "expand_more"
               color: root.urgency === "critical" ? ThemeService.palette.mOnError : ThemeService.palette.mOnSurface
@@ -197,7 +197,7 @@ Rectangle {
 
       Repeater {
         model: ScriptModel {
-          values: root.notifs.slice(0, Config.notifications.groupPreviewNum)
+          values: root.notifs.slice(0, Settings.notifications.groupPreviewNum)
         }
 
         NotifLine {
@@ -260,7 +260,7 @@ Rectangle {
         sourceComponent: ColumnLayout {
           Repeater {
             model: ScriptModel {
-              values: root.notifs.slice(Config.notifications.groupPreviewNum)
+              values: root.notifs.slice(Settings.notifications.groupPreviewNum)
             }
 
             NotifLine {}
@@ -276,8 +276,8 @@ Rectangle {
 
   Behavior on implicitHeight {
     IAnim {
-      duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-      easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+      duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+      easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
     }
   }
 

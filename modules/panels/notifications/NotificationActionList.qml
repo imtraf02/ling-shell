@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.services
 import qs.widgets
 
@@ -92,7 +92,7 @@ Item {
       id: actionList
 
       anchors.fill: parent
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
 
       Repeater {
         model: [
@@ -112,11 +112,11 @@ Item {
 
           Layout.fillWidth: true
           Layout.fillHeight: true
-          implicitWidth: actionInner.implicitWidth + Config.appearance.padding.normal * 2
-          implicitHeight: actionInner.implicitHeight + Config.appearance.padding.small * 2
+          implicitWidth: actionInner.implicitWidth + Style.appearance.padding.normal * 2
+          implicitHeight: actionInner.implicitHeight + Style.appearance.padding.small * 2
 
-          Layout.preferredWidth: implicitWidth + (actionStateLayer.pressed ? Config.appearance.padding.large : 0)
-          radius: actionStateLayer.pressed ? Config.appearance.rounding.small / 2 : Config.appearance.rounding.small
+          Layout.preferredWidth: implicitWidth + (actionStateLayer.pressed ? Style.appearance.padding.large : 0)
+          radius: actionStateLayer.pressed ? Style.appearance.rounding.small / 2 : Style.appearance.rounding.small
           color: ThemeService.palette.mSurfaceContainerHighest
 
           Timer {
@@ -180,15 +180,15 @@ Item {
 
           Behavior on Layout.preferredWidth {
             IAnim {
-              duration: Config.appearance.anim.durations.expressiveFastSpatial
-              easing.bezierCurve: Config.appearance.anim.curves.expressiveFastSpatial
+              duration: Style.appearance.anim.durations.expressiveFastSpatial
+              easing.bezierCurve: Style.appearance.anim.curves.expressiveFastSpatial
             }
           }
 
           Behavior on radius {
             IAnim {
-              duration: Config.appearance.anim.durations.expressiveFastSpatial
-              easing.bezierCurve: Config.appearance.anim.curves.expressiveFastSpatial
+              duration: Style.appearance.anim.durations.expressiveFastSpatial
+              easing.bezierCurve: Style.appearance.anim.curves.expressiveFastSpatial
             }
           }
         }

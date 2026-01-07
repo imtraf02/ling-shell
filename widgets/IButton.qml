@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -14,9 +13,9 @@ Rectangle {
   property color textColor: ThemeService.palette.mOnPrimary
   property color hoverColor: ThemeService.palette.mPrimary
   property bool enabled: true
-  property real fontSize: Config.appearance.font.size.small
+  property real fontSize: Style.appearance.font.size.small
   property int fontWeight: Font.DemiBold
-  property real iconSize: Config.appearance.font.size.large
+  property real iconSize: Style.appearance.font.size.large
   property bool outlined: false
   property int horizontalAlignment: Qt.AlignHCenter
 
@@ -31,8 +30,8 @@ Rectangle {
   property bool hovered: false
 
   // Dimensions
-  implicitWidth: contentRow.implicitWidth + (Config.appearance.padding.large * 2)
-  implicitHeight: Math.max(Config.appearance.widget.size, contentRow.implicitHeight + (Config.appearance.padding.small))
+  implicitWidth: contentRow.implicitWidth + (Style.appearance.padding.large * 2)
+  implicitHeight: Math.max(Style.appearance.widget.size, contentRow.implicitHeight + (Style.appearance.padding.small))
 
   // Appearance
   radius: Settings.appearance.cornerRadius
@@ -69,8 +68,8 @@ Rectangle {
     anchors.verticalCenter: parent.verticalCenter
     anchors.left: root.horizontalAlignment === Qt.AlignLeft ? parent.left : undefined
     anchors.horizontalCenter: root.horizontalAlignment === Qt.AlignHCenter ? parent.horizontalCenter : undefined
-    anchors.leftMargin: root.horizontalAlignment === Qt.AlignLeft ? Config.appearance.padding.large : 0
-    spacing: Config.appearance.spacing.small
+    anchors.leftMargin: root.horizontalAlignment === Qt.AlignLeft ? Style.appearance.padding.large : 0
+    spacing: Style.appearance.spacing.small
 
     // Icon (optional)
     IIcon {

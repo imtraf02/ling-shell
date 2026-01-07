@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -9,8 +8,8 @@ ColumnLayout {
 
   required property var panel
 
-  readonly property int padding: Config.appearance.padding.normal
-  readonly property int spacing: Config.appearance.spacing.small
+  readonly property int padding: Style.appearance.padding.normal
+  readonly property int spacing: Style.appearance.spacing.small
 
   QtObject {
     id: netState

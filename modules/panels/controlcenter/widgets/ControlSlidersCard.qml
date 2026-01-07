@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -10,8 +9,8 @@ Item {
   id: root
 
   required property var panel
-  readonly property int padding: Config.appearance.padding.normal
-  readonly property int spacing: Config.appearance.spacing.small
+  readonly property int padding: Style.appearance.padding.normal
+  readonly property int spacing: Style.appearance.spacing.small
 
   property real localVolume: AudioService.volume || 0
   property bool volumeChanging: false

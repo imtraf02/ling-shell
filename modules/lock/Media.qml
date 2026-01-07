@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.widgets.audiospectrum
@@ -16,8 +15,8 @@ Item {
   anchors.right: parent.right
   implicitHeight: 280
 
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   Item {
     anchors.fill: parent
@@ -79,7 +78,7 @@ Item {
     anchors.topMargin: root.spacing
     anchors.leftMargin: root.padding
     anchors.rightMargin: root.padding
-    height: Config.bar.sizes.innerHeight
+    height: Style.bar.innerHeight
     visible: MediaService.getAvailablePlayers().length > 1
     radius: Settings.appearance.cornerRadius
     color: "transparent"
@@ -92,13 +91,13 @@ Item {
 
       IIcon {
         icon: "arrow_drop_down"
-        pointSize: Config.appearance.font.size.extraLarge
+        pointSize: Style.appearance.font.size.extraLarge
         color: ThemeService.palette.mOnSurface
       }
 
       IText {
         text: playerSelectorButton.currentPlayer ? playerSelectorButton.currentPlayer.identity : ""
-        pointSize: Config.appearance.font.size.large
+        pointSize: Style.appearance.font.size.large
         color: ThemeService.palette.mOnSurface
         Layout.fillWidth: true
       }
@@ -164,8 +163,8 @@ Item {
 
           Item {
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: Config.appearance.font.size.extraLarge * 4
-            Layout.preferredHeight: Config.appearance.font.size.extraLarge * 4
+            Layout.preferredWidth: Style.appearance.font.size.extraLarge * 4
+            Layout.preferredHeight: Style.appearance.font.size.extraLarge * 4
 
             Repeater {
               model: 3
@@ -214,7 +213,7 @@ Item {
             IIcon {
               anchors.centerIn: parent
               icon: "album"
-              pointSize: Config.appearance.font.size.extraLarge * 3
+              pointSize: Style.appearance.font.size.extraLarge * 3
               color: ThemeService.palette.mOnSurface
             }
           }
@@ -248,7 +247,7 @@ Item {
         IText {
           visible: MediaService.trackTitle !== ""
           text: MediaService.trackTitle
-          pointSize: Config.appearance.font.size.large
+          pointSize: Style.appearance.font.size.large
           elide: Text.ElideRight
           wrapMode: Text.Wrap
           maximumLineCount: 2
@@ -259,7 +258,7 @@ Item {
           visible: MediaService.trackArtist !== ""
           text: MediaService.trackArtist
           color: ThemeService.palette.mPrimary
-          pointSize: Config.appearance.font.size.small
+          pointSize: Style.appearance.font.size.small
           elide: Text.ElideRight
           Layout.fillWidth: true
         }
@@ -268,7 +267,7 @@ Item {
           visible: MediaService.trackAlbum !== ""
           text: MediaService.trackAlbum
           color: ThemeService.palette.mOnSurface
-          pointSize: Config.appearance.font.size.small
+          pointSize: Style.appearance.font.size.small
           elide: Text.ElideRight
           Layout.fillWidth: true
         }
@@ -278,7 +277,7 @@ Item {
         id: progressWrapper
         visible: (MediaService.currentPlayer && MediaService.trackLength > 0)
         Layout.fillWidth: true
-        Layout.preferredHeight: Config.appearance.widget.size * 0.5
+        Layout.preferredHeight: Style.appearance.widget.size * 0.5
 
         property real localSeekRatio: -1
         property real lastSentSeekRatio: -1

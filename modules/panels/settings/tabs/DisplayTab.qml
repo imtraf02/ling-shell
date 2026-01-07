@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -11,14 +10,14 @@ import qs.services
 ColumnLayout {
   id: root
 
-  readonly property int padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.larger
+  readonly property int padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.larger
 
   ILabel {
     label: "Per-monitor settings"
     description: "Adjust settings brightness for each display."
-    labelSize: Config.appearance.font.size.large
-    descriptionSize: Config.appearance.font.size.smaller
+    labelSize: Style.appearance.font.size.large
+    descriptionSize: Style.appearance.font.size.smaller
   }
 
   Repeater {
@@ -52,13 +51,13 @@ ColumnLayout {
         }
 
         ColumnLayout {
-          spacing: Config.appearance.spacing.small
+          spacing: Style.appearance.spacing.small
           Layout.fillWidth: true
           visible: screenRect.brightnessMonitor !== undefined && screenRect.brightnessMonitor !== null
 
           RowLayout {
             Layout.fillWidth: true
-            spacing: Config.appearance.spacing.small
+            spacing: Style.appearance.spacing.small
 
             IText {
               text: "Brightness"

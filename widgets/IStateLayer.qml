@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Widgets
-import qs.config
+import qs.commons
 import qs.services
 
 MouseArea {
@@ -62,7 +62,7 @@ MouseArea {
       properties: "implicitWidth,implicitHeight"
       from: 0
       to: rippleAnim.radius * 2
-      easing.bezierCurve: Config.appearance.anim.curves.standardDecel
+      easing.bezierCurve: Style.appearance.anim.curves.standardDecel
     }
     IAnim {
       target: ripple
@@ -82,7 +82,7 @@ MouseArea {
     Rectangle {
       id: ripple
 
-      radius: Config.appearance.rounding.full
+      radius: Style.appearance.rounding.full
       color: root.color
       opacity: 0
 

@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -15,8 +14,8 @@ Rectangle {
   color: hovered ? ThemeService.palette.mSurfaceContainerHigh : ThemeService.palette.mSurfaceContainer
   radius: Settings.appearance.cornerRadius
 
-  implicitWidth: clock.implicitWidth + Config.bar.sizes.innerHeight * 0.5
-  implicitHeight: Config.bar.sizes.innerHeight
+  implicitWidth: clock.implicitWidth + Style.bar.innerHeight * 0.5
+  implicitHeight: Style.bar.innerHeight
 
   Behavior on color {
     ICAnim {}

@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -100,7 +99,7 @@ BarPanel {
 
   contentComponent: Item {
     id: content
-    implicitWidth: Config.bar.sizes.networkWidth
+    implicitWidth: Style.bar.networkWidth
     implicitHeight: mainColumn.implicitHeight + (root.padding * 2)
 
     ColumnLayout {
@@ -123,7 +122,7 @@ BarPanel {
           IIcon {
             id: modeIcon
             icon: panelViewMode === "wifi" ? (Settings.network.wifiEnabled ? "wifi" : "wifi_off") : (NetworkService.hasEthernet() ? (NetworkService.ethernetConnected ? "ethernet" : "ethernet") : "ethernet_off")
-            pointSize: Config.appearance.font.size.large
+            pointSize: Style.appearance.font.size.large
             color: panelViewMode === "wifi" ? (Settings.network.wifiEnabled ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurfaceVariant) : (NetworkService.ethernetConnected ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurfaceVariant)
 
             MouseArea {
@@ -143,7 +142,7 @@ BarPanel {
 
           IText {
             text: panelViewMode === "wifi" ? "Wi-Fi" : "Ethernet"
-            pointSize: Config.appearance.font.size.larger
+            pointSize: Style.appearance.font.size.larger
             font.weight: Font.DemiBold
             color: ThemeService.palette.mOnSurface
             Layout.fillWidth: true
@@ -158,7 +157,7 @@ BarPanel {
 
           IIconButton {
             icon: "refresh"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             enabled: panelViewMode === "wifi" ? (Settings.network.wifiEnabled && !NetworkService.scanning) : true
             onClicked: {
               if (panelViewMode === "wifi")
@@ -170,7 +169,7 @@ BarPanel {
 
           IIconButton {
             icon: "close"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: root.close()
           }
         }
@@ -232,21 +231,21 @@ BarPanel {
 
             IIcon {
               icon: "warning"
-              pointSize: Config.appearance.font.size.large
+              pointSize: Style.appearance.font.size.large
               color: ThemeService.palette.mError
             }
 
             IText {
               text: NetworkService.lastError
               color: ThemeService.palette.mError
-              pointSize: Config.appearance.font.size.small
+              pointSize: Style.appearance.font.size.small
               wrapMode: Text.Wrap
               Layout.fillWidth: true
             }
 
             IIconButton {
               icon: "close"
-              size: Config.appearance.widget.size * 0.6
+              size: Style.appearance.widget.size * 0.6
               onClicked: NetworkService.lastError = ""
             }
           }
@@ -292,14 +291,14 @@ BarPanel {
 
                 IText {
                   text: "Wi-Fi is disabled"
-                  pointSize: Config.appearance.font.size.large
+                  pointSize: Style.appearance.font.size.large
                   color: ThemeService.palette.mOnSurfaceVariant
                   Layout.alignment: Qt.AlignHCenter
                 }
 
                 IText {
                   text: "Enable Wi-Fi to connect to networks"
-                  pointSize: Config.appearance.font.size.small
+                  pointSize: Style.appearance.font.size.small
                   color: ThemeService.palette.mOnSurfaceVariant
                   horizontalAlignment: Text.AlignHCenter
                   Layout.fillWidth: true
@@ -332,13 +331,13 @@ BarPanel {
                 IBusyIndicator {
                   running: true
                   color: ThemeService.palette.mPrimary
-                  size: Config.appearance.widget.size
+                  size: Style.appearance.widget.size
                   Layout.alignment: Qt.AlignHCenter
                 }
 
                 IText {
                   text: "Searching for nearby networks..."
-                  pointSize: Config.appearance.font.size.normal
+                  pointSize: Style.appearance.font.size.normal
                   color: ThemeService.palette.mOnSurfaceVariant
                   Layout.alignment: Qt.AlignHCenter
                 }
@@ -375,7 +374,7 @@ BarPanel {
 
                 IText {
                   text: "No networks found"
-                  pointSize: Config.appearance.font.size.large
+                  pointSize: Style.appearance.font.size.large
                   color: ThemeService.palette.mOnSurfaceVariant
                   Layout.alignment: Qt.AlignHCenter
                 }
@@ -463,7 +462,7 @@ BarPanel {
 
               IText {
                 text: "Available Interfaces"
-                pointSize: Config.appearance.font.size.normal
+                pointSize: Style.appearance.font.size.normal
                 color: ThemeService.palette.mOnSurface
               }
 
@@ -488,7 +487,7 @@ BarPanel {
 
                   IText {
                     text: "No Ethernet devices detected"
-                    pointSize: Config.appearance.font.size.small
+                    pointSize: Style.appearance.font.size.small
                     color: ThemeService.palette.mOnSurfaceVariant
                     horizontalAlignment: Text.AlignHCenter
                     Layout.fillWidth: true
@@ -502,7 +501,7 @@ BarPanel {
                 id: ethIfacesList
                 visible: NetworkService.ethernetInterfaces && NetworkService.ethernetInterfaces.length > 0
                 width: parent.width
-                spacing: Config.appearance.spacing.small
+                spacing: Style.appearance.spacing.small
 
                 Repeater {
                   model: NetworkService.ethernetInterfaces || []
@@ -510,8 +509,8 @@ BarPanel {
                     id: ethItem
 
                     Layout.fillWidth: true
-                    // Layout.leftMargin: Config.appearance.spacing.small
-                    // Layout.rightMargin: Config.appearance.spacing.small
+                    // Layout.leftMargin: Style.appearance.spacing.small
+                    // Layout.rightMargin: Style.appearance.spacing.small
                     implicitHeight: ethItemColumn.implicitHeight + (root.padding * 2)
                     radius: Settings.appearance.cornerRadius
                     border.width: 1 // Style.borderS
@@ -533,7 +532,7 @@ BarPanel {
 
                         IIcon {
                           icon: "ethernet"
-                          pointSize: Config.appearance.font.size.large
+                          pointSize: Style.appearance.font.size.large
                           color: modelData.connected ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface
                         }
 
@@ -543,7 +542,7 @@ BarPanel {
 
                           IText {
                             text: modelData.ifname
-                            pointSize: Config.appearance.font.size.normal
+                            pointSize: Style.appearance.font.size.normal
                             font.weight: modelData.connected ? Font.DemiBold : Font.Medium
                             color: ThemeService.palette.mOnSurface
                             elide: Text.ElideRight
@@ -551,21 +550,21 @@ BarPanel {
                           }
 
                           RowLayout {
-                            spacing: Config.appearance.spacing.small
+                            spacing: Style.appearance.spacing.small
 
                             // Connected badge
                             Rectangle {
                               visible: modelData.connected
                               color: ThemeService.palette.mPrimary
                               radius: height * 0.5
-                              width: ethConnectedText.implicitWidth + (Config.appearance.spacing.small * 2)
-                              height: ethConnectedText.implicitHeight + (Config.appearance.spacing.small * 0.5)
+                              width: ethConnectedText.implicitWidth + (Style.appearance.spacing.small * 2)
+                              height: ethConnectedText.implicitHeight + (Style.appearance.spacing.small * 0.5)
 
                               IText {
                                 id: ethConnectedText
                                 anchors.centerIn: parent
                                 text: "Connected"
-                                pointSize: Config.appearance.font.size.smaller
+                                pointSize: Style.appearance.font.size.smaller
                                 color: ThemeService.palette.mOnPrimary
                               }
                             }
@@ -574,7 +573,7 @@ BarPanel {
 
                         IIconButton {
                           icon: "info"
-                          size: Config.appearance.widget.size * 0.7
+                          size: Style.appearance.widget.size * 0.7
                           enabled: true
                           onClicked: {
                             if (NetworkService.activeEthernetIf === modelData.ifname && ethernetInfoExpanded) {
@@ -619,15 +618,15 @@ BarPanel {
                         border.color: ThemeService.palette.mOutline
                         implicitHeight: ethInfoGrid.implicitHeight + root.padding * 2
                         clip: true
-                        Layout.topMargin: Config.appearance.spacing.small
+                        Layout.topMargin: Style.appearance.spacing.small
 
                         // Grid/List toggle
                         IIconButton {
                           anchors.top: parent.top
                           anchors.right: parent.right
-                          anchors.margins: Config.appearance.spacing.small
+                          anchors.margins: Style.appearance.spacing.small
                           icon: ethernetDetailsGrid ? "view_list" : "grid_view"
-                          size: Config.appearance.widget.size * 0.6
+                          size: Style.appearance.widget.size * 0.6
                           onClicked: ethernetDetailsGrid = !ethernetDetailsGrid
                           z: 1
                         }
@@ -635,25 +634,25 @@ BarPanel {
                         GridLayout {
                           id: ethInfoGrid
                           anchors.fill: parent
-                          anchors.margins: Config.appearance.spacing.small
-                          anchors.rightMargin: Config.appearance.widget.size
+                          anchors.margins: Style.appearance.spacing.small
+                          anchors.rightMargin: Style.appearance.widget.size
                           columns: ethernetDetailsGrid ? 2 : 1
                           columnSpacing: root.spacing
-                          rowSpacing: Config.appearance.spacing.small
+                          rowSpacing: Style.appearance.spacing.small
 
                           // Interface name
                           RowLayout {
                             Layout.fillWidth: true
-                            spacing: Config.appearance.spacing.small
+                            spacing: Style.appearance.spacing.small
                             IIcon {
                               icon: "ethernet"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                               // Layout.alignment: Qt.AlignVCenter
                             }
                             IText {
                               text: (NetworkService.activeEthernetDetails.ifname && NetworkService.activeEthernetDetails.ifname.length > 0) ? NetworkService.activeEthernetDetails.ifname : (NetworkService.activeEthernetIf || "-")
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                               Layout.fillWidth: true
                               wrapMode: ethernetDetailsGrid ? Text.NoWrap : Text.WrapAtWordBoundaryOrAnywhere
@@ -678,15 +677,15 @@ BarPanel {
                           // Internet connectivity
                           RowLayout {
                             Layout.fillWidth: true
-                            spacing: Config.appearance.spacing.small
+                            spacing: Style.appearance.spacing.small
                             IIcon {
                               icon: modelData.connected ? (NetworkService.internetConnectivity ? "public" : "public_off") : "public_off"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: modelData.connected ? (NetworkService.internetConnectivity ? ThemeService.palette.mOnSurface : ThemeService.palette.mError) : ThemeService.palette.mError
                             }
                             IText {
                               text: modelData.connected ? (NetworkService.internetConnectivity ? "Internet Connected" : "Limited Connection") : "Disconnected"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: modelData.connected ? (NetworkService.internetConnectivity ? ThemeService.palette.mOnSurface : ThemeService.palette.mError) : ThemeService.palette.mError
                               Layout.fillWidth: true
                               wrapMode: ethernetDetailsGrid ? Text.NoWrap : Text.WrapAtWordBoundaryOrAnywhere
@@ -699,15 +698,15 @@ BarPanel {
                           // Link speed
                           RowLayout {
                             Layout.fillWidth: true
-                            spacing: Config.appearance.spacing.small
+                            spacing: Style.appearance.spacing.small
                             IIcon {
                               icon: "speed"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                             }
                             IText {
                               text: (NetworkService.activeEthernetDetails.speed && NetworkService.activeEthernetDetails.speed.length > 0) ? NetworkService.activeEthernetDetails.speed : "-"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                               Layout.fillWidth: true
                               wrapMode: ethernetDetailsGrid ? Text.NoWrap : Text.WrapAtWordBoundaryOrAnywhere
@@ -720,15 +719,15 @@ BarPanel {
                           // IPv4 address
                           RowLayout {
                             Layout.fillWidth: true
-                            spacing: Config.appearance.spacing.small
+                            spacing: Style.appearance.spacing.small
                             IIcon {
                               icon: "lan"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                             }
                             IText {
                               text: NetworkService.activeEthernetDetails.ipv4 || "-"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                               Layout.fillWidth: true
                               wrapMode: ethernetDetailsGrid ? Text.NoWrap : Text.WrapAtWordBoundaryOrAnywhere
@@ -753,15 +752,15 @@ BarPanel {
                           // Gateway
                           RowLayout {
                             Layout.fillWidth: true
-                            spacing: Config.appearance.spacing.small
+                            spacing: Style.appearance.spacing.small
                             IIcon {
                               icon: "router"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                             }
                             IText {
                               text: NetworkService.activeEthernetDetails.gateway4 || "-"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                               Layout.fillWidth: true
                               wrapMode: ethernetDetailsGrid ? Text.NoWrap : Text.WrapAtWordBoundaryOrAnywhere
@@ -774,10 +773,10 @@ BarPanel {
                           // DNS
                           RowLayout {
                             Layout.fillWidth: true
-                            spacing: Config.appearance.spacing.small
+                            spacing: Style.appearance.spacing.small
                             IIcon {
                               icon: "dns"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                             }
 
@@ -799,7 +798,7 @@ BarPanel {
                                   anchors.fill: parent
                                   anchors.margins: 4
                                   text: root.dnsInput
-                                  font.pointSize: Config.appearance.font.size.small
+                                  font.pointSize: Style.appearance.font.size.small
                                   color: ThemeService.palette.mOnSurface
                                   onTextChanged: root.dnsInput = text
                                   focus: visible
@@ -810,7 +809,7 @@ BarPanel {
                                 spacing: 8
                                 IButton {
                                   text: "Save"
-                                  fontSize: Config.appearance.font.size.smaller
+                                  fontSize: Style.appearance.font.size.smaller
                                   onClicked: {
                                     NetworkService.setDns(modelData.ifname, root.dnsInput);
                                     root.editingDnsIface = "";
@@ -818,7 +817,7 @@ BarPanel {
                                 }
                                 IButton {
                                   text: "Cancel"
-                                  fontSize: Config.appearance.font.size.smaller
+                                  fontSize: Style.appearance.font.size.smaller
                                   outlined: true
                                   onClicked: root.editingDnsIface = ""
                                 }
@@ -828,7 +827,7 @@ BarPanel {
                             IText {
                               visible: root.editingDnsIface !== modelData.ifname
                               text: NetworkService.activeEthernetDetails.dns || "-"
-                              pointSize: Config.appearance.font.size.small
+                              pointSize: Style.appearance.font.size.small
                               color: ThemeService.palette.mOnSurface
                               Layout.fillWidth: true
                               wrapMode: ethernetDetailsGrid ? Text.NoWrap : Text.WrapAtWordBoundaryOrAnywhere

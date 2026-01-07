@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -18,9 +17,9 @@ Item {
   property var buttonItem: null
 
   property int contentHeight: 0
-  readonly property real maxHeight: screen.height - Settings.appearance.thickness * 2 - Config.appearance.spacing.small
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real maxHeight: screen.height - Settings.appearance.thickness * 2 - Style.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   visible: height > 0
   implicitWidth: content.implicitWidth
@@ -87,8 +86,8 @@ Item {
       target: root
       property: "implicitHeight"
       to: root.contentHeight
-      duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-      easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+      duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+      easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
     }
     ScriptAction {
       script: root.implicitHeight = Qt.binding(() => Math.min(root.maxHeight, content.implicitHeight))
@@ -104,8 +103,8 @@ Item {
       target: root
       property: "implicitHeight"
       to: 0
-      duration: Config.appearance.anim.durations.normal
-      easing.bezierCurve: Config.appearance.anim.curves.emphasized
+      duration: Style.appearance.anim.durations.normal
+      easing.bezierCurve: Style.appearance.anim.curves.emphasized
     }
     ScriptAction {
       script: {

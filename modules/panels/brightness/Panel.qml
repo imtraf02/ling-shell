@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -15,7 +14,7 @@ BarPanel {
   contentComponent: Item {
     id: content
 
-    implicitWidth: Config.bar.sizes.brightnessWidth
+    implicitWidth: Style.bar.brightnessWidth
     implicitHeight: mainColumn.implicitHeight + (root.padding * 2)
 
     ColumnLayout {
@@ -110,7 +109,7 @@ BarPanel {
               IText {
                 visible: box.brightnessMonitor && !box.brightnessMonitor.brightnessControlAvailable || true
                 text: !Settings.brightness.enableDdcSupport ? "Brightness control unavailable. Enable \"External brightness support\" to control this display's brightness." : "Brightness control is not available for this display."
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 color: ThemeService.palette.mOnSurfaceVariant
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap

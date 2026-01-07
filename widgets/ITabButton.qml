@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -28,7 +27,7 @@ Rectangle {
     id: tabText
     anchors.centerIn: parent
     text: root.text
-    pointSize: Config.appearance.font.size.smaller
+    pointSize: Style.appearance.font.size.smaller
     color: root.checked ? ThemeService.palette.mOnPrimary : root.isHovered ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter

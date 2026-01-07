@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -13,8 +12,8 @@ RowLayout {
 
   required property var panel
 
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   readonly property var tabComponents: ({
       [Panel.Tab.About]: aboutTab,
@@ -102,13 +101,13 @@ RowLayout {
             IIcon {
               icon: tabItem.modelData.icon
               color: tabItem.tabTextColor
-              pointSize: Config.appearance.font.size.large
+              pointSize: Style.appearance.font.size.large
             }
 
             IText {
               text: tabItem.modelData.label
               color: tabItem.tabTextColor
-              pointSize: Config.appearance.font.size.normal
+              pointSize: Style.appearance.font.size.normal
               Layout.fillWidth: true
               Layout.alignment: Qt.AlignVCenter
             }
@@ -154,12 +153,12 @@ RowLayout {
         IIcon {
           icon: root.panel.tabsModel[root.panel.currentTabIndex]?.icon
           color: ThemeService.palette.mPrimary
-          pointSize: Config.appearance.font.size.large
+          pointSize: Style.appearance.font.size.large
         }
 
         IText {
           text: root.panel.tabsModel[root.panel.currentTabIndex]?.label || ""
-          pointSize: Config.appearance.font.size.large
+          pointSize: Style.appearance.font.size.large
           color: ThemeService.palette.mPrimary
           Layout.fillWidth: true
           Layout.alignment: Qt.AlignVCenter

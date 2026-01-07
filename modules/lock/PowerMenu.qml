@@ -1,14 +1,14 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.services
 import qs.widgets
 
 GridLayout {
   id: root
 
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   anchors.left: parent.left
   anchors.right: parent.right

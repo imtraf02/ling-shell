@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -16,8 +15,8 @@ BarPanel {
   property QsMenuHandle menu
   property var trayItem: null
 
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
   readonly property real trayWidth: 280
 
   function addToFavorites() {
@@ -122,14 +121,14 @@ BarPanel {
 
                 IIcon {
                   icon: "chevron_left"
-                  pointSize: Config.appearance.font.size.small
+                  pointSize: Style.appearance.font.size.small
                   color: backMouseArea.containsMouse ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface
                 }
 
                 IText {
                   Layout.fillWidth: true
                   text: "Back"
-                  pointSize: Config.appearance.font.size.small
+                  pointSize: Style.appearance.font.size.small
                   color: backMouseArea.containsMouse ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface
                   elide: Text.ElideRight
                 }
@@ -195,7 +194,7 @@ BarPanel {
                   IText {
                     Layout.fillWidth: true
                     text: subEntry.modelData?.text !== "" ? subEntry.modelData.text.replace(/[\n\r]+/g, " ") : "..."
-                    pointSize: Config.appearance.font.size.small
+                    pointSize: Style.appearance.font.size.small
                     color: (subEntry.modelData?.enabled ?? true) ? (subMouseArea.containsMouse ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface) : ThemeService.palette.mPrimary
                     elide: Text.ElideRight
                   }
@@ -216,7 +215,7 @@ BarPanel {
 
                   IIcon {
                     icon: subEntry.modelData?.hasChildren ? "menu" : ""
-                    pointSize: Config.appearance.font.size.small
+                    pointSize: Style.appearance.font.size.small
                     visible: subEntry.modelData?.hasChildren
                     Layout.rightMargin: root.padding
                     color: subMouseArea.containsMouse ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface
@@ -307,7 +306,7 @@ BarPanel {
                   IText {
                     Layout.fillWidth: true
                     text: entry.modelData?.text !== "" ? entry.modelData.text.replace(/[\n\r]+/g, " ") : "..."
-                    pointSize: Config.appearance.font.size.small
+                    pointSize: Style.appearance.font.size.small
                     color: (entry.modelData?.enabled ?? true) ? (mouseArea.containsMouse ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface) : ThemeService.palette.mOnSurfaceVariant
                     elide: Text.ElideRight
                   }
@@ -328,7 +327,7 @@ BarPanel {
 
                   IIcon {
                     icon: entry.modelData?.hasChildren ? "menu" : ""
-                    pointSize: Config.appearance.font.size.small
+                    pointSize: Style.appearance.font.size.small
                     visible: entry.modelData?.hasChildren
                     Layout.rightMargin: root.padding
                     color: mouseArea.containsMouse ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurface
@@ -400,7 +399,7 @@ BarPanel {
 
                 IIcon {
                   icon: addToFavoriteEntry.isFavorite ? "keep_off" : "keep"
-                  pointSize: Config.appearance.font.size.small
+                  pointSize: Style.appearance.font.size.small
                   verticalAlignment: Text.AlignVCenter
                   color: ThemeService.palette.mPrimary
                 }
@@ -408,7 +407,7 @@ BarPanel {
                 IText {
                   Layout.fillWidth: true
                   text: addToFavoriteEntry.isFavorite ? "Unpin application" : "Pin application"
-                  pointSize: Config.appearance.font.size.small
+                  pointSize: Style.appearance.font.size.small
                   verticalAlignment: Text.AlignVCenter
                   elide: Text.ElideRight
                   color: ThemeService.palette.mPrimary

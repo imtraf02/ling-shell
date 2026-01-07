@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -18,7 +17,7 @@ RowLayout {
   property string description: ""
   property bool enabled: true
   property bool hovering: false
-  property int baseSize: Config.appearance.widget.size
+  property int baseSize: Style.appearance.widget.size
 
   property alias minimum: root.from
   property alias maximum: root.to
@@ -147,7 +146,7 @@ RowLayout {
         IText {
           text: root.prefix
           family: Settings.appearance.font.mono
-          pointSize: Config.appearance.font.size.normal
+          pointSize: Style.appearance.font.size.normal
           color: ThemeService.palette.mOnSurface
           visible: root.prefix !== ""
         }
@@ -157,7 +156,7 @@ RowLayout {
           text: valueInput.focus ? valueInput.text : Number(root.value.toFixed(2)).toString()
 
           font.family: Settings.appearance.font.mono
-          font.pointSize: Config.appearance.font.size.normal
+          font.pointSize: Style.appearance.font.size.normal
           color: ThemeService.palette.mOnSurface
           selectByMouse: true
           enabled: root.enabled
@@ -205,7 +204,7 @@ RowLayout {
         IText {
           text: root.suffix
           family: Settings.appearance.font.mono
-          pointSize: Config.appearance.font.size.normal
+          pointSize: Style.appearance.font.size.normal
           color: ThemeService.palette.mOnSurface
           visible: root.suffix !== ""
         }

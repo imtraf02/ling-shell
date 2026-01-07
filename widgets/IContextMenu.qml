@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -12,12 +11,12 @@ Popup {
 
   property alias model: listView.model
   property real itemHeight: 36
-  property real itemPadding: Config.appearance.padding.normal
+  property real itemPadding: Style.appearance.padding.normal
 
   signal triggered(string action)
 
   width: 180
-  padding: Config.appearance.padding.normal
+  padding: Style.appearance.padding.normal
 
   onOpened: VisibilityService.willOpenPopup(root)
   onClosed: VisibilityService.willClosePopup(root)
@@ -33,7 +32,7 @@ Popup {
     id: listView
 
     implicitHeight: contentHeight
-    spacing: Config.appearance.spacing.small
+    spacing: Style.appearance.spacing.small
     interactive: contentHeight > root.height
 
     IScrollBar.vertical: IScrollBar {
@@ -64,12 +63,12 @@ Popup {
       }
 
       contentItem: RowLayout {
-        spacing: Config.appearance.spacing.small
+        spacing: Style.appearance.spacing.small
 
         IIcon {
           visible: menuItem.modelData.icon !== undefined
           icon: menuItem.modelData.icon || ""
-          pointSize: Config.appearance.font.size.normal
+          pointSize: Style.appearance.font.size.normal
           color: menuItem.hovered && menuItem.enabled ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
           Layout.leftMargin: root.itemPadding
 
@@ -80,7 +79,7 @@ Popup {
 
         IText {
           text: menuItem.modelData.label || menuItem.modelData.text || ""
-          pointSize: Config.appearance.font.size.normal
+          pointSize: Style.appearance.font.size.normal
           color: menuItem.hovered && menuItem.enabled ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
           verticalAlignment: Text.AlignVCenter
           Layout.fillWidth: true

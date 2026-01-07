@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import qs.commons
-import qs.config
 import qs.services
 import qs.widgets
 import qs.utils
@@ -190,13 +189,13 @@ Variants {
 
         RowLayout {
           anchors.fill: parent
-          anchors.margins: Config.appearance.padding.normal
-          spacing: Config.appearance.spacing.normal
+          anchors.margins: Style.appearance.padding.normal
+          spacing: Style.appearance.spacing.normal
 
           IIcon {
             id: icon
             icon: panel.currentIcon
-            pointSize: Config.appearance.font.size.large
+            pointSize: Style.appearance.font.size.large
             color: panel.currentMuted ? ThemeService.palette.mError : ThemeService.palette.mOnSurface
             scale: iconScale.running ? 1.2 : 1.0
 
@@ -254,7 +253,7 @@ Variants {
             id: valueText
             text: Math.round(panel.currentValue * 100) + "%"
             color: ThemeService.palette.mOnSurface
-            pointSize: Config.appearance.font.size.larger
+            pointSize: Style.appearance.font.size.larger
             family: Settings.appearance.font.mono
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
             horizontalAlignment: Text.AlignRight

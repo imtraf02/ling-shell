@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -19,11 +18,11 @@ RowLayout {
   property string currentKey: ""
   property string placeholder: ""
 
-  readonly property real preferredHeight: Config.appearance.widget.size * 1.1
+  readonly property real preferredHeight: Style.appearance.widget.size * 1.1
 
   signal selected(string key)
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
   Layout.fillWidth: true
 
   function itemCount() {
@@ -75,7 +74,7 @@ RowLayout {
     }
 
     background: Rectangle {
-      implicitWidth: Config.appearance.widget.size * 3.75
+      implicitWidth: Style.appearance.widget.size * 3.75
       implicitHeight: root.preferredHeight
       color: ThemeService.palette.mSurfaceVariant
       border.color: Qt.alpha(combo.activeFocus ? ThemeService.palette.mSecondary : ThemeService.palette.mOutline, 0.2)
@@ -88,9 +87,9 @@ RowLayout {
     }
 
     contentItem: IText {
-      leftPadding: Config.appearance.padding.normal
-      rightPadding: combo.indicator.width + Config.appearance.padding.normal
-      pointSize: Config.appearance.font.size.smaller
+      leftPadding: Style.appearance.padding.normal
+      rightPadding: combo.indicator.width + Style.appearance.padding.normal
+      pointSize: Style.appearance.font.size.smaller
       verticalAlignment: Text.AlignVCenter
       elide: Text.ElideRight
       color: (combo.currentIndex >= 0 && combo.currentIndex < root.itemCount()) ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSurfaceVariant
@@ -98,17 +97,17 @@ RowLayout {
     }
 
     indicator: IIcon {
-      x: combo.width - width - Config.appearance.padding.normal
+      x: combo.width - width - Style.appearance.padding.normal
       y: combo.topPadding + (combo.availableHeight - height) / 2
       icon: "arrow_drop_down"
-      pointSize: Config.appearance.font.size.large
+      pointSize: Style.appearance.font.size.large
     }
 
     popup: Popup {
       y: combo.height
       implicitWidth: combo.width
-      implicitHeight: Math.min(root.popupHeight, contentItem.implicitHeight + Config.appearance.padding.normal * 2)
-      padding: Config.appearance.padding.normal
+      implicitHeight: Math.min(root.popupHeight, contentItem.implicitHeight + Style.appearance.padding.normal * 2)
+      padding: Style.appearance.padding.normal
 
       onOpened: {
         VisibilityService.willOpenPopup(root);
@@ -152,7 +151,7 @@ RowLayout {
           }
 
           background: Rectangle {
-            width: delegateItem.parentComboBox.width - Config.appearance.padding.normal * 2
+            width: delegateItem.parentComboBox.width - Style.appearance.padding.normal * 2
             color: delegateItem.highlighted ? ThemeService.palette.mPrimary : "transparent"
             radius: Settings.appearance.cornerRadius
 
@@ -166,7 +165,7 @@ RowLayout {
               var item = root.getItem(delegateItem.index);
               return item && item.name ? item.name : "";
             }
-            pointSize: Config.appearance.font.size.smaller
+            pointSize: Style.appearance.font.size.smaller
             color: delegateItem.highlighted ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight

@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 
@@ -15,7 +14,7 @@ ColumnLayout {
   property bool enabled: true
   property color labelColor: ThemeService.palette.mOnSurface
   property color descriptionColor: ThemeService.palette.mOnSurfaceVariant
-  property real fontSize: Config.appearance.font.size.small
+  property real fontSize: Style.appearance.font.size.small
   property int fontWeight: Settings.appearance.font.weight
 
   property alias text: input.text
@@ -26,7 +25,7 @@ ColumnLayout {
   signal editingFinished
   signal accepted
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
 
   ILabel {
     label: root.label
@@ -42,7 +41,7 @@ ColumnLayout {
 
     Layout.fillWidth: true
     Layout.minimumWidth: 80
-    implicitHeight: Config.appearance.widget.size * 1.1
+    implicitHeight: Style.appearance.widget.size * 1.1
 
     focusPolicy: Qt.StrongFocus
     hoverEnabled: true
@@ -78,7 +77,7 @@ ColumnLayout {
           input.forceActiveFocus();
           var inputPos = mapToItem(inputContainer, mouse.x, mouse.y);
           if (inputPos.x >= 0 && inputPos.x <= inputContainer.width) {
-            var textPos = inputPos.x - Config.appearance.padding.larger;
+            var textPos = inputPos.x - Style.appearance.padding.larger;
             if (textPos >= 0 && textPos <= input.width) {
               input.cursorPosition = input.positionAt(textPos, input.height / 2);
             }
@@ -100,7 +99,7 @@ ColumnLayout {
       Item {
         id: inputContainer
         anchors.fill: parent
-        anchors.leftMargin: Config.appearance.padding.larger
+        anchors.leftMargin: Style.appearance.padding.larger
         clip: true
         z: 1
 
@@ -116,7 +115,7 @@ ColumnLayout {
             enabled: false
 
             Layout.alignment: Qt.AlignVCenter
-            Layout.rightMargin: visible ? Config.appearance.spacing.small : 0
+            Layout.rightMargin: visible ? Style.appearance.spacing.small : 0
           }
 
           TextField {
@@ -126,7 +125,7 @@ ColumnLayout {
             Layout.fillHeight: true
 
             verticalAlignment: TextInput.AlignVCenter
-            font.family: Config.appearance.font.family.sans
+            font.family: Settings.appearance.font.sans
 
             echoMode: TextInput.Normal
             readOnly: root.readOnly

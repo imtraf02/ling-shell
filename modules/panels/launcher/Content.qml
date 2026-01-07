@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import qs.config
+import qs.commons
 import qs.widgets
 import qs.modules.panels.launcher.services
 
@@ -11,8 +11,8 @@ Item {
   required property var panel
   required property real maxHeight
 
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   implicitWidth: listWrapper.width + padding * 2
   implicitHeight: searchInput.height + listWrapper.height + padding * 2
@@ -44,10 +44,10 @@ Item {
     anchors.bottom: parent.bottom
     anchors.margins: root.padding
 
-    fontSize: Config.appearance.font.size.larger
+    fontSize: Style.appearance.font.size.larger
     fontWeight: Font.Medium
 
-    placeholderText: `Type \"${Config.launcher.actionPrefix}\" for commands`
+    placeholderText: `Type \"${Settings.launcher.actionPrefix}\" for commands`
 
     onAccepted: {
       if (list.showWallpapers) {
@@ -55,7 +55,7 @@ Item {
       } else {
         const currentItem = list.currentList?.currentItem;
         if (currentItem) {
-          if (inputItem.text.startsWith(Config.launcher.actionPrefix)) {
+          if (inputItem.text.startsWith(Settings.launcher.actionPrefix)) {
             currentItem.modelData.onClicked(list.currentList);
           } else {
             AppsService.launch(currentItem.modelData);

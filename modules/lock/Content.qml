@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Wayland
-import qs.config
 import qs.commons
 import qs.services
 
@@ -10,7 +9,7 @@ RowLayout {
 
   required property WlSessionLockSurface lock
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
 
   ColumnLayout {
     Layout.fillWidth: true
@@ -30,7 +29,7 @@ RowLayout {
       Layout.fillWidth: true
       implicitHeight: media.implicitHeight
 
-      bottomLeftRadius: Config.appearance.rounding.large
+      bottomLeftRadius: Style.appearance.rounding.large
       radius: Settings.appearance.cornerRadius
       color: ThemeService.palette.mSurfaceContainer
 

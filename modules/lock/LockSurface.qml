@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -35,8 +34,8 @@ WlSessionLockSurface {
         target: lockContent
         properties: "implicitWidth,implicitHeight"
         to: lockContent.size
-        duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-        easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+        duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+        easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
       }
       IAnim {
         target: lockBg
@@ -47,24 +46,24 @@ WlSessionLockSurface {
         target: content
         property: "scale"
         to: 0
-        duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-        easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+        duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+        easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
       }
       IAnim {
         target: content
         property: "opacity"
         to: 0
-        duration: Config.appearance.anim.durations.small
+        duration: Style.appearance.anim.durations.small
       }
       IAnim {
         target: lockIcon
         property: "opacity"
         to: 1
-        duration: Config.appearance.anim.durations.large
+        duration: Style.appearance.anim.durations.large
       }
       SequentialAnimation {
         PauseAnimation {
-          duration: Config.appearance.anim.durations.small
+          duration: Style.appearance.anim.durations.small
         }
         IAnim {
           target: lockContent
@@ -91,15 +90,15 @@ WlSessionLockSurface {
           target: lockContent
           property: "scale"
           to: 1
-          duration: Config.appearance.anim.durations.expressiveFastSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveFastSpatial
+          duration: Style.appearance.anim.durations.expressiveFastSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveFastSpatial
         }
         IAnim {
           target: lockContent
           property: "rotation"
           to: 360
-          duration: Config.appearance.anim.durations.expressiveFastSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.standardAccel
+          duration: Style.appearance.anim.durations.expressiveFastSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.standardAccel
         }
       }
       ParallelAnimation {
@@ -107,7 +106,7 @@ WlSessionLockSurface {
           target: lockIcon
           property: "rotation"
           to: 360
-          easing.bezierCurve: Config.appearance.anim.curves.standardDecel
+          easing.bezierCurve: Style.appearance.anim.curves.standardDecel
         }
         IAnim {
           target: lockIcon
@@ -123,8 +122,8 @@ WlSessionLockSurface {
           target: content
           property: "scale"
           to: 1
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
         IAnim {
           target: lockBg
@@ -134,16 +133,16 @@ WlSessionLockSurface {
         IAnim {
           target: lockContent
           property: "implicitWidth"
-          to: root.screen.height * Config.lock.sizes.heightMult * Config.lock.sizes.ratio
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          to: root.screen.height * Style.lock.heightMult * Style.lock.ratio
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
         IAnim {
           target: lockContent
           property: "implicitHeight"
-          to: root.screen.height * Config.lock.sizes.heightMult
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          to: root.screen.height * Style.lock.heightMult
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
     }
@@ -184,7 +183,7 @@ WlSessionLockSurface {
   Item {
     id: lockContent
 
-    readonly property int size: lockIcon.implicitHeight + Config.appearance.padding.large * 4
+    readonly property int size: lockIcon.implicitHeight + Style.appearance.padding.large * 4
     readonly property int radius: Settings.appearance.cornerRadius
 
     anchors.centerIn: parent
@@ -215,7 +214,7 @@ WlSessionLockSurface {
 
       anchors.centerIn: parent
       icon: "lock"
-      pointSize: Config.appearance.font.size.extraLarge * 4
+      pointSize: Style.appearance.font.size.extraLarge * 4
       font.bold: true
       rotation: 180
     }
@@ -224,8 +223,8 @@ WlSessionLockSurface {
       id: content
 
       anchors.centerIn: parent
-      width: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio - Config.appearance.padding.large * 2
-      height: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult - Config.appearance.padding.large * 2
+      width: (root.screen?.height ?? 0) * Style.lock.heightMult * Style.lock.ratio - Style.appearance.padding.large * 2
+      height: (root.screen?.height ?? 0) * Style.lock.heightMult - Style.appearance.padding.large * 2
 
       lock: root
       opacity: 0

@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.UPower
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -16,8 +15,8 @@ ColumnLayout {
 
   property var panel
 
-  readonly property int padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.larger
+  readonly property int padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.larger
 
   RowLayout {
     spacing: root.spacing
@@ -28,8 +27,8 @@ ColumnLayout {
       ILabel {
         label: "System"
         description: "Overview of your current system."
-        labelSize: Config.appearance.font.size.large
-        descriptionSize: Config.appearance.font.size.smaller
+        labelSize: Style.appearance.font.size.large
+        descriptionSize: Style.appearance.font.size.smaller
       }
 
       RowLayout {
@@ -83,8 +82,8 @@ ColumnLayout {
       ILabel {
         label: "Profile"
         description: "Edit your user details and avatar."
-        labelSize: Config.appearance.font.size.large
-        descriptionSize: Config.appearance.font.size.smaller
+        labelSize: Style.appearance.font.size.large
+        descriptionSize: Style.appearance.font.size.smaller
       }
 
       RowLayout {
@@ -137,7 +136,7 @@ ColumnLayout {
   }
 
   ColumnLayout {
-    spacing: Config.appearance.spacing.small
+    spacing: Style.appearance.spacing.small
 
     SettingsTab {
       label: "Personalization"
@@ -216,11 +215,11 @@ ColumnLayout {
     RowLayout {
       anchors.fill: parent
       anchors.margins: root.padding
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
 
       IIcon {
         icon: settingsTab.icon
-        pointSize: Config.appearance.font.size.extraLarge
+        pointSize: Style.appearance.font.size.extraLarge
       }
 
       ILabel {
@@ -230,7 +229,7 @@ ColumnLayout {
 
       IIcon {
         icon: "keyboard_arrow_right"
-        pointSize: Config.appearance.font.size.large
+        pointSize: Style.appearance.font.size.large
         color: ThemeService.palette.mOutline
       }
     }

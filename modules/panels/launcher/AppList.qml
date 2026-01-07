@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -25,10 +24,10 @@ IListView {
     onValuesChanged: root.currentIndex = 0
   }
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
   orientation: Qt.Vertical
 
-  implicitHeight: (Config.launcher.sizes.itemHeight + spacing) * Math.min(7, count) - spacing
+  implicitHeight: (Style.launcher.itemHeight + spacing) * Math.min(7, count) - spacing
 
   preferredHighlightBegin: 0
   preferredHighlightEnd: height
@@ -46,15 +45,15 @@ IListView {
 
     Behavior on y {
       IAnim {
-        duration: Config.appearance.anim.durations.normal
-        easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+        duration: Style.appearance.anim.durations.normal
+        easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
       }
     }
   }
 
   state: {
     const text = root.searchInput.inputItem.text;
-    const prefix = Config.launcher.actionPrefix;
+    const prefix = Settings.launcher.actionPrefix;
     if (text.startsWith(prefix)) {
       for (const action of ["calc"])
         if (text.startsWith(`${prefix}${action} `))
@@ -94,16 +93,16 @@ IListView {
           property: "opacity"
           from: 1
           to: 0
-          duration: Config.appearance.anim.durations.small
-          easing.bezierCurve: Config.appearance.anim.curves.standardAccel
+          duration: Style.appearance.anim.durations.small
+          easing.bezierCurve: Style.appearance.anim.curves.standardAccel
         }
         IAnim {
           target: root
           property: "scale"
           from: 1
           to: 0.9
-          duration: Config.appearance.anim.durations.small
-          easing.bezierCurve: Config.appearance.anim.curves.standardAccel
+          duration: Style.appearance.anim.durations.small
+          easing.bezierCurve: Style.appearance.anim.curves.standardAccel
         }
       }
       PropertyAction {
@@ -116,16 +115,16 @@ IListView {
           property: "opacity"
           from: 0
           to: 1
-          duration: Config.appearance.anim.durations.small
-          easing.bezierCurve: Config.appearance.anim.curves.standardDecel
+          duration: Style.appearance.anim.durations.small
+          easing.bezierCurve: Style.appearance.anim.curves.standardDecel
         }
         IAnim {
           target: root
           property: "scale"
           from: 0.9
           to: 1
-          duration: Config.appearance.anim.durations.small
-          easing.bezierCurve: Config.appearance.anim.curves.standardDecel
+          duration: Style.appearance.anim.durations.small
+          easing.bezierCurve: Style.appearance.anim.curves.standardDecel
         }
       }
       PropertyAction {
@@ -169,7 +168,7 @@ IListView {
   addDisplaced: Transition {
     IAnim {
       property: "y"
-      duration: Config.appearance.anim.durations.small
+      duration: Style.appearance.anim.durations.small
     }
     IAnim {
       properties: "opacity,scale"

@@ -3,11 +3,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
 
+// TODO: Fix Performance
 Item {
   id: root
 
@@ -70,7 +70,7 @@ Item {
     }
   ]
 
-  readonly property int size: settingsIcon.implicitHeight + Config.appearance.padding.large * 4
+  readonly property int size: settingsIcon.implicitHeight + Style.appearance.padding.large * 4
   readonly property int radius: Settings.appearance.cornerRadius
 
   implicitWidth: size
@@ -125,15 +125,15 @@ Item {
           target: root
           property: "scale"
           to: 1
-          duration: Config.appearance.anim.durations.expressiveFastSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveFastSpatial
+          duration: Style.appearance.anim.durations.expressiveFastSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveFastSpatial
         }
         IAnim {
           target: root
           property: "rotation"
           to: 360
-          duration: Config.appearance.anim.durations.expressiveFastSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.standardAccel
+          duration: Style.appearance.anim.durations.expressiveFastSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.standardAccel
         }
       }
 
@@ -142,7 +142,7 @@ Item {
           target: settingsIcon
           property: "rotation"
           to: 360
-          easing.bezierCurve: Config.appearance.anim.curves.standardDecel
+          easing.bezierCurve: Style.appearance.anim.curves.standardDecel
         }
         IAnim {
           target: settingsIcon
@@ -158,8 +158,8 @@ Item {
           target: content
           property: "scale"
           to: 1
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
         IAnim {
           target: background
@@ -169,16 +169,16 @@ Item {
         IAnim {
           target: root
           property: "implicitWidth"
-          to: root.screen.height * Config.settings.sizes.heightMult * Config.settings.sizes.ratio
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          to: root.screen.height * Style.settings.heightMult * Style.settings.ratio
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
         IAnim {
           target: root
           property: "implicitHeight"
-          to: root.screen.height * Config.settings.sizes.heightMult
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          to: root.screen.height * Style.settings.heightMult
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
     }
@@ -192,16 +192,16 @@ Item {
         target: root
         property: "opacity"
         to: 0
-        duration: Config.appearance.anim.durations.small
-        easing.bezierCurve: Config.appearance.anim.curves.standardDecel
+        duration: Style.appearance.anim.durations.small
+        easing.bezierCurve: Style.appearance.anim.curves.standardDecel
       }
       IAnim {
         target: root
         property: "scale"
         from: 1
         to: 0.95
-        duration: Config.appearance.anim.durations.small
-        easing.bezierCurve: Config.appearance.anim.curves.standardDecel
+        duration: Style.appearance.anim.durations.small
+        easing.bezierCurve: Style.appearance.anim.curves.standardDecel
       }
     }
 
@@ -243,7 +243,7 @@ Item {
 
     anchors.centerIn: parent
     icon: "settings"
-    pointSize: Config.appearance.font.size.extraLarge * 4
+    pointSize: Style.appearance.font.size.extraLarge * 4
     font.bold: true
     rotation: 180
   }
@@ -255,7 +255,7 @@ Item {
     opacity: 0
     scale: 0
     anchors.fill: parent
-    anchors.margins: Config.appearance.padding.normal
+    anchors.margins: Style.appearance.padding.normal
     sourceComponent: Content {
       panel: root
     }

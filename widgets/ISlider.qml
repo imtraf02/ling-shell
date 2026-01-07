@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import qs.config
+import qs.commons
 import qs.services
 
 Slider {
@@ -11,9 +11,9 @@ Slider {
   property real heightRatio: 0.7
   property bool hovering: false
 
-  readonly property real knobDiameter: Math.round((Config.appearance.widget.size * heightRatio) / 2) * 2
+  readonly property real knobDiameter: Math.round((Style.appearance.widget.size * heightRatio) / 2) * 2
   readonly property real trackHeight: Math.round((knobDiameter * 0.4) / 2) * 2
-  readonly property real cutoutExtra: Math.round((Config.appearance.widget.size * 0.1) / 2) * 2
+  readonly property real cutoutExtra: Math.round((Style.appearance.widget.size * 0.1) / 2) * 2
 
   padding: cutoutExtra / 2
   snapMode: snapAlways ? Slider.SnapAlways : Slider.SnapOnRelease
@@ -22,7 +22,7 @@ Slider {
   background: Rectangle {
     x: root.leftPadding
     y: root.topPadding + root.availableHeight / 2 - height / 2
-    implicitWidth: Config.appearance.widget.sliderWidth
+    implicitWidth: Style.appearance.widget.sliderWidth
     implicitHeight: root.trackHeight
     width: root.availableWidth
     height: implicitHeight

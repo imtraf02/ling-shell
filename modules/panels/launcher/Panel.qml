@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -15,7 +14,7 @@ Item {
   property bool shouldBeActive: false
   property int contentHeight
   readonly property real maxHeight: {
-    let max = screen.height - Settings.appearance.thickness * 2 - Config.appearance.spacing.small;
+    let max = screen.height - Settings.appearance.thickness * 2 - Style.appearance.spacing.small;
     return max;
   }
 
@@ -58,8 +57,8 @@ Item {
       target: root
       property: "implicitHeight"
       to: root.contentHeight
-      duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-      easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+      duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+      easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
     }
     ScriptAction {
       script: root.implicitHeight = Qt.binding(() => content.implicitHeight)
@@ -76,14 +75,14 @@ Item {
       target: root
       property: "implicitHeight"
       to: 0
-      easing.bezierCurve: Config.appearance.anim.curves.emphasized
+      easing.bezierCurve: Style.appearance.anim.curves.emphasized
     }
   }
 
   Timer {
     id: timer
 
-    interval: Config.appearance.anim.durations.extraLarge
+    interval: Style.appearance.anim.durations.extraLarge
     onRunningChanged: {
       if (running && !root.shouldBeActive) {
         content.visible = false;

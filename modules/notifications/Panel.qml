@@ -1,5 +1,5 @@
 import QtQuick
-import qs.config
+import qs.commons
 import qs.widgets
 
 Item {
@@ -24,8 +24,8 @@ Item {
     IAnim {
       target: root
       property: "implicitHeight"
-      duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-      easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+      duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+      easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
     }
   }
 

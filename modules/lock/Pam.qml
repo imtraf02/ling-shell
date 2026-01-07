@@ -3,7 +3,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Pam
 import QtQuick
-import qs.config
+import qs.commons
 
 Scope {
   id: root
@@ -82,7 +82,7 @@ Scope {
     property int errorTries
 
     function checkAvail(): void {
-      if (!available || !Config.lock.enableFprint || !root.lock.secure) {
+      if (!available || !Settings.lock.enableFprint || !root.lock.secure) {
         abort();
         return;
       }
@@ -113,7 +113,7 @@ Scope {
         // Isn't actually the real max tries as pam only reports completed
         // when max tries is reached.
         tries++;
-        if (tries < Config.lock.maxFprintTries) {
+        if (tries < Settings.lock.maxFprintTries) {
           // Restart if not actually real max tries
           root.fprintState = "fail";
           start();
@@ -184,7 +184,7 @@ Scope {
   }
 
   Connections {
-    target: Config.lock
+    target: Settings.lock
 
     function onEnableFprintChanged(): void {
       fprint.checkAvail();

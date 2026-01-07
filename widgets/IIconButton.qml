@@ -1,5 +1,4 @@
 import QtQuick
-import qs.config
 import qs.commons
 import qs.services
 
@@ -7,7 +6,7 @@ Rectangle {
   id: root
 
   property string icon
-  property real size: Config.appearance.widget.size
+  property real size: Style.appearance.widget.size
   property real iconSize: Math.max(1, size * 0.48)
 
   property bool enabled: true

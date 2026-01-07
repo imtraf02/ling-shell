@@ -1,7 +1,6 @@
 pragma Singleton
 import Quickshell
 import QtQuick
-import qs.config
 import qs.commons
 import qs.services
 import qs.modules.panels.settings as SettingsPanel
@@ -99,7 +98,7 @@ Singleton {
 
       // Handle autocomplete for wallpaper
       if (command[0] === "autocomplete" && command.length > 1) {
-        list.searchInput.inputItem.text = `${Config.launcher.actionPrefix}${command[1]} `;
+        list.searchInput.inputItem.text = `${Settings.launcher.actionPrefix}${command[1]} `;
         return;
       }
 
@@ -156,7 +155,7 @@ Singleton {
   }
 
   function transformSearch(search: string): string {
-    return search.slice(Config.launcher.actionPrefix.length);
+    return search.slice(Settings.launcher.actionPrefix.length);
   }
 
   function query(search: string): list<var> {

@@ -4,7 +4,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -18,7 +17,7 @@ Rectangle {
   property var filteredItems: []
   property var dropdownItems: []
 
-  readonly property real iconSize: Math.round(Config.bar.sizes.innerHeight * 0.65)
+  readonly property real iconSize: Math.round(Style.bar.innerHeight * 0.65)
 
   Timer {
     id: updateDebounceTimer
@@ -105,7 +104,7 @@ Rectangle {
   }
 
   implicitWidth: Math.round(trayFlow.implicitWidth)
-  implicitHeight: Config.bar.sizes.innerHeight
+  implicitHeight: Style.bar.innerHeight
   radius: Settings.appearance.cornerRadius
   color: ThemeService.palette.mSurfaceContainer
 
@@ -127,7 +126,7 @@ Rectangle {
 
   Flow {
     id: trayFlow
-    spacing: Config.appearance.spacing.small
+    spacing: Style.appearance.spacing.small
     flow: Flow.LeftToRight
 
     Repeater {
@@ -138,8 +137,8 @@ Rectangle {
         id: trayItem
         required property var modelData
 
-        width: Config.bar.sizes.innerHeight
-        height: Config.bar.sizes.innerHeight
+        width: Style.bar.innerHeight
+        height: Style.bar.innerHeight
 
         IconImage {
           id: trayIcon

@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
-import qs.config
+import qs.commons
 import qs.services
 import qs.widgets
 import ".."
@@ -42,7 +42,7 @@ BarPanel {
 
           IText {
             text: "Bluetooth"
-            pointSize: Config.appearance.font.size.larger
+            pointSize: Style.appearance.font.size.larger
             color: ThemeService.palette.mOnSurface
             Layout.fillWidth: true
           }
@@ -58,7 +58,7 @@ BarPanel {
           IIconButton {
             enabled: BluetoothService.enabled
             icon: BluetoothService.adapter && BluetoothService.adapter.discovering ? "stop" : "refresh"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: {
               if (BluetoothService.adapter)
                 BluetoothService.adapter.discovering = !BluetoothService.adapter.discovering;
@@ -68,7 +68,7 @@ BarPanel {
           IIconButton {
             enabled: BluetoothService.enabled
             icon: "close"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: root.close()
           }
         }
@@ -93,14 +93,14 @@ BarPanel {
 
           IText {
             text: "Bluetooth is disabled"
-            pointSize: Config.appearance.font.size.large
+            pointSize: Style.appearance.font.size.large
             color: ThemeService.palette.mOnSurfaceVariant
             Layout.alignment: Qt.AlignHCenter
           }
 
           IText {
             text: "Enable Bluetooth to see available devices."
-            pointSize: Config.appearance.font.size.small
+            pointSize: Style.appearance.font.size.small
             color: ThemeService.palette.mOnSurfaceVariant
             Layout.alignment: Qt.AlignHCenter
           }
@@ -197,7 +197,7 @@ BarPanel {
 
                   IIcon {
                     icon: "refresh"
-                    pointSize: Config.appearance.font.size.extraLarge * 1.5
+                    pointSize: Style.appearance.font.size.extraLarge * 1.5
                     color: ThemeService.palette.mPrimary
 
                     RotationAnimation on rotation {
@@ -205,13 +205,13 @@ BarPanel {
                       loops: Animation.Infinite
                       from: 0
                       to: 360
-                      duration: Config.appearance.anim.durations.large * 4
+                      duration: Style.appearance.anim.durations.large * 4
                     }
                   }
 
                   IText {
                     text: "Scanning for devices..."
-                    pointSize: Config.appearance.font.size.large
+                    pointSize: Style.appearance.font.size.large
                     color: ThemeService.palette.mOnSurface
                   }
                 }

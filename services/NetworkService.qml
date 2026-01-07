@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 pragma Singleton
 
 import QtQuick
@@ -33,7 +34,7 @@ Singleton {
   property double activeWifiDetailsTimestamp: 0
   property int activeWifiDetailsTtlMs: 5000
 
-  property string cacheFile: Directories.shellStateNetworkPath
+  property string cacheFile: Directories.shellConfigNetworkPath
   readonly property string cachedLastConnected: cacheAdapter.lastConnected
   readonly property var cachedNetworks: cacheAdapter.knownNetworks
 
@@ -42,15 +43,15 @@ Singleton {
     path: root.cacheFile
     printErrors: false
 
+    onLoadFailed: {
+      cacheAdapter.knownNetworks = ({});
+      cacheAdapter.lastConnected = "";
+    }
+
     JsonAdapter {
       id: cacheAdapter
       property var knownNetworks: ({})
       property string lastConnected: ""
-    }
-
-    onLoadFailed: {
-      cacheAdapter.knownNetworks = ({});
-      cacheAdapter.lastConnected = "";
     }
   }
 

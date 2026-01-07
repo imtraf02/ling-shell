@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -14,24 +13,24 @@ ColumnLayout {
   required property var lock
   readonly property list<string> timeComponents: TimeService.format("hh:mm:A").split(":")
   readonly property real centerScale: Math.min(1, (lock.screen?.height ?? 1440) / 1440)
-  readonly property int centerWidth: Config.lock.sizes.centerWidth * centerScale
+  readonly property int centerWidth: Style.lock.centerWidth * centerScale
 
   Layout.preferredWidth: centerWidth
   Layout.fillWidth: false
   Layout.fillHeight: true
 
-  spacing: Config.appearance.spacing.large * 2
+  spacing: Style.appearance.spacing.large * 2
 
   RowLayout {
     Layout.alignment: Qt.AlignHCenter
-    spacing: Config.appearance.spacing.small
+    spacing: Style.appearance.spacing.small
 
     IText {
       Layout.alignment: Qt.AlignVCenter
       text: root.timeComponents[0]
       color: ThemeService.palette.mSecondary
-      font.pointSize: Math.floor(Config.appearance.font.size.extraLarge * 3 * root.centerScale)
-      font.family: Config.appearance.font.family.clock
+      font.pointSize: Math.floor(Style.appearance.font.size.extraLarge * 3 * root.centerScale)
+      font.family: Settings.appearance.font.clock
       font.bold: true
     }
 
@@ -39,8 +38,8 @@ ColumnLayout {
       Layout.alignment: Qt.AlignVCenter
       text: ":"
       color: ThemeService.palette.mPrimary
-      font.pointSize: Math.floor(Config.appearance.font.size.extraLarge * 3 * root.centerScale)
-      font.family: Config.appearance.font.family.clock
+      font.pointSize: Math.floor(Style.appearance.font.size.extraLarge * 3 * root.centerScale)
+      font.family: Settings.appearance.font.clock
       font.bold: true
     }
 
@@ -48,13 +47,13 @@ ColumnLayout {
       Layout.alignment: Qt.AlignVCenter
       text: root.timeComponents[1]
       color: ThemeService.palette.mSecondary
-      font.pointSize: Math.floor(Config.appearance.font.size.extraLarge * 3 * root.centerScale)
-      font.family: Config.appearance.font.family.clock
+      font.pointSize: Math.floor(Style.appearance.font.size.extraLarge * 3 * root.centerScale)
+      font.family: Settings.appearance.font.clock
       font.bold: true
     }
 
     Loader {
-      Layout.leftMargin: Config.appearance.spacing.small
+      Layout.leftMargin: Style.appearance.spacing.small
       Layout.alignment: Qt.AlignVCenter
       asynchronous: true
       active: true
@@ -63,8 +62,8 @@ ColumnLayout {
       sourceComponent: IText {
         text: root.timeComponents[2] ?? ""
         color: ThemeService.palette.mPrimary
-        font.pointSize: Math.floor(Config.appearance.font.size.extraLarge * 2 * root.centerScale)
-        font.family: Config.appearance.font.family.clock
+        font.pointSize: Math.floor(Style.appearance.font.size.extraLarge * 2 * root.centerScale)
+        font.family: Settings.appearance.font.clock
         font.bold: true
       }
     }
@@ -72,16 +71,16 @@ ColumnLayout {
 
   IText {
     Layout.alignment: Qt.AlignHCenter
-    Layout.topMargin: -Config.appearance.padding.large * 2
+    Layout.topMargin: -Style.appearance.padding.large * 2
     text: TimeService.format("dddd, d MMMM yyyy")
     color: ThemeService.palette.mTertiary
-    font.pointSize: Math.floor(Config.appearance.font.size.extraLarge * root.centerScale)
-    font.family: Config.appearance.font.family.mono
+    font.pointSize: Math.floor(Style.appearance.font.size.extraLarge * root.centerScale)
+    font.family: Settings.appearance.font.mono
     font.bold: true
   }
 
   IImageCircled {
-    Layout.topMargin: Config.appearance.spacing.large * 2
+    Layout.topMargin: Style.appearance.spacing.large * 2
     Layout.alignment: Qt.AlignHCenter
     implicitWidth: root.centerWidth / 2
     implicitHeight: root.centerWidth / 2
@@ -94,9 +93,9 @@ ColumnLayout {
   Rectangle {
     Layout.alignment: Qt.AlignHCenter
     implicitWidth: root.centerWidth * 0.8
-    implicitHeight: input.implicitHeight + Config.appearance.padding.small * 2
+    implicitHeight: input.implicitHeight + Style.appearance.padding.small * 2
     color: ThemeService.palette.mSurfaceContainer
-    radius: Config.appearance.rounding.full
+    radius: Style.appearance.rounding.full
     focus: true
 
     onActiveFocusChanged: {
@@ -124,24 +123,24 @@ ColumnLayout {
     RowLayout {
       id: input
       anchors.fill: parent
-      anchors.margins: Config.appearance.padding.small
-      spacing: Config.appearance.spacing.normal
+      anchors.margins: Style.appearance.padding.small
+      spacing: Style.appearance.spacing.normal
 
       Item {
         implicitWidth: implicitHeight
-        implicitHeight: fprintIcon.implicitHeight + Config.appearance.padding.small * 2
+        implicitHeight: fprintIcon.implicitHeight + Style.appearance.padding.small * 2
 
         IIcon {
           id: fprintIcon
           anchors.centerIn: parent
           icon: {
-            if (root.lock.pam.fprint.tries >= Config.lock.maxFprintTries)
+            if (root.lock.pam.fprint.tries >= Settings.lock.maxFprintTries)
               return "fingerprint_off";
             if (root.lock.pam.fprint.active)
               return "fingerprint";
             return "lock";
           }
-          color: root.lock.pam.fprint.tries >= Config.lock.maxFprintTries ? ThemeService.palette.mError : ThemeService.palette.mOnSurface
+          color: root.lock.pam.fprint.tries >= Settings.lock.maxFprintTries ? ThemeService.palette.mError : ThemeService.palette.mOnSurface
 
           opacity: root.lock.pam.passwd.active ? 0 : 1
 
@@ -165,9 +164,9 @@ ColumnLayout {
 
       Rectangle {
         implicitWidth: implicitHeight
-        implicitHeight: enterIcon.implicitHeight + Config.appearance.padding.small * 2
+        implicitHeight: enterIcon.implicitHeight + Style.appearance.padding.small * 2
         color: root.lock.pam.buffer ? ThemeService.palette.mPrimary : Qt.alpha(ThemeService.palette.mSurfaceContainerHigh, 1)
-        radius: Config.appearance.rounding.full
+        radius: Style.appearance.rounding.full
 
         IStateLayer {
           color: root.lock.pam.buffer ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
@@ -189,7 +188,7 @@ ColumnLayout {
 
   Item {
     Layout.fillWidth: true
-    Layout.topMargin: -Config.appearance.spacing.large
+    Layout.topMargin: -Style.appearance.spacing.large
     implicitHeight: Math.max(message.implicitHeight, stateMessage.implicitHeight)
 
     Behavior on implicitHeight {
@@ -231,7 +230,7 @@ ColumnLayout {
       scale: shouldBeVisible && !message.msg ? 1 : 0.7
       opacity: shouldBeVisible && !message.msg ? 1 : 0
       color: ThemeService.palette.mOnSurfaceVariant
-      font.family: Config.appearance.font.family.mono
+      font.family: Settings.appearance.font.mono
       horizontalAlignment: Qt.AlignHCenter
       wrapMode: Text.WrapAtWordBoundaryOrAnywhere
       lineHeight: 1.2
@@ -270,7 +269,7 @@ ColumnLayout {
           return "Incorrect password. Please try again.";
         }
         if (pam.fprintState === "fail")
-          return "Fingerprint not recognized (" + pam.fprint.tries + "/" + Config.lock.maxFprintTries + "). Please try again or use password.";
+          return "Fingerprint not recognized (" + pam.fprint.tries + "/" + Settings.lock.maxFprintTries + "). Please try again or use password.";
         return "";
       }
 
@@ -279,8 +278,8 @@ ColumnLayout {
       scale: 0.7
       opacity: 0
       color: ThemeService.palette.mError
-      font.pointSize: Config.appearance.font.size.small
-      font.family: Config.appearance.font.family.mono
+      font.pointSize: Style.appearance.font.size.small
+      font.family: Settings.appearance.font.mono
       horizontalAlignment: Qt.AlignHCenter
       wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
@@ -343,13 +342,13 @@ ColumnLayout {
           target: message
           property: "scale"
           to: 0.7
-          duration: Config.appearance.anim.durations.large
+          duration: Style.appearance.anim.durations.large
         }
         IAnim {
           target: message
           property: "opacity"
           to: 0
-          duration: Config.appearance.anim.durations.large
+          duration: Style.appearance.anim.durations.large
         }
       }
     }
@@ -358,7 +357,7 @@ ColumnLayout {
   component FlashAnim: NumberAnimation {
     target: message
     property: "opacity"
-    duration: Config.appearance.anim.durations.small
+    duration: Style.appearance.anim.durations.small
     easing.type: Easing.Linear
   }
 }

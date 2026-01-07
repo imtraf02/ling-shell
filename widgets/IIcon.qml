@@ -1,5 +1,4 @@
 import QtQuick
-import qs.config
 import qs.commons
 import qs.services
 
@@ -7,7 +6,7 @@ IText {
   id: root
 
   property string icon
-  property real pointSize: Config.appearance.font.size.large
+  property real pointSize: Style.appearance.font.size.large
   property real fill
   property int grade: Settings.appearance.theme.mode === "light" ? 0 : -25
 

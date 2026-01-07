@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -13,14 +12,14 @@ Column {
 
   required property var panel
 
-  padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.small
+  padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.small
 
   SessionButton {
     id: logout
 
     icon: "logout"
-    command: Config.session.commands.logout
+    command: Settings.session.commands.logout
 
     KeyNavigation.down: shutdown
 
@@ -31,15 +30,15 @@ Column {
     id: shutdown
 
     icon: "power_settings_new"
-    command: Config.session.commands.shutdown
+    command: Settings.session.commands.shutdown
 
     KeyNavigation.up: logout
     KeyNavigation.down: hibernate
   }
 
   AnimatedImage {
-    width: Config.session.sizes.button
-    height: Config.session.sizes.button
+    width: Style.session.button
+    height: Style.session.button
     sourceSize.width: width
     sourceSize.height: height
 
@@ -53,7 +52,7 @@ Column {
     id: hibernate
 
     icon: "downloading"
-    command: Config.session.commands.hibernate
+    command: Settings.session.commands.hibernate
 
     KeyNavigation.up: shutdown
     KeyNavigation.down: reboot
@@ -63,7 +62,7 @@ Column {
     id: reboot
 
     icon: "cached"
-    command: Config.session.commands.reboot
+    command: Settings.session.commands.reboot
 
     KeyNavigation.up: hibernate
   }
@@ -74,8 +73,8 @@ Column {
     required property string icon
     required property list<string> command
 
-    implicitWidth: Config.session.sizes.button
-    implicitHeight: Config.session.sizes.button
+    implicitWidth: Style.session.button
+    implicitHeight: Style.session.button
 
     radius: Settings.appearance.cornerRadius
     color: button.activeFocus ? Qt.alpha(ThemeService.palette.mSecondary, 0.9) : ThemeService.palette.mSurfaceContainer
@@ -84,7 +83,7 @@ Column {
     Keys.onReturnPressed: Quickshell.execDetached(button.command)
     Keys.onEscapePressed: root.panel.close()
     Keys.onPressed: event => {
-      if (!Config.session.vimKeybinds)
+      if (!Settings.session.vimKeybinds)
         return;
 
       if (event.modifiers & Qt.ControlModifier) {
@@ -120,7 +119,7 @@ Column {
 
       icon: button.icon
       color: button.activeFocus ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurface
-      pointSize: Config.appearance.font.size.extraLarge
+      pointSize: Style.appearance.font.size.extraLarge
     }
   }
 }

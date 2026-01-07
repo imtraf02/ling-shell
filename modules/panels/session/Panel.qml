@@ -5,7 +5,7 @@ import QtQuick.Controls
 import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
-import qs.config
+import qs.commons
 import qs.widgets
 import qs.services
 
@@ -53,8 +53,8 @@ Item {
       target: root
       property: "implicitWidth"
       to: root.contentWidth
-      duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-      easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+      duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+      easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
     }
     ScriptAction {
       script: root.implicitWidth = Qt.binding(() => content.implicitWidth)
@@ -70,13 +70,13 @@ Item {
       target: root
       property: "implicitWidth"
       to: 0
-      easing.bezierCurve: Config.appearance.anim.curves.emphasized
+      easing.bezierCurve: Style.appearance.anim.curves.emphasized
     }
   }
 
   Timer {
     id: timer
-    interval: Config.appearance.anim.durations.extraLarge
+    interval: Style.appearance.anim.durations.extraLarge
     onRunningChanged: {
       if (running && !root.shouldBeActive) {
         content.visible = false;

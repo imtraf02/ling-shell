@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell.Services.SystemTray
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -17,9 +16,9 @@ BarPanel {
   })
   readonly property int itemCount: trayValues.length
   readonly property int maxColumns: 8
-  readonly property real cellSize: Math.round(Config.bar.sizes.innerHeight * 0.65)
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real cellSize: Math.round(Style.bar.innerHeight * 0.65)
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
   readonly property int columns: Math.max(1, Math.min(maxColumns, itemCount))
   readonly property int rows: Math.max(1, Math.ceil(itemCount / Math.max(1, columns)))
 

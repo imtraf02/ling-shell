@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.services
 
 RowLayout {
@@ -14,7 +14,7 @@ RowLayout {
   property bool snapAlways: true
   property real heightRatio: 0.7
   property string text: ""
-  property real textSize: Config.appearance.font.size.small
+  property real textSize: Style.appearance.font.size.small
   property real customHeight: -1
   property real customHeightRatio: -1
 
@@ -22,7 +22,7 @@ RowLayout {
   signal moved(real value)
   signal pressedChanged(bool pressed, real value)
 
-  spacing: Config.appearance.spacing.larger
+  spacing: Style.appearance.spacing.larger
   implicitHeight: root.customHeight > 0 ? root.customHeight : slider.implicitHeight
 
   ISlider {

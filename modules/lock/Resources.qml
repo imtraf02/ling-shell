@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -8,11 +7,11 @@ import qs.widgets
 RowLayout {
   id: root
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
 
   anchors.left: parent.left
   anchors.right: parent.right
-  anchors.margins: Config.appearance.padding.normal
+  anchors.margins: Style.appearance.padding.normal
 
   Resource {
     icon: "memory"
@@ -45,7 +44,7 @@ RowLayout {
     required property color colour
 
     Layout.fillWidth: true
-    Layout.preferredHeight: stat.height + Config.appearance.padding.normal * 2
+    Layout.preferredHeight: stat.height + Style.appearance.padding.normal * 2
 
     color: ThemeService.palette.mSurfaceContainer
     radius: Settings.appearance.cornerRadius
@@ -59,8 +58,8 @@ RowLayout {
       flat: true
       circleColor: parent.colour
       // circleWidth: 6
-      // iconSize: Config.appearance.font.size.extraLarge
-      // valueFontSize: Config.appearance.font.size.large
+      // iconSize: Style.appearance.font.size.extraLarge
+      // valueFontSize: Style.appearance.font.size.large
     }
   }
 }

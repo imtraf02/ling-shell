@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -9,19 +8,19 @@ import qs.widgets
 Item {
   id: root
 
-  readonly property int padding: Config.appearance.padding.normal
+  readonly property int padding: Style.appearance.padding.normal
 
   anchors.top: parent.top
   anchors.bottom: parent.bottom
   anchors.right: parent.right
 
-  implicitWidth: Config.notifications.sizes.width + padding * 2
+  implicitWidth: Style.notifications.width + padding * 2
   implicitHeight: {
     const count = list.count;
     if (count === 0)
       return 0;
 
-    let height = (count - 1) * Config.appearance.spacing.small;
+    let height = (count - 1) * Style.appearance.spacing.small;
     for (let i = 0; i < count; i++)
       height += list.itemAtIndex(i)?.nonAnimHeight ?? 0;
 
@@ -62,7 +61,7 @@ Item {
         }
 
         implicitWidth: notif.implicitWidth
-        implicitHeight: notif.implicitHeight + (idx === 0 ? 0 : Config.appearance.spacing.small)
+        implicitHeight: notif.implicitHeight + (idx === 0 ? 0 : Style.appearance.spacing.small)
 
         ListView.onRemove: removeAnim.start()
 
@@ -92,9 +91,9 @@ Item {
           IAnim {
             target: notif
             property: "x"
-            to: (notif.x >= 0 ? Config.notifications.sizes.width : -Config.notifications.sizes.width) * 2
-            duration: Config.appearance.anim.durations.normal
-            easing.bezierCurve: Config.appearance.anim.curves.emphasized
+            to: (notif.x >= 0 ? Style.notifications.width : -Style.notifications.width) * 2
+            duration: Style.appearance.anim.durations.normal
+            easing.bezierCurve: Style.appearance.anim.curves.emphasized
           }
           PropertyAction {
             target: wrapper
@@ -105,7 +104,7 @@ Item {
 
         ClippingRectangle {
           anchors.top: parent.top
-          anchors.topMargin: wrapper.idx === 0 ? 0 : Config.appearance.spacing.small
+          anchors.topMargin: wrapper.idx === 0 ? 0 : Style.appearance.spacing.small
 
           color: "transparent"
           radius: notif.radius
@@ -143,9 +142,9 @@ Item {
 
           let height = 0;
           for (let i = 0; i < count; i++) {
-            height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + Config.appearance.spacing.small;
+            height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + Style.appearance.spacing.small;
 
-            if (height - Config.appearance.spacing.small >= scrollY)
+            if (height - Style.appearance.spacing.small >= scrollY)
               return i;
           }
 
@@ -164,9 +163,9 @@ Item {
 
           let height = 0;
           for (let i = count - 1; i >= 0; i--) {
-            height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + Config.appearance.spacing.small;
+            height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + Style.appearance.spacing.small;
 
-            if (height - Config.appearance.spacing.small >= scrollY)
+            if (height - Style.appearance.spacing.small >= scrollY)
               return count - i - 1;
           }
 
@@ -181,8 +180,8 @@ Item {
   }
 
   component Anim: NumberAnimation {
-    duration: Config.appearance.anim.durations.expressiveDefaultSpatial
+    duration: Style.appearance.anim.durations.expressiveDefaultSpatial
     easing.type: Easing.BezierSpline
-    easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+    easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
   }
 }

@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.config
+import qs.commons
 import "widgets"
 
 RowLayout {
@@ -12,7 +12,7 @@ RowLayout {
 
   readonly property list<string> widgetsList: ["Tray", "Notifications", "Battery", "Volume", "Wifi", "Brightness"]
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
 
   Repeater {
     model: root.widgetsList

@@ -5,7 +5,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.widgets
 import qs.services
-import qs.config
+import qs.commons
 
 Rectangle {
   id: root
@@ -15,9 +15,9 @@ Rectangle {
   required property bool expanded
 
   readonly property IText body: expandedContent.item?.body ?? null
-  implicitHeight: expanded ? summary.implicitHeight + expandedContent.implicitHeight + expandedContent.anchors.topMargin + Config.appearance.padding.normal * 2 : summaryHeightMetrics.height
+  implicitHeight: expanded ? summary.implicitHeight + expandedContent.implicitHeight + expandedContent.anchors.topMargin + Style.appearance.padding.normal * 2 : summaryHeightMetrics.height
 
-  radius: Config.appearance.rounding.small
+  radius: Style.appearance.rounding.small
   color: {
     const c = root.modelData.urgency === "critical" ? ThemeService.palette.mSecondary : ThemeService.palette.mSurfaceContainerHigh;
     return expanded ? c : Qt.alpha(c, 0);
@@ -28,12 +28,12 @@ Rectangle {
     when: root.expanded
 
     PropertyChanges {
-      summary.anchors.margins: Config.appearance.padding.normal
-      dummySummary.anchors.margins: Config.appearance.padding.normal
-      compactBody.anchors.margins: Config.appearance.padding.normal
-      timeStr.anchors.margins: Config.appearance.padding.normal
-      expandedContent.anchors.margins: Config.appearance.padding.normal
-      summary.width: root.width - Config.appearance.padding.normal * 2 - timeStr.implicitWidth - Config.appearance.spacing.small
+      summary.anchors.margins: Style.appearance.padding.normal
+      dummySummary.anchors.margins: Style.appearance.padding.normal
+      compactBody.anchors.margins: Style.appearance.padding.normal
+      timeStr.anchors.margins: Style.appearance.padding.normal
+      expandedContent.anchors.margins: Style.appearance.padding.normal
+      summary.width: root.width - Style.appearance.padding.normal * 2 - timeStr.implicitWidth - Style.appearance.spacing.small
       summary.maximumLineCount: Number.MAX_SAFE_INTEGER
     }
   }
@@ -82,7 +82,7 @@ Rectangle {
     anchors.top: parent.top
     anchors.left: dummySummary.right
     anchors.right: parent.right
-    anchors.leftMargin: Config.appearance.spacing.small
+    anchors.leftMargin: Style.appearance.spacing.small
 
     sourceComponent: IText {
       text: root.modelData.body.replace(/\n/g, " ")
@@ -102,7 +102,7 @@ Rectangle {
       animate: true
       text: root.modelData.timeStr
       color: ThemeService.palette.mOutline
-      font.pointSize: Config.appearance.font.size.small
+      font.pointSize: Style.appearance.font.size.small
     }
   }
 
@@ -113,12 +113,12 @@ Rectangle {
     anchors.top: summary.bottom
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.topMargin: Config.appearance.spacing.small / 2
+    anchors.topMargin: Style.appearance.spacing.small / 2
 
     sourceComponent: ColumnLayout {
       readonly property alias body: body
 
-      spacing: Config.appearance.spacing.smaller
+      spacing: Style.appearance.spacing.smaller
 
       IText {
         id: body

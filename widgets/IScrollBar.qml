@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Templates
-import qs.config
+import qs.commons
 import qs.services
 
 ScrollBar {
@@ -26,7 +26,7 @@ ScrollBar {
   }
 
   position: nonAnimPosition
-  implicitWidth: Config.appearance.padding.small
+  implicitWidth: Style.appearance.padding.small
 
   contentItem: Rectangle {
     anchors.left: parent.left
@@ -42,7 +42,7 @@ ScrollBar {
         return 0.6;
       return 0;
     }
-    radius: Config.appearance.rounding.full
+    radius: Style.appearance.rounding.full
     color: ThemeService.palette.mSecondary
 
     MouseArea {

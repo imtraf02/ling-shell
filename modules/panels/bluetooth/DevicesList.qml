@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -14,8 +13,8 @@ IBox {
   property string label: ""
   property var model: ({})
 
-  readonly property real padding: Config.appearance.padding.normal
-  readonly property real spacing: Config.appearance.spacing.small
+  readonly property real padding: Style.appearance.padding.normal
+  readonly property real spacing: Style.appearance.spacing.small
 
   Layout.fillWidth: true
   Layout.preferredHeight: column.implicitHeight + root.padding * 2
@@ -28,7 +27,7 @@ IBox {
 
     IText {
       text: root.label
-      pointSize: Config.appearance.font.size.normal
+      pointSize: Style.appearance.font.size.normal
       color: ThemeService.palette.mSecondary
       visible: root.model.length > 0
       Layout.fillWidth: true
@@ -74,7 +73,7 @@ IBox {
 
           IIcon {
             icon: BluetoothService.getDeviceIcon(device.modelData)
-            pointSize: Config.appearance.font.size.large
+            pointSize: Style.appearance.font.size.large
             color: device.getContentColor(ThemeService.palette.mOnSurface)
             Layout.alignment: Qt.AlignVCenter
           }
@@ -85,7 +84,7 @@ IBox {
 
             IText {
               text: device.modelData.name || device.modelData.deviceName
-              pointSize: Config.appearance.font.size.large
+              pointSize: Style.appearance.font.size.large
               elide: Text.ElideRight
               color: device.getContentColor(ThemeService.palette.mOnSurface)
               Layout.fillWidth: true
@@ -94,7 +93,7 @@ IBox {
             IText {
               text: BluetoothService.getStatusString(device.modelData)
               visible: text !== ""
-              pointSize: Config.appearance.font.size.small
+              pointSize: Style.appearance.font.size.small
               color: device.getContentColor(ThemeService.palette.mOnSurfaceVariant)
             }
 
@@ -105,21 +104,21 @@ IBox {
 
               IText {
                 text: BluetoothService.getSignalStrength(device.modelData)
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 color: device.getContentColor(ThemeService.palette.mOnSurfaceVariant)
               }
 
               IIcon {
                 visible: device.modelData.signalStrength > 0 && !device.modelData.pairing && !device.modelData.blocked
                 icon: BluetoothService.getSignalIcon(device.modelData)
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 color: device.getContentColor(ThemeService.palette.mOnSurface)
               }
 
               IText {
                 visible: device.modelData.signalStrength > 0 && !device.modelData.pairing && !device.modelData.blocked
                 text: (device.modelData.signalStrength > 0) ? device.modelData.signalStrength + "%" : ""
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 color: device.getContentColor(ThemeService.palette.mOnSurface)
               }
             }
@@ -127,7 +126,7 @@ IBox {
             IText {
               visible: device.modelData.batteryAvailable
               text: BluetoothService.getBattery(device.modelData)
-              pointSize: Config.appearance.font.size.small
+              pointSize: Style.appearance.font.size.small
               color: device.getContentColor(ThemeService.palette.mOnSurfaceVariant)
             }
           }
@@ -142,7 +141,7 @@ IBox {
             enabled: (device.canConnect || device.canDisconnect) && !device.isBusy
             outlined: !button.hovered
 
-            fontSize: Config.appearance.font.size.small
+            fontSize: Style.appearance.font.size.small
             fontWeight: Font.Medium
 
             backgroundColor: device.canDisconnect && !device.isBusy ? ThemeService.palette.mError : ThemeService.palette.mPrimary

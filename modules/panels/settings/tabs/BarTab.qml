@@ -1,14 +1,13 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.commons
 import qs.widgets
 
 ColumnLayout {
   id: root
 
-  readonly property int padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.larger
+  readonly property int padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.larger
 
   IToggle {
     label: "Persistent"

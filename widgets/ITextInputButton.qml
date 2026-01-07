@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 
 ColumnLayout {
   id: root
@@ -19,7 +19,7 @@ ColumnLayout {
   signal inputTextChanged(string text)
   signal inputEditingFinished
 
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
 
   ILabel {
     label: root.label
@@ -30,7 +30,7 @@ ColumnLayout {
 
   RowLayout {
     Layout.fillWidth: true
-    spacing: Config.appearance.spacing.small
+    spacing: Style.appearance.spacing.small
 
     ITextInput {
       id: input
@@ -43,7 +43,7 @@ ColumnLayout {
 
     IIconButton {
       id: button
-      size: Config.appearance.widget.size
+      size: Style.appearance.widget.size
       onClicked: root.buttonClicked()
     }
   }

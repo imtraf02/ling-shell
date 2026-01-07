@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell.Services.Pipewire
-import qs.config
 import qs.commons
 import qs.widgets
 import qs.services
@@ -52,7 +51,7 @@ BarPanel {
   contentComponent: Item {
     id: content
 
-    implicitWidth: Config.bar.sizes.audioWidth
+    implicitWidth: Style.bar.audioWidth
     implicitHeight: mainColumn.implicitHeight + root.padding * 2
 
     ColumnLayout {
@@ -69,8 +68,8 @@ BarPanel {
         RowLayout {
           id: headerRow
           anchors.fill: parent
-          anchors.margins: Config.appearance.padding.normal
-          spacing: Config.appearance.spacing.small
+          anchors.margins: Style.appearance.padding.normal
+          spacing: Style.appearance.spacing.small
 
           IIcon {
             icon: "media_output"
@@ -79,26 +78,26 @@ BarPanel {
 
           IText {
             text: "Audio"
-            pointSize: Config.appearance.font.size.larger
+            pointSize: Style.appearance.font.size.larger
             color: ThemeService.palette.mOnSurface
             Layout.fillWidth: true
           }
 
           IIconButton {
             icon: AudioService.getOutputIcon()
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: AudioService.setOutputMuted(!AudioService.muted)
           }
 
           IIconButton {
             icon: AudioService.getInputIcon()
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: AudioService.setInputMuted(!AudioService.inputMuted)
           }
 
           IIconButton {
             icon: "close"
-            size: Config.appearance.widget.size * 0.8
+            size: Style.appearance.widget.size * 0.8
             onClicked: root.close()
           }
         }
@@ -121,7 +120,7 @@ BarPanel {
           ColumnLayout {
             id: outputColumn
             width: outputFlickable.width
-            spacing: Config.appearance.spacing.small
+            spacing: Style.appearance.spacing.small
 
             ButtonGroup {
               id: sinks
@@ -129,7 +128,7 @@ BarPanel {
 
             IText {
               text: "Output devices"
-              pointSize: Config.appearance.font.size.larger
+              pointSize: Style.appearance.font.size.larger
               color: ThemeService.palette.mPrimary
             }
 
@@ -143,7 +142,7 @@ BarPanel {
               onMoved: value => root.localOutputVolume = value
               onPressedChanged: (pressed, value) => root.localOutputVolumeChanging = pressed
               text: Math.round(root.localOutputVolume * 100) + "%"
-              Layout.bottomMargin: Config.appearance.spacing.small
+              Layout.bottomMargin: Style.appearance.spacing.small
             }
 
             Repeater {
@@ -151,7 +150,7 @@ BarPanel {
               IRadioButton {
                 ButtonGroup.group: sinks
                 required property PwNode modelData
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 text: modelData.description
                 checked: AudioService.sink?.id === modelData.id
                 onClicked: {
@@ -173,7 +172,7 @@ BarPanel {
         IFlickable {
           id: inputFlickable
           anchors.fill: parent
-          anchors.margins: Config.appearance.padding.normal
+          anchors.margins: Style.appearance.padding.normal
           clip: true
           contentWidth: parent.width
           contentHeight: inputColumn.height
@@ -182,7 +181,7 @@ BarPanel {
           ColumnLayout {
             id: inputColumn
             width: inputFlickable.width
-            spacing: Config.appearance.spacing.small
+            spacing: Style.appearance.spacing.small
 
             ButtonGroup {
               id: sources
@@ -190,7 +189,7 @@ BarPanel {
 
             IText {
               text: "Input devices"
-              pointSize: Config.appearance.font.size.larger
+              pointSize: Style.appearance.font.size.larger
               color: ThemeService.palette.mPrimary
             }
 
@@ -206,7 +205,7 @@ BarPanel {
                 root.localInputVolumeChanging = pressed;
               }
               text: Math.round(root.localInputVolume * 100) + "%"
-              Layout.bottomMargin: Config.appearance.spacing.small
+              Layout.bottomMargin: Style.appearance.spacing.small
             }
 
             Repeater {
@@ -214,7 +213,7 @@ BarPanel {
               IRadioButton {
                 ButtonGroup.group: sources
                 required property PwNode modelData
-                pointSize: Config.appearance.font.size.small
+                pointSize: Style.appearance.font.size.small
                 text: modelData.description
                 checked: AudioService.source?.id === modelData.id
                 onClicked: AudioService.setAudioSource(modelData)

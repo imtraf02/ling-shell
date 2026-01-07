@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Notifications
 import Quickshell.Widgets
-import qs.config
 import qs.commons
 import qs.services
 import qs.widgets
@@ -41,7 +40,7 @@ Rectangle {
 
   anchors.left: parent?.left
   anchors.right: parent?.right
-  implicitHeight: content.implicitHeight + Config.appearance.padding.normal * 2
+  implicitHeight: content.implicitHeight + Style.appearance.padding.normal * 2
 
   clip: true
   radius: Settings.appearance.cornerRadius
@@ -53,14 +52,14 @@ Rectangle {
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
-    anchors.margins: Config.appearance.padding.normal
+    anchors.margins: Style.appearance.padding.normal
 
-    spacing: Config.appearance.spacing.small
+    spacing: Style.appearance.spacing.small
 
     Item {
       Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-      implicitWidth: Config.notifications.sizes.image
-      implicitHeight: Config.notifications.sizes.image
+      implicitWidth: Style.notifications.image
+      implicitHeight: Style.notifications.image
 
       Component {
         id: imageComp
@@ -70,8 +69,8 @@ Rectangle {
           fillMode: Image.PreserveAspectCrop
           cache: false
           asynchronous: true
-          width: Config.notifications.sizes.image
-          height: Config.notifications.sizes.image
+          width: Style.notifications.image
+          height: Style.notifications.image
         }
       }
 
@@ -79,7 +78,7 @@ Rectangle {
         id: appIconComp
 
         IColouredIcon {
-          implicitSize: Math.round(Config.notifications.sizes.image * 0.6)
+          implicitSize: Math.round(Style.notifications.image * 0.6)
           source: Quickshell.iconPath(root.appIcon)
           colour: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnError : root.urgency === NotificationUrgency.Low ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSecondary
 
@@ -122,14 +121,14 @@ Rectangle {
           }
           color: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnError : root.urgency === NotificationUrgency.Low ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSecondary
 
-          font.pointSize: Config.appearance.font.size.large
+          font.pointSize: Style.appearance.font.size.large
         }
       }
 
       ClippingRectangle {
         anchors.fill: parent
         color: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mError : root.urgency === NotificationUrgency.Low ? ThemeService.palette.mSurfaceContainerHigh : Qt.alpha(ThemeService.palette.mSecondary, 0.4)
-        radius: Config.appearance.rounding.full
+        radius: Style.appearance.rounding.full
 
         Loader {
           anchors.centerIn: parent
@@ -145,15 +144,15 @@ Rectangle {
         active: root.appIcon && root.image
 
         sourceComponent: Rectangle {
-          implicitWidth: Config.notifications.sizes.badge
-          implicitHeight: Config.notifications.sizes.badge
+          implicitWidth: Style.notifications.badge
+          implicitHeight: Style.notifications.badge
 
           color: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mError : root.urgency === NotificationUrgency.Low ? ThemeService.palette.mSurfaceContainerHigh : Qt.alpha(ThemeService.palette.mSecondary, 0.4)
-          radius: Config.appearance.rounding.full
+          radius: Style.appearance.rounding.full
 
           IColouredIcon {
             anchors.centerIn: parent
-            implicitSize: Math.round(Config.notifications.sizes.badge * 0.6)
+            implicitSize: Math.round(Style.notifications.badge * 0.6)
             source: Quickshell.iconPath(root.appIcon)
             colour: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnError : root.urgency === NotificationUrgency.Low ? ThemeService.palette.mOnSurface : ThemeService.palette.mOnSecondary
 
@@ -166,23 +165,23 @@ Rectangle {
     ColumnLayout {
       id: column
 
-      Layout.topMargin: -Config.appearance.padding.small
-      Layout.bottomMargin: -Config.appearance.padding.small / 2
+      Layout.topMargin: -Style.appearance.padding.small
+      Layout.bottomMargin: -Style.appearance.padding.small / 2
       Layout.fillWidth: true
       spacing: 0
 
       RowLayout {
         id: header
 
-        Layout.bottomMargin: root.expanded ? Math.round(Config.appearance.spacing.small / 2) : 0
+        Layout.bottomMargin: root.expanded ? Math.round(Style.appearance.spacing.small / 2) : 0
         Layout.fillWidth: true
-        spacing: Config.appearance.spacing.smaller
+        spacing: Style.appearance.spacing.smaller
 
         IText {
           Layout.fillWidth: true
           text: root.modelData
           color: ThemeService.palette.mOnSurfaceVariant
-          font.pointSize: Config.appearance.font.size.small
+          font.pointSize: Style.appearance.font.size.small
           elide: Text.ElideRight
         }
 
@@ -190,16 +189,16 @@ Rectangle {
           animate: true
           text: root.notifs.find(n => !n.closed)?.timeStr ?? ""
           color: ThemeService.palette.mOutline
-          font.pointSize: Config.appearance.font.size.small
+          font.pointSize: Style.appearance.font.size.small
         }
 
         Rectangle {
-          implicitWidth: expandBtn.implicitWidth + Config.appearance.padding.smaller * 2
-          implicitHeight: groupCount.implicitHeight + Config.appearance.padding.small
+          implicitWidth: expandBtn.implicitWidth + Style.appearance.padding.smaller * 2
+          implicitHeight: groupCount.implicitHeight + Style.appearance.padding.small
 
           color: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mError : ThemeService.palette.mSurfaceContainerHigh
 
-          radius: Config.appearance.rounding.full
+          radius: Style.appearance.rounding.full
 
           IStateLayer {
             color: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnError : ThemeService.palette.mOnSurface
@@ -213,36 +212,36 @@ Rectangle {
             id: expandBtn
 
             anchors.centerIn: parent
-            spacing: Config.appearance.spacing.small / 2
+            spacing: Style.appearance.spacing.small / 2
 
             IText {
               id: groupCount
 
-              Layout.leftMargin: Config.appearance.padding.small / 2
+              Layout.leftMargin: Style.appearance.padding.small / 2
               animate: true
               text: root.notifCount
               color: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnError : ThemeService.palette.mOnSurface
-              font.pointSize: Config.appearance.font.size.small
+              font.pointSize: Style.appearance.font.size.small
             }
 
             IIcon {
-              Layout.rightMargin: -Config.appearance.padding.small / 2
+              Layout.rightMargin: -Style.appearance.padding.small / 2
               icon: "expand_more"
               color: root.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnError : ThemeService.palette.mOnSurface
               rotation: root.expanded ? 180 : 0
-              Layout.topMargin: root.expanded ? -Math.floor(Config.appearance.padding.smaller / 2) : 0
+              Layout.topMargin: root.expanded ? -Math.floor(Style.appearance.padding.smaller / 2) : 0
 
               Behavior on rotation {
                 IAnim {
-                  duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-                  easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+                  duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+                  easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
                 }
               }
 
               Behavior on Layout.topMargin {
                 IAnim {
-                  duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-                  easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+                  duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+                  easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
                 }
               }
             }

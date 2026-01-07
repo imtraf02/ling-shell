@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.services
 import qs.widgets
 
@@ -17,7 +17,7 @@ ColumnLayout {
 
   anchors.left: parent.left
   anchors.right: parent.right
-  spacing: Config.appearance.spacing.small
+  spacing: Style.appearance.spacing.small
 
   Repeater {
     id: repeater
@@ -82,12 +82,12 @@ ColumnLayout {
       onPositionChanged: event => {
         if (pressed) {
           const diffY = event.y - startY;
-          if (Math.abs(diffY) > Config.notifications.expandThreshold)
+          if (Math.abs(diffY) > Settings.notifications.expandThreshold)
             notifInner.toggleExpand(diffY > 0);
         }
       }
       onReleased: event => {
-        if (Math.abs(x) < width * Config.notifications.clearThreshold)
+        if (Math.abs(x) < width * Settings.notifications.clearThreshold)
           x = 0;
         else
           closeAll();
@@ -107,8 +107,8 @@ ColumnLayout {
           property: "scale"
           from: 0
           to: 1
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
 
@@ -137,8 +137,8 @@ ColumnLayout {
 
       Behavior on x {
         IAnim {
-          duration: Config.appearance.anim.durations.expressiveDefaultSpatial
-          easing.bezierCurve: Config.appearance.anim.curves.expressiveDefaultSpatial
+          duration: Style.appearance.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.appearance.anim.curves.expressiveDefaultSpatial
         }
       }
     }

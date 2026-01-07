@@ -2,23 +2,23 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import qs.config
+import qs.commons
 import qs.widgets
 import "../data/keybinds.js" as Keybinds
 
 ColumnLayout {
   id: root
 
-  readonly property int padding: Config.appearance.padding.normal
-  spacing: Config.appearance.spacing.larger
+  readonly property int padding: Style.appearance.padding.normal
+  spacing: Style.appearance.spacing.larger
 
   readonly property var keybinds: Keybinds.keybinds
 
   ILabel {
     label: "Keybinds"
     description: "Take full control of Ling Shell with keyboard shortcuts and IPC commands. This tab covers how to start the shell and all available commands you can bind to your favorite keys."
-    labelSize: Config.appearance.font.size.large
-    descriptionSize: Config.appearance.font.size.smaller
+    labelSize: Style.appearance.font.size.large
+    descriptionSize: Style.appearance.font.size.smaller
   }
 
   IBox {
@@ -30,21 +30,21 @@ ColumnLayout {
       anchors.fill: parent
       anchors.margins: root.padding
 
-      spacing: Config.appearance.spacing.small
+      spacing: Style.appearance.spacing.small
 
       IIcon {
         Layout.alignment: Qt.AlignTop
         icon: "rocket_launch"
-        pointSize: Config.appearance.font.size.large
+        pointSize: Style.appearance.font.size.large
       }
 
       Column {
         Layout.alignment: Qt.AlignTop
-        spacing: Config.appearance.spacing.small
+        spacing: Style.appearance.spacing.small
 
         IText {
           text: "Installation-specific commands"
-          pointSize: Config.appearance.font.size.larger
+          pointSize: Style.appearance.font.size.larger
         }
 
         IText {
@@ -68,7 +68,7 @@ ColumnLayout {
 
       required property var modelData
 
-      spacing: Config.appearance.spacing.normal
+      spacing: Style.appearance.spacing.normal
 
       ILabel {
         label: keybindItem.modelData.title
@@ -83,13 +83,13 @@ ColumnLayout {
           id: keybindActionItem
 
           required property var modelData
-          spacing: Config.appearance.spacing.normal
+          spacing: Style.appearance.spacing.normal
 
           IText {
             Layout.preferredWidth: 200
             Layout.alignment: Qt.AlignTop
             text: keybindActionItem.modelData.fn
-            padding: Config.appearance.padding.smaller
+            padding: Style.appearance.padding.smaller
             wrapMode: Text.WordWrap
           }
 
@@ -107,9 +107,9 @@ ColumnLayout {
                 id: commandText
                 width: parent.width
                 wrapMode: Text.WordWrap
-                padding: Config.appearance.padding.smaller
+                padding: Style.appearance.padding.smaller
                 text: keybindActionItem.modelData.command
-                family: Config.appearance.font.family.mono
+                family: Settings.appearance.font.mono
               }
             }
           }
@@ -118,7 +118,7 @@ ColumnLayout {
             Layout.preferredWidth: 360
             Layout.alignment: Qt.AlignTop
             text: keybindActionItem.modelData.description
-            padding: Config.appearance.padding.smaller
+            padding: Style.appearance.padding.smaller
             wrapMode: Text.WordWrap
           }
         }
