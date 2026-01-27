@@ -20,7 +20,7 @@ Rectangle {
   property bool expanded
 
   color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mSecondary : ThemeService.palette.mSurfaceContainer
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   implicitWidth: Style.notifications.width
   implicitHeight: inner.implicitHeight
 
@@ -116,7 +116,7 @@ Rectangle {
         visible: root.hasImage || root.hasAppIcon
 
         sourceComponent: ClippingRectangle {
-          radius: Settings.appearance.cornerRadius * 2
+          radius: Style.rounding.small * 2
           implicitWidth: Style.notifications.image
           implicitHeight: Style.notifications.image
 
@@ -142,7 +142,7 @@ Rectangle {
         anchors.bottom: root.hasImage ? image.bottom : undefined
 
         sourceComponent: Rectangle {
-          radius: Settings.appearance.cornerRadius * 2
+          radius: Style.rounding.small * 2
           color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mError : root.modelData.urgency === NotificationUrgency.Low ? ThemeService.palette.mSurfaceContainerHighest : ThemeService.palette.mSecondary
           implicitWidth: root.hasImage ? Style.notifications.badge : Style.notifications.image
           implicitHeight: root.hasImage ? Style.notifications.badge : Style.notifications.image
@@ -320,7 +320,7 @@ Rectangle {
         implicitHeight: expandIcon.height
 
         IStateLayer {
-          radius: Settings.appearance.cornerRadius * 2
+          radius: Style.rounding.small * 2
           color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurface
 
           function onClicked() {
@@ -441,7 +441,7 @@ Rectangle {
 
     required property var modelData
 
-    radius: Settings.appearance.cornerRadius * 2
+    radius: Style.rounding.small * 2
     color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mSecondary : ThemeService.palette.mSurfaceContainerHigh
 
     Layout.preferredWidth: actionText.width + Style.padding.small * 2
@@ -450,7 +450,7 @@ Rectangle {
     implicitHeight: actionText.height + Style.padding.small * 2
 
     IStateLayer {
-      radius: Settings.appearance.cornerRadius * 2
+      radius: Style.rounding.small * 2
       color: root.modelData.urgency === NotificationUrgency.Critical ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurface
 
       function onClicked(): void {

@@ -43,7 +43,7 @@ Rectangle {
   implicitHeight: content.implicitHeight + Style.padding.small * 2
 
   clip: true
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   color: ThemeService.palette.mSurfaceContainer
 
   RowLayout {

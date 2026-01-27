@@ -10,7 +10,7 @@ ShapePath {
 
   property color defaultBackgroundColor: ThemeService.palette.mSurface
 
-  readonly property real radius: Settings.appearance.cornerRadius
+  readonly property real radius: Style.rounding.small
 
   readonly property var panelRegion: assignedPanel?.panelRegion ?? null
 

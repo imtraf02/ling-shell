@@ -23,7 +23,7 @@ Rectangle {
   implicitWidth: size
   implicitHeight: size
   color: root.enabled && root.hovering ? colorBgHover : colorBg
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   border.color: root.enabled && root.hovering ? colorBorderHover : colorBorder
   border.width: 1
 

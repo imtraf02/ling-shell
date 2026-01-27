@@ -24,7 +24,7 @@ Rectangle {
   width: 68
   height: 92
   color: flat ? "transparent" : ThemeService.palette.mSurface
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   border.color: flat ? "transparent" : ThemeService.palette.mSurfaceVariant
   border.width: flat ? 0 : 1
 

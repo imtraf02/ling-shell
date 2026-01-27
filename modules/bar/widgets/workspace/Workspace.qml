@@ -25,7 +25,7 @@ ClippingRectangle {
   implicitHeight: Style.bar.innerHeight
   implicitWidth: layout.implicitWidth + Style.spacing.small * 2
 
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   color: ThemeService.palette.mSurfaceContainer
 
   Component.onCompleted: {

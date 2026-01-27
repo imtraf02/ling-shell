@@ -18,7 +18,7 @@ Rectangle {
   implicitHeight: size
 
   color: hovered ? ThemeService.palette.mSurfaceContainerHigh : ThemeService.palette.mSurfaceContainer
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
 
   Behavior on color {
     ICAnim {}

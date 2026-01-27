@@ -417,7 +417,7 @@ ColumnLayout {
             Rectangle {
               Layout.fillWidth: true
               Layout.fillHeight: true
-              radius: Settings.appearance.cornerRadius
+              radius: Style.rounding.small
               color: ThemeService.palette.mSurface
               border.color: pwdInput.activeFocus ? ThemeService.palette.mSecondary : ThemeService.palette.mOutline
               border.width: 1

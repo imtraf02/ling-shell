@@ -143,7 +143,7 @@ Singleton {
     property string mode: "light"
     property string light: "Ling Light"
     property string dark: "Ling Dark"
-    property bool dynamic: true
+    property bool dynamic: false
     property string matugenType: "scheme-tonal-spot"
   }
 

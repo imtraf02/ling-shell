@@ -54,10 +54,10 @@ Item {
     opacity: root.revealed ? 1 : 0
     color: root.hovered ? ThemeService.palette.mSurfaceContainerHigh : ThemeService.palette.mSurfaceContainer
 
-    topLeftRadius: root.oppositeDirection ? 0 : Settings.appearance.cornerRadius
-    bottomLeftRadius: root.oppositeDirection ? 0 : Settings.appearance.cornerRadius
-    topRightRadius: root.oppositeDirection ? Settings.appearance.cornerRadius : 0
-    bottomRightRadius: root.oppositeDirection ? Settings.appearance.cornerRadius : 0
+    topLeftRadius: root.oppositeDirection ? 0 : Style.rounding.small
+    bottomLeftRadius: root.oppositeDirection ? 0 : Style.rounding.small
+    topRightRadius: root.oppositeDirection ? Style.rounding.small : 0
+    bottomRightRadius: root.oppositeDirection ? Style.rounding.small : 0
     anchors.verticalCenter: parent.verticalCenter
 
     Behavior on width {
@@ -94,7 +94,7 @@ Item {
     width: root.pillHeight
     height: root.pillHeight
 
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     color: pill.color
     anchors.verticalCenter: parent.verticalCenter
 

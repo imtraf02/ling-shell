@@ -36,7 +36,7 @@ IListView {
   highlightFollowsCurrentItem: false
   highlight: Rectangle {
     color: ThemeService.palette.mOnSurface
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     opacity: 0.08
 
     y: root.currentItem?.y ?? 0

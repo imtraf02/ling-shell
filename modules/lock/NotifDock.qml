@@ -33,7 +33,7 @@ ${NotificationService.list.length === 1 ? "" : "s"}` : "Notifications"
     Layout.fillWidth: true
     Layout.fillHeight: true
 
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     color: "transparent"
 
     Loader {

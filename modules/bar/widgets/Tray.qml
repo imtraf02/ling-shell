@@ -105,7 +105,7 @@ Rectangle {
 
   implicitWidth: Math.round(trayFlow.implicitWidth)
   implicitHeight: Style.bar.innerHeight
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   color: ThemeService.palette.mSurfaceContainer
 
   Connections {
@@ -226,7 +226,7 @@ Rectangle {
       colorBgHover: ThemeService.palette.mSurfaceContainerHigh
       colorFg: ThemeService.palette.mPrimary
       colorFgHover: ThemeService.palette.mPrimary
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       border.width: 0
       onClicked: {
         PanelService.getPanel("panel:tray-drawer", root.screen).toggle(this);

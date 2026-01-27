@@ -6,5 +6,5 @@ Rectangle {
   id: root
 
   color: ThemeService.palette.mSurfaceContainer
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
 }

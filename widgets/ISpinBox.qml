@@ -36,7 +36,7 @@ RowLayout {
     id: spinBoxContainer
     implicitWidth: 120
     implicitHeight: root.baseSize - 4
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     color: ThemeService.palette.mSurfaceVariant
     border.color: (root.hovering || decreaseArea.containsMouse || increaseArea.containsMouse) ? ThemeService.palette.mPrimary : ThemeService.palette.mOutline
     border.width: 1
@@ -75,7 +75,7 @@ RowLayout {
 
       Rectangle {
         anchors.fill: parent
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
         color: decreaseArea.containsMouse ? ThemeService.palette.mPrimary : "transparent"
         Behavior on color {
           ICAnim {}
@@ -107,7 +107,7 @@ RowLayout {
 
       Rectangle {
         anchors.fill: parent
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
         color: increaseArea.containsMouse ? ThemeService.palette.mPrimary : "transparent"
         Behavior on color {
           ICAnim {}

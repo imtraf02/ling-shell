@@ -128,7 +128,7 @@ WlSessionLockSurface {
         IAnim {
           target: lockBg
           property: "radius"
-          to: Settings.appearance.cornerRadius * 1.5
+          to: Style.rounding.large * 1.5
         }
         IAnim {
           target: lockContent
@@ -184,7 +184,7 @@ WlSessionLockSurface {
     id: lockContent
 
     readonly property int size: lockIcon.implicitHeight + Style.padding.large * 4
-    readonly property int radius: Settings.appearance.cornerRadius
+    readonly property int radius: Style.rounding.large
 
     anchors.centerIn: parent
     implicitWidth: size

@@ -30,7 +30,7 @@ Item {
     anchors.margins: Style.padding.small
 
     color: "transparent"
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
 
     IListView {
       id: list

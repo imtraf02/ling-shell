@@ -283,7 +283,7 @@ Item {
       implicitHeight: image.height + label.height + Style.padding.larger * 2
 
       IStateLayer {
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
 
         function onClicked() {
           WallpaperService.changeWallpaper(delegateItem.wallpaperPath, pathView.targetScreen.name);
@@ -315,7 +315,7 @@ Item {
         color: delegateItem.isSelected ? ThemeService.palette.mPrimary : ThemeService.palette.mSurfaceVariant
         implicitWidth: Style.launcher.wallpaperWidth
         implicitHeight: implicitWidth / 16 * 9
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
 
         IImageCached {
           maxCacheDimension: 384

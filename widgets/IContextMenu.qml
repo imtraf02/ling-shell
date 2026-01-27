@@ -22,7 +22,7 @@ Popup {
     color: ThemeService.palette.mSurface
     border.color: ThemeService.palette.mOutline
     border.width: 1
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
   }
 
   contentItem: IListView {
@@ -53,7 +53,7 @@ Popup {
       background: Rectangle {
         color: menuItem.hovered && menuItem.enabled ? ThemeService.palette.mPrimary : ThemeService.palette.mSurfaceContainer
 
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
 
         Behavior on color {
           ICAnim {}

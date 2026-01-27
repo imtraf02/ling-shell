@@ -11,7 +11,7 @@ Switch {
   implicitHeight: implicitIndicatorHeight
 
   indicator: Rectangle {
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     color: root.checked ? ThemeService.palette.mPrimary : ThemeService.palette.mSurfaceContainerHighest
 
     implicitWidth: implicitHeight * 2
@@ -20,7 +20,7 @@ Switch {
     Rectangle {
       readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.3 : implicitHeight
 
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       color: root.checked ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOutline
 
       x: root.checked ? parent.implicitWidth - nonAnimWidth - Style.padding.small / 2 : Style.padding.small / 2

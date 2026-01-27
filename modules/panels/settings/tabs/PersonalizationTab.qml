@@ -67,7 +67,7 @@ ColumnLayout {
     ClippingRectangle {
       Layout.preferredWidth: 160
       Layout.preferredHeight: 90
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurfaceVariant
       Layout.alignment: Qt.AlignTop
 
@@ -341,7 +341,7 @@ ColumnLayout {
           Layout.alignment: Qt.AlignHCenter
           color: root.getThemeColor(themeName, "mSurface")
           height: 48
-          radius: Settings.appearance.cornerRadius
+          radius: Style.rounding.small
           border.width: 3
           border.color: {
             if (Settings.appearance.theme[Settings.appearance.theme.mode] === themeName) {
@@ -476,9 +476,9 @@ ColumnLayout {
     description: "Corner roundness applied to the drawer, widgets and masked screen areas"
     minimum: 0
     maximum: 20
-    value: Settings.appearance.cornerRadius
+    value: Style.rounding.small
     stepSize: 1
-    onValueChanged: Settings.appearance.cornerRadius = value
+    onValueChanged: Style.rounding.small = value
   }
 
   IDivider {

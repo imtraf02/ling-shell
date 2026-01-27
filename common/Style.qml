@@ -6,6 +6,88 @@ import Quickshell.Io
 import qs.common
 
 Singleton {
+  id: root
+
+  property bool ready: false
+
+  readonly property alias rounding: adapter.rounding
+  readonly property alias spacing: adapter.spacing
+  readonly property alias padding: adapter.padding
+  readonly property alias font: adapter.font
+  readonly property alias anim: adapter.anim
+  readonly property alias widget: adapter.widget
+  readonly property alias bar: adapter.bar
+  readonly property alias shadow: adapter.shadow
+  readonly property alias launcher: adapter.launcher
+  readonly property alias lock: adapter.lock
+  readonly property alias notifications: adapter.notifications
+  readonly property alias session: adapter.session
+  readonly property alias settings: adapter.settings
+
+  signal settingsLoaded
+  signal settingsSaved
+
+  Component.onCompleted: {
+    styleFileView.adapter = adapter;
+  }
+
+  Timer {
+    id: saveTimer
+    running: false
+    interval: 1000
+    onTriggered: {
+      root.saveImmediate();
+    }
+  }
+
+  function saveImmediate() {
+    styleFileView.writeAdapter();
+    root.ready = true;
+    root.settingsSaved();
+  }
+
+  FileView {
+    id: styleFileView
+    path: Directories.shellConfigStylePath
+    printErrors: false
+    watchChanges: true
+    onFileChanged: reload()
+    onAdapterUpdated: saveTimer.start()
+    onPathChanged: {
+      if (path !== undefined) {
+        reload();
+      }
+    }
+    onLoaded: function () {
+      if (!root.ready) {
+        root.ready = true;
+        root.settingsLoaded();
+      }
+    }
+    onLoadFailed: function (error) {
+      if (error === FileViewError.FileNotFound) {
+        writeAdapter();
+      }
+    }
+  }
+
+  JsonAdapter {
+    id: adapter
+
+    property Rounding rounding: Rounding {}
+    property Spacing spacing: Spacing {}
+    property Padding padding: Padding {}
+    property FontStuff font: FontStuff {}
+    property Anim anim: Anim {}
+    property Widget widget: Widget {}
+    property Bar bar: Bar {}
+    property Shadow shadow: Shadow {}
+    property Launcher launcher: Launcher {}
+    property Lock lock: Lock {}
+    property Notifications notifications: Notifications {}
+    property Session session: Session {}
+    property Settings settings: Settings {}
+  }
 
   component Rounding: JsonObject {
     property int small: 12
@@ -44,15 +126,15 @@ Singleton {
   }
 
   component AnimCurves: JsonObject {
-    property list<real> emphasized: [0.05, 0, 2 / 15, 0.06, 1 / 6, 0.4, 5 / 24, 0.82, 0.25, 1, 1, 1]
-    property list<real> emphasizedAccel: [0.3, 0, 0.8, 0.15, 1, 1]
-    property list<real> emphasizedDecel: [0.05, 0.7, 0.1, 1, 1, 1]
-    property list<real> standard: [0.2, 0, 0, 1, 1, 1]
-    property list<real> standardAccel: [0.3, 0, 1, 1, 1, 1]
-    property list<real> standardDecel: [0, 0, 0, 1, 1, 1]
-    property list<real> expressiveFastSpatial: [0.42, 1.67, 0.21, 0.9, 1, 1]
-    property list<real> expressiveDefaultSpatial: [0.38, 1.21, 0.22, 1, 1, 1]
-    property list<real> expressiveEffects: [0.34, 0.8, 0.34, 1, 1, 1]
+    property list<var> emphasized: [0.05, 0, 0.133, 0.06, 0.167, 0.4, 0.208, 0.82, 0.25, 1, 1, 1]
+    property list<var> emphasizedAccel: [0.3, 0, 0.8, 0.15, 1, 1]
+    property list<var> emphasizedDecel: [0.05, 0.7, 0.1, 1, 1, 1]
+    property list<var> standard: [0.2, 0, 0, 1, 1, 1]
+    property list<var> standardAccel: [0.3, 0, 1, 1, 1, 1]
+    property list<var> standardDecel: [0, 0, 0, 1, 1, 1]
+    property list<var> expressiveFastSpatial: [0.42, 1.67, 0.21, 0.9, 1, 1]
+    property list<var> expressiveDefaultSpatial: [0.38, 1.21, 0.22, 1, 1, 1]
+    property list<var> expressiveEffects: [0.34, 0.8, 0.34, 1, 1, 1]
   }
 
   component AnimDurations: JsonObject {
@@ -123,18 +205,4 @@ Singleton {
     property int width: 1280
     property int height: 720
   }
-
-  property Rounding rounding: Rounding {}
-  property Spacing spacing: Spacing {}
-  property Padding padding: Padding {}
-  property FontStuff font: FontStuff {}
-  property Anim anim: Anim {}
-  property Widget widget: Widget {}
-  property Bar bar: Bar {}
-  property Shadow shadow: Shadow {}
-  property Launcher launcher: Launcher {}
-  property Lock lock: Lock {}
-  property Notifications notifications: Notifications {}
-  property Session session: Session {}
-  property Settings settings: Settings {}
 }

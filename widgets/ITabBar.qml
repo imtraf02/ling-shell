@@ -13,7 +13,7 @@ Rectangle {
   Layout.fillWidth: true
   implicitHeight: Style.widget.size + Style.padding.small * 2
   color: ThemeService.palette.mSurfaceVariant
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
 
   RowLayout {
     id: tabRow

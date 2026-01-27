@@ -86,7 +86,7 @@ SmartPanel {
     implicitWidth: Style.widget.size * 3
     implicitHeight: Style.widget.size * 3
 
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     color: button.activeFocus ? ThemeService.palette.mPrimaryContainer : ThemeService.palette.mSurfaceContainer
 
     signal clicked

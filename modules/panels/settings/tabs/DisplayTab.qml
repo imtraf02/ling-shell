@@ -28,7 +28,7 @@ ColumnLayout {
 
       Layout.fillWidth: true
       implicitHeight: contentCol.implicitHeight + root.padding * 2
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurfaceVariant
       border.color: ThemeService.palette.mOutline
       border.width: 1

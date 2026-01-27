@@ -110,7 +110,7 @@ RowLayout {
       color: ThemeService.palette.mSurfaceVariant
       border.color: combo.activeFocus ? ThemeService.palette.mSecondary : Qt.alpha(ThemeService.palette.mOutline, 0.2)
       border.width: 1
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
 
       Behavior on border.color {
         ICAnim {}
@@ -220,7 +220,7 @@ RowLayout {
               background: Rectangle {
                 width: listView.width
                 color: highlighted ? ThemeService.palette.mPrimary : "transparent"
-                radius: Settings.appearance.cornerRadius
+                radius: Style.rounding.small
 
                 Behavior on color {
                   ICAnim {}
@@ -235,7 +235,7 @@ RowLayout {
         color: ThemeService.palette.mSurfaceVariant
         border.color: Qt.alpha(ThemeService.palette.mOutline, 0.2)
         border.width: 1
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
       }
     }
 

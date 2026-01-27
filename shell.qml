@@ -11,6 +11,7 @@ ShellRoot {
   id: root
 
   property bool settingsLoaded: false
+  property bool styleLoaded: false
 
   Connections {
     target: Settings ? Settings : null
@@ -19,8 +20,15 @@ ShellRoot {
     }
   }
 
+  Connections {
+    target: Style ? Style : null
+    function onSettingsLoaded() {
+      root.styleLoaded = true;
+    }
+  }
+
   Loader {
-    active: root.settingsLoaded && Directories.ready
+    active: root.settingsLoaded && root.styleLoaded && Directories.ready
     sourceComponent: Item {
       Component.onCompleted: {
         ProgramCheckerService.init();
@@ -31,6 +39,8 @@ ShellRoot {
       }
 
       Background {}
+      // TODO: Implement LiveBackground.qml
+      // LiveBackground {}
       Overview {}
       Drawers {}
       Lock {

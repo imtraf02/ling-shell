@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Wayland
+import Quickshell.Widgets
 import qs.common
 import qs.services
 
@@ -15,22 +16,21 @@ RowLayout {
     Layout.fillWidth: true
     spacing: Style.spacing.small
 
-    Rectangle {
+    ClippingRectangle {
       Layout.fillWidth: true
       Layout.fillHeight: true
-      topLeftRadius: Settings.appearance.cornerRadius
-      radius: Settings.appearance.cornerRadius
+      topLeftRadius: Style.rounding.large
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurfaceContainer
 
       Fetch {}
     }
 
-    Rectangle {
+    ClippingRectangle {
       Layout.fillWidth: true
-      implicitHeight: resources.implicitHeight
+      Layout.preferredHeight: resources.implicitHeight
 
-      topRightRadius: Settings.appearance.cornerRadius
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurfaceContainer
 
       Resources {
@@ -38,12 +38,12 @@ RowLayout {
       }
     }
 
-    Rectangle {
+    ClippingRectangle {
       Layout.fillWidth: true
-      implicitHeight: media.implicitHeight
+      Layout.preferredHeight: media.implicitHeight
 
       bottomLeftRadius: Style.rounding.large
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurfaceContainer
 
       Media {
@@ -60,11 +60,12 @@ RowLayout {
     Layout.fillWidth: true
     spacing: Style.spacing.small
 
-    Rectangle {
+    ClippingRectangle {
       Layout.fillWidth: true
       Layout.fillHeight: true
 
-      radius: Settings.appearance.cornerRadius
+      topRightRadius: Style.rounding.large
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurfaceContainer
 
       NotifDock {
@@ -72,12 +73,12 @@ RowLayout {
       }
     }
 
-    Rectangle {
+    ClippingRectangle {
       Layout.fillWidth: true
-      implicitHeight: powerMenu.implicitHeight
+      Layout.preferredHeight: powerMenu.implicitHeight
 
-      bottomRightRadius: Settings.appearance.cornerRadius
-      radius: Settings.appearance.cornerRadius
+      bottomRightRadius: Style.rounding.large
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurfaceContainer
 
       PowerMenu {

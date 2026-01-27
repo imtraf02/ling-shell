@@ -18,7 +18,7 @@ Item {
   signal clicked
 
   IStateLayer {
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
 
     function onClicked(): void {
       AppsService.launch(root.modelData);

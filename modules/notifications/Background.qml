@@ -9,7 +9,7 @@ ShapePath {
   property var assignedPanel: null
   property color defaultBackgroundColor: ThemeService.palette.mSurface
 
-  readonly property real radius: Settings.appearance.cornerRadius
+  readonly property real radius: Style.rounding.small
 
   readonly property bool shouldFlatten: assignedPanel ? ShapeCornerHelper.shouldFlatten(panelWidth, panelHeight, radius) : false
   readonly property real effectiveRadius: shouldFlatten ? ShapeCornerHelper.getFlattenedRadius(Math.min(panelWidth, panelHeight), radius) : radius

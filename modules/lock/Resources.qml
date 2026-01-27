@@ -47,7 +47,7 @@ RowLayout {
     Layout.preferredHeight: stat.height + Style.padding.normal * 2
 
     color: ThemeService.palette.mSurfaceContainer
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
 
     ICircleStat {
       id: stat

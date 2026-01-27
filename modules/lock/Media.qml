@@ -29,7 +29,7 @@ Item {
         sourceItem: Rectangle {
           width: root.width
           height: root.height
-          radius: Settings.appearance.cornerRadius
+          radius: Style.rounding.small
           color: "white"
         }
       }
@@ -55,7 +55,7 @@ Item {
       anchors.fill: parent
       color: ThemeService.palette.mSurfaceContainer
       opacity: 0.85
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
     }
 
     Loader {
@@ -80,7 +80,7 @@ Item {
     anchors.rightMargin: Style.padding.small
     height: Style.bar.innerHeight
     visible: MediaService.getAvailablePlayers().length > 1
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     color: "transparent"
 
     property var currentPlayer: MediaService.getAvailablePlayers()[MediaService.selectedPlayerIndex]

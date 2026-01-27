@@ -215,10 +215,10 @@ GridLayout {
         Layout.preferredWidth: tile.showDetails ? parent.width / 2 : parent.width
         Layout.fillHeight: true
 
-        topLeftRadius: Settings.appearance.cornerRadius
-        bottomLeftRadius: Settings.appearance.cornerRadius
-        topRightRadius: tile.showDetails ? 0 : Settings.appearance.cornerRadius
-        bottomRightRadius: tile.showDetails ? 0 : Settings.appearance.cornerRadius
+        topLeftRadius: Style.rounding.small
+        bottomLeftRadius: Style.rounding.small
+        topRightRadius: tile.showDetails ? 0 : Style.rounding.small
+        bottomRightRadius: tile.showDetails ? 0 : Style.rounding.small
 
         color: iconMouseArea.containsMouse && tile.interactive ? (tile.active ? ThemeService.palette.mPrimaryContainer : ThemeService.palette.mSurfaceContainerHigh) : (tile.active ? ThemeService.palette.mPrimary : ThemeService.palette.mSurfaceContainer)
 
@@ -263,8 +263,8 @@ GridLayout {
         Layout.preferredWidth: tile.showDetails ? parent.width / 2 : 0
         Layout.fillHeight: true
 
-        topRightRadius: Settings.appearance.cornerRadius
-        bottomRightRadius: Settings.appearance.cornerRadius
+        topRightRadius: Style.rounding.small
+        bottomRightRadius: Style.rounding.small
         topLeftRadius: 0
         bottomLeftRadius: 0
 

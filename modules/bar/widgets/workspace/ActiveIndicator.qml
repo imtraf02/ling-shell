@@ -67,7 +67,7 @@ Rectangle {
   x: animX + mask.x
   implicitWidth: animWidth
   implicitHeight: Style.bar.innerHeight - Style.padding.small
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   color: ThemeService.palette.mPrimary
 
   IColouriser {

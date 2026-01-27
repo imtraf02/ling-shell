@@ -111,7 +111,7 @@ SmartPanel {
               anchors.horizontalCenter: parent.horizontalCenter
               width: parent.width - (Style.padding.small * 2)
               color: backMouseArea.containsMouse ? ThemeService.palette.mSurfaceContainer : ThemeService.palette.mSurface
-              radius: Settings.appearance.cornerRadius
+              radius: Style.rounding.small
 
               RowLayout {
                 anchors.fill: parent
@@ -181,7 +181,7 @@ SmartPanel {
                 anchors.fill: parent
                 anchors.leftMargin: Style.padding.small
                 anchors.rightMargin: Style.padding.small
-                radius: Settings.appearance.cornerRadius
+                radius: Style.rounding.small
                 visible: !subEntry.modelData?.isSeparator
                 color: subMouseArea.containsMouse ? ThemeService.palette.mSurfaceContainer : ThemeService.palette.mSurface
 
@@ -293,7 +293,7 @@ SmartPanel {
                 anchors.fill: parent
                 anchors.leftMargin: Style.padding.small
                 anchors.rightMargin: Style.padding.small
-                radius: Settings.appearance.cornerRadius
+                radius: Style.rounding.small
                 visible: !entry.modelData?.isSeparator
                 color: mouseArea.containsMouse ? ThemeService.palette.mSurfaceContainer : ThemeService.palette.mSurface
 
@@ -386,7 +386,7 @@ SmartPanel {
               anchors.fill: parent
               anchors.leftMargin: Style.padding.small
               anchors.rightMargin: Style.padding.small
-              radius: Settings.appearance.cornerRadius
+              radius: Style.rounding.small
               color: addToFavoriteMouseArea.containsMouse ? Qt.alpha(ThemeService.palette.mPrimary, 0.2) : Qt.alpha(ThemeService.palette.mPrimary, 0.08)
               border.color: Qt.alpha(ThemeService.palette.mPrimary, addToFavoriteMouseArea.containsMouse ? 0.4 : 0.2)
               border.width: 1

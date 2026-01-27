@@ -49,7 +49,7 @@ ColumnLayout {
     background: Rectangle {
       id: frame
 
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       color: ThemeService.palette.mSurface
       border.color: input.activeFocus ? Qt.alpha(ThemeService.palette.mSecondary, 0.6) : Qt.alpha(ThemeService.palette.mOutline, 0.4)
       border.width: 2

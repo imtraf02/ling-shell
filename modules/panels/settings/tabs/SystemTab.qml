@@ -198,7 +198,7 @@ ColumnLayout {
     Layout.preferredHeight: 56
 
     color: ThemeService.palette.mSurface
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
 
     IStateLayer {
       color: ThemeService.palette.mSurfaceContainerHigh

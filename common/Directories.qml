@@ -22,6 +22,7 @@ Singleton {
   property string shellConfig: `${config}/${shellName}`
   property string shellConfigColoursPath: `${shellConfig}/colours.json`
   property string shellConfigSettingsPath: `${shellConfig}/settings.json`
+  property string shellConfigStylePath: `${shellConfig}/style.json`
   property string shellConfigNotificationsPath: `${shellConfig}/notifications.json`
   property string shellState: `${state}/${shellName}`
   property string shellCache: `${cache}/${shellName}`

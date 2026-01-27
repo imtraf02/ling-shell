@@ -12,7 +12,7 @@ Rectangle {
   property bool hovered: false
 
   color: hovered ? ThemeService.palette.mSurfaceContainerHigh : ThemeService.palette.mSurfaceContainer
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
 
   implicitWidth: clock.implicitWidth + Style.bar.innerHeight * 0.5
   implicitHeight: Style.bar.innerHeight

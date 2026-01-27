@@ -16,7 +16,7 @@ Rectangle {
   Layout.fillWidth: true
   Layout.fillHeight: true
 
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   color: root.checked ? ThemeService.palette.mPrimary : (root.isHovered ? ThemeService.palette.mPrimary : ThemeService.palette.mSurface)
 
   Behavior on color {

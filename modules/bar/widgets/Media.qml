@@ -57,7 +57,7 @@ Item {
     width: parent.width
     height: Style.bar.innerHeight
     color: ThemeService.palette.mSurfaceContainer
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
 
     Item {
       id: mainContainer
@@ -211,7 +211,7 @@ Item {
     implicitWidth: root.buttonSize
     implicitHeight: root.buttonSize
     color: "transparent"
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     Layout.alignment: Qt.AlignVCenter
 
     IIcon {

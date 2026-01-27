@@ -35,7 +35,7 @@ SmartPanel {
             sourceItem: Rectangle {
               width: box.width
               height: box.height
-              radius: Settings.appearance.cornerRadius
+              radius: Style.rounding.small
               color: "white"
             }
           }
@@ -63,7 +63,7 @@ SmartPanel {
           anchors.fill: parent
           color: ThemeService.palette.mSurfaceContainer
           opacity: 0.85
-          radius: Settings.appearance.cornerRadius
+          radius: Style.rounding.small
         }
 
         Rectangle {
@@ -71,7 +71,7 @@ SmartPanel {
           color: "transparent"
           border.color: Qt.alpha(ThemeService.palette.mOutline, 0.4)
           border.width: 1
-          radius: Settings.appearance.cornerRadius
+          radius: Style.rounding.small
         }
 
         Loader {
@@ -96,7 +96,7 @@ SmartPanel {
         anchors.rightMargin: Style.padding.small
         height: Style.bar.innerHeight
         visible: MediaService.getAvailablePlayers().length > 1
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
         color: "transparent"
 
         property var currentPlayer: MediaService.getAvailablePlayers()[MediaService.selectedPlayerIndex]

@@ -69,7 +69,7 @@ SmartPanel {
             color: ThemeService.palette.mSurface
             border.color: ThemeService.palette.mError
             border.width: 1
-            radius: Settings.appearance.cornerRadius
+            radius: Style.rounding.small
 
             Column {
               id: child
@@ -126,13 +126,13 @@ SmartPanel {
           implicitHeight: Math.max(saver.implicitHeight, balance.implicitHeight, perf.implicitHeight) + Style.spacing.small * 2
 
           color: ThemeService.palette.mSurface
-          radius: Settings.appearance.cornerRadius
+          radius: Style.rounding.small
 
           Rectangle {
             id: indicator
 
             color: ThemeService.palette.mPrimary
-            radius: Settings.appearance.cornerRadius
+            radius: Style.rounding.small
             state: parent.current
 
             states: [
@@ -216,7 +216,7 @@ SmartPanel {
     }
 
     IStateLayer {
-      radius: Settings.appearance.cornerRadius
+      radius: Style.rounding.small
       color: parent.current === parent.icon ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
 
       function onClicked(): void {

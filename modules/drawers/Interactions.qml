@@ -41,7 +41,7 @@ MouseArea {
       }
     }
 
-    if (pressed && (dragStart.y > root.height - Settings.appearance.thickness - Settings.appearance.cornerRadius)) {
+    if (pressed && (dragStart.y > root.height - Settings.appearance.thickness - Style.rounding.small)) {
       if (dragY < -50)
         PanelService.getPanel("panel:launcher", screen).open();
       else if (dragY > 50) {

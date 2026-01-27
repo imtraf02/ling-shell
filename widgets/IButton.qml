@@ -61,7 +61,7 @@ Rectangle {
   implicitHeight: Math.max(Style.widget.size, contentRow.implicitHeight + (Style.padding.small))
 
   // Appearance
-  radius: Settings.appearance.cornerRadius
+  radius: Style.rounding.small
   color: _computedBackgroundColor
   border.width: outlined ? 2 : 0
   border.color: _computedBorderColor

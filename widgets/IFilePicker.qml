@@ -129,7 +129,7 @@ Popup {
 
   background: Rectangle {
     color: ThemeService.palette.mSurfaceVariant
-    radius: Settings.appearance.cornerRadius
+    radius: Style.rounding.small
     border.color: ThemeService.palette.mOutline
     border.width: 2
   }
@@ -220,7 +220,7 @@ Popup {
         Layout.fillWidth: true
         Layout.preferredHeight: 45
         color: ThemeService.palette.mSurfaceVariant
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
         border.color: ThemeService.palette.mOutline
         border.width: 2
 
@@ -339,7 +339,7 @@ Popup {
         Layout.fillWidth: true
         Layout.fillHeight: true
         color: ThemeService.palette.mSurface
-        radius: Settings.appearance.cornerRadius
+        radius: Style.rounding.small
         border.color: ThemeService.palette.mOutline
         border.width: 2
 
@@ -407,7 +407,7 @@ Popup {
             contentItem: Rectangle {
               implicitWidth: 6
               implicitHeight: 100
-              radius: Settings.appearance.cornerRadius
+              radius: Style.rounding.small
               color: Qt.alpha(ThemeService.palette.mPrimary, 0.8)
               opacity: {
                 let bar = parent as ScrollBar;
@@ -428,7 +428,7 @@ Popup {
                 let bar = parent as ScrollBar;
                 return (bar && (bar.policy === ScrollBar.AlwaysOn || bar.active)) ? 0.3 : 0.0;
               }
-              radius: (Settings.appearance.cornerRadius) / 2
+              radius: (Style.rounding.small) / 2
               Behavior on opacity {
                 IAnim {}
               }
@@ -445,7 +445,7 @@ Popup {
             width: gridView.itemSize
             height: gridView.cellHeight
             color: "transparent"
-            radius: Settings.appearance.cornerRadius
+            radius: Style.rounding.small
 
             property bool isSelected: filePickerPanel.currentSelection.includes(filePath)
 
@@ -514,7 +514,7 @@ Popup {
                   Rectangle {
                     anchors.fill: parent
                     color: ThemeService.palette.mSurfaceVariant
-                    radius: Settings.appearance.cornerRadius
+                    radius: Style.rounding.small
                     visible: thumbnail.status === Image.Loading
                     IIcon {
                       icon: "photo"
@@ -640,7 +640,7 @@ Popup {
                 return ThemeService.palette.mPrimary;
               return "transparent";
             }
-            radius: Settings.appearance.cornerRadius
+            radius: Style.rounding.small
             Behavior on color {
               ICAnim {}
             }
