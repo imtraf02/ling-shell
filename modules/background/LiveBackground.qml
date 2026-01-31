@@ -34,14 +34,14 @@ Variants {
         left: true
       }
 
-      // Video {
-      //   anchors.fill: parent
-      //   source: "file:///home/imtraf/Downloads/aoqi-legend.1920x1080.mp4"
-      //   autoPlay: true
-      //   loops: MediaPlayer.Infinite
-      //   muted: true
-      //   fillMode: VideoOutput.PreserveAspectCrop
-      // }
+      Video {
+        anchors.fill: parent
+        source: "file:///home/imtraf/Pictures/Wallpapers/moonlit-blade-of-the-white-dragon.mp4"
+        autoPlay: true
+        loops: MediaPlayer.Infinite
+        muted: true
+        fillMode: VideoOutput.PreserveAspectCrop
+      }
     }
   }
 }

@@ -12,13 +12,13 @@ import qs.utils
 ColumnLayout {
   id: root
 
-  property string label: ""
   property var model: []
   property var cachedModel: []
-  readonly property var displayModel: (passwordSsid && passwordSsid.length > 0) ? cachedModel : model
+  readonly property var displayModel: passwordSsid ? cachedModel : model
 
   property string passwordSsid: ""
   property string expandedSsid: ""
+  property string selectedSsid: ""
   property string infoSsid: ""
 
   property bool detailsGrid: Settings.network.wifiDetailsViewMode === "grid"
@@ -26,39 +26,17 @@ ColumnLayout {
   signal passwordRequested(string ssid)
   signal passwordSubmitted(string ssid, string password)
   signal passwordCancelled
+  signal selectedRequested(string ssid)
   signal forgetRequested(string ssid)
   signal forgetConfirmed(string ssid)
   signal forgetCancelled
 
-  onPasswordSsidChanged: {
-    if (passwordSsid && passwordSsid.length > 0) {
-      try {
-        cachedModel = JSON.parse(JSON.stringify(model));
-      } catch (e) {
-        cachedModel = model;
-      }
-    } else {
-      cachedModel = [];
-    }
-  }
-
   Layout.fillWidth: true
   spacing: Style.spacing.small
-  visible: root.model.length > 0
+  visible: model.length > 0
 
-  RowLayout {
-    Layout.fillWidth: true
-    visible: root.model.length > 0
-    Layout.leftMargin: Style.padding.small
-    spacing: Style.spacing.small
-
-    IText {
-      text: root.label
-      font.pointSize: Style.font.size.small
-      color: ThemeService.palette.mSecondary
-      font.weight: Font.Medium
-      Layout.fillWidth: true
-    }
+  onPasswordSsidChanged: {
+    cachedModel = passwordSsid ? JSON.parse(JSON.stringify(model)) : [];
   }
 
   Repeater {
@@ -69,14 +47,30 @@ ColumnLayout {
       required property var modelData
 
       Layout.fillWidth: true
-      implicitHeight: netColumn.implicitHeight + (Style.padding.small * 2)
+      implicitHeight: netColumn.implicitHeight + Style.padding.small * 2
 
-      opacity: (modelData && (NetworkService.disconnectingFrom === modelData.ssid || NetworkService.forgettingNetwork === modelData.ssid)) ? 0.6 : 1.0
+      readonly property bool isConnected: modelData?.connected ?? false
+      readonly property bool isDisconnecting: modelData && NetworkService.disconnectingFrom === modelData.ssid
+      readonly property bool isForgetting: modelData && NetworkService.forgettingNetwork === modelData.ssid
+      readonly property bool isProcessing: isDisconnecting || isForgetting
+      readonly property bool isHovered: itemMouseArea.containsMouse
 
-      color: (modelData && modelData.connected) ? Qt.rgba(ThemeService.palette.mPrimary.r, ThemeService.palette.mPrimary.g, ThemeService.palette.mPrimary.b, 0.08) : ThemeService.palette.mSurface
+      opacity: isProcessing ? 0.6 : 1.0
+
+      color: isHovered || root.selectedSsid === modelData?.ssid ? ThemeService.palette.mSurfaceVariant : ThemeService.palette.mSurface
 
       Behavior on opacity {
         IAnim {}
+      }
+      Behavior on color {
+        ICAnim {}
+      }
+
+      MouseArea {
+        id: itemMouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        onClicked: root.selectedRequested(networkItem.modelData.ssid)
       }
 
       ColumnLayout {
@@ -85,16 +79,21 @@ ColumnLayout {
         anchors.margins: Style.padding.small
         spacing: Style.spacing.small
 
-        // Main row
+        // Main Network Info Row
         RowLayout {
           Layout.fillWidth: true
           Layout.margins: Style.padding.small
           spacing: Style.spacing.small
 
           IIcon {
-            icon: Icons.getNetworkIcon(networkItem.modelData ? networkItem.modelData.signal : 0, NetworkService.isSecured(networkItem.modelData.security))
+            Layout.alignment: Qt.AlignTop
+            icon: Icons.getNetworkIcon(modelData?.signal ?? 0, NetworkService.isSecured(modelData?.security))
             font.pointSize: Style.font.size.large
-            color: (networkItem.modelData && networkItem.modelData.connected) ? (NetworkService.internetConnectivity ? ThemeService.palette.mPrimary : ThemeService.palette.mError) : ThemeService.palette.mOnSurface
+            color: {
+              if (!isConnected)
+                return ThemeService.palette.mOnSurface;
+              return NetworkService.internetConnectivity ? ThemeService.palette.mPrimary : ThemeService.palette.mError;
+            }
 
             MouseArea {
               anchors.fill: parent
@@ -107,7 +106,7 @@ ColumnLayout {
             spacing: 0
 
             IText {
-              text: networkItem.modelData ? networkItem.modelData.ssid : ""
+              text: modelData?.ssid ?? ""
               font.pointSize: Style.font.size.small
               font.weight: Font.Medium
               color: ThemeService.palette.mOnSurface
@@ -119,179 +118,181 @@ ColumnLayout {
               spacing: Style.spacing.small
 
               IText {
-                text: (networkItem.modelData && NetworkService.isSecured(networkItem.modelData.security)) ? networkItem.modelData.security : "Open"
-
+                text: NetworkService.isSecured(modelData?.security) ? modelData.security : "Open"
                 font.pointSize: Style.font.size.small
                 color: ThemeService.palette.mOnSurfaceVariant
               }
 
               IIcon {
+                visible: modelData && !NetworkService.isSecured(modelData.security)
                 icon: "lock_open"
                 font.pointSize: Style.font.size.small
                 color: ThemeService.palette.mOnSurfaceVariant
-                visible: networkItem.modelData && !NetworkService.isSecured(networkItem.modelData.security)
               }
 
               // Disconnecting Badge
               Rectangle {
-                visible: networkItem.modelData && NetworkService.disconnectingFrom === networkItem.modelData.ssid
+                visible: isDisconnecting
                 color: ThemeService.palette.mError
                 radius: height * 0.5
-                Layout.preferredWidth: disconnectingText.contentWidth + (Style.spacing.small * 2)
+                Layout.preferredWidth: disconnectingText.contentWidth + Style.spacing.small * 2
                 Layout.preferredHeight: disconnectingText.contentHeight
 
                 IText {
                   id: disconnectingText
                   anchors.centerIn: parent
                   text: "Disconnecting..."
-                  font.pointSize: 10
+                  font.pointSize: Style.font.size.small
                   color: ThemeService.palette.mOnPrimary
                 }
               }
 
               // Forgetting Badge
               Rectangle {
-                visible: networkItem.modelData && NetworkService.forgettingNetwork === networkItem.modelData.ssid
+                visible: isForgetting
                 color: ThemeService.palette.mError
                 radius: height * 0.5
-                Layout.preferredWidth: forgettingText.contentWidth + (Style.spacing.small * 2)
+                Layout.preferredWidth: forgettingText.contentWidth + Style.spacing.small * 2
                 Layout.preferredHeight: forgettingText.contentHeight
 
                 IText {
                   id: forgettingText
                   anchors.centerIn: parent
                   text: "Forgetting..."
-                  font.pointSize: 10
+                  font.pointSize: Style.font.size.small
                   color: ThemeService.palette.mOnPrimary
                 }
               }
 
               // Connected Badge
               Rectangle {
-                visible: (networkItem.modelData && networkItem.modelData.connected) && NetworkService.disconnectingFrom !== networkItem.modelData.ssid
+                visible: isConnected && !isDisconnecting
                 color: NetworkService.internetConnectivity ? ThemeService.palette.mPrimary : ThemeService.palette.mError
                 radius: height * 0.5
-                Layout.preferredWidth: connectedText.contentWidth + (Style.spacing.small * 2)
+                Layout.preferredWidth: connectedText.contentWidth + Style.spacing.small * 2
                 Layout.preferredHeight: connectedText.contentHeight
 
                 IText {
                   id: connectedText
                   anchors.centerIn: parent
                   text: {
-                    if (NetworkService.networkConnectivity === "full")
+                    const conn = NetworkService.networkConnectivity;
+                    if (conn === "full")
                       return "Connected";
-                    if (NetworkService.networkConnectivity === "limited")
+                    if (conn === "limited")
                       return "Limited";
-                    if (NetworkService.networkConnectivity === "portal")
+                    if (conn === "portal")
                       return "Action Required";
-                    return NetworkService.networkConnectivity;
+                    return conn;
                   }
-                  font.pointSize: 10
+                  font.pointSize: Style.font.size.small
                   color: ThemeService.palette.mOnPrimary
                 }
               }
 
-              // Saved Badge
               Rectangle {
-                visible: (networkItem.modelData && networkItem.modelData.cached && !networkItem.modelData.connected) && NetworkService.forgettingNetwork !== networkItem.modelData.ssid && NetworkService.disconnectingFrom !== networkItem.modelData.ssid
+                visible: modelData?.cached && !isConnected && !isForgetting && !isDisconnecting
                 color: "transparent"
                 border.color: ThemeService.palette.mOutline
                 border.width: 1
                 radius: height * 0.5
-                Layout.preferredWidth: savedText.contentWidth + (Style.padding.small * 2)
+                Layout.preferredWidth: savedText.contentWidth + Style.padding.small * 2
                 Layout.preferredHeight: savedText.contentHeight
 
                 IText {
                   id: savedText
                   anchors.centerIn: parent
                   text: "Saved"
-                  font.pointSize: 10
+                  font.pointSize: Style.font.size.small
                   color: ThemeService.palette.mOnSurfaceVariant
                 }
               }
             }
           }
 
-          // Action area
+          // Action Icons
           RowLayout {
+            visible: root.selectedSsid === modelData?.ssid
             spacing: Style.spacing.small
 
             IBusyIndicator {
-              visible: networkItem.modelData && (NetworkService.connectingTo === networkItem.modelData.ssid || NetworkService.disconnectingFrom === networkItem.modelData.ssid || NetworkService.forgettingNetwork === networkItem.modelData.ssid)
+              visible: modelData && (NetworkService.connectingTo === modelData.ssid || isDisconnecting || isForgetting)
               running: visible
               color: ThemeService.palette.mPrimary
               size: Style.widget.size * 0.5
             }
 
             IIconButton {
-              visible: (networkItem.modelData && networkItem.modelData.connected) && NetworkService.disconnectingFrom !== networkItem.modelData.ssid
+              visible: isConnected && !isDisconnecting
+              Layout.alignment: Qt.AlignTop
               icon: "info"
               size: Style.widget.size * 0.8
               onClicked: {
-                if (root.infoSsid === networkItem.modelData.ssid)
-                  root.infoSsid = "";
-                else {
-                  root.infoSsid = networkItem.modelData.ssid;
+                root.infoSsid = root.infoSsid === modelData.ssid ? "" : modelData.ssid;
+                if (root.infoSsid)
                   NetworkService.refreshActiveWifiDetails();
-                }
               }
             }
 
             IIconButton {
-              visible: (networkItem.modelData && (networkItem.modelData.existing || networkItem.modelData.cached) && !networkItem.modelData.connected) && NetworkService.connectingTo !== networkItem.modelData.ssid && NetworkService.forgettingNetwork !== networkItem.modelData.ssid && NetworkService.disconnectingFrom !== networkItem.modelData.ssid
+              visible: (modelData?.existing || modelData?.cached) && !isConnected && !NetworkService.connectingTo === modelData.ssid && !isForgetting && !isDisconnecting
+              Layout.alignment: Qt.AlignTop
               icon: "delete"
               size: Style.widget.size * 0.8
-              onClicked: root.forgetRequested(networkItem.modelData.ssid)
+              onClicked: root.forgetRequested(modelData.ssid)
             }
+          }
+        }
 
-            IButton {
-              visible: !networkItem.modelData.connected && NetworkService.connectingTo !== networkItem.modelData.ssid && root.passwordSsid !== networkItem.modelData.ssid && NetworkService.forgettingNetwork !== networkItem.modelData.ssid && NetworkService.disconnectingFrom !== networkItem.modelData.ssid
-              text: (networkItem.modelData.existing || networkItem.modelData.cached || !NetworkService.isSecured(networkItem.modelData.security)) ? "Connect" : "Password"
-              outlined: !hovered
-              fontSize: Style.font.size.small
-              enabled: !NetworkService.connecting
-              onClicked: {
-                if (networkItem.modelData.existing || networkItem.modelData.cached || !NetworkService.isSecured(networkItem.modelData.security)) {
-                  NetworkService.connect(networkItem.modelData.ssid);
-                } else {
-                  root.passwordRequested(networkItem.modelData.ssid);
-                }
+        // Connect/Disconnect Buttons
+        RowLayout {
+          visible: root.selectedSsid === modelData?.ssid
+          Layout.fillWidth: true
+          Layout.margins: Style.padding.small
+          Layout.alignment: Qt.AlignRight
+          spacing: Style.spacing.small
+
+          IButton {
+            visible: !isConnected && NetworkService.connectingTo !== modelData.ssid && root.passwordSsid !== modelData.ssid && !isForgetting && !isDisconnecting
+            text: "Connect"
+            outlined: !hovered
+            fontSize: Style.font.size.small
+            enabled: !NetworkService.connecting
+            onClicked: {
+              if (modelData.existing || modelData.cached || !NetworkService.isSecured(modelData.security)) {
+                NetworkService.connect(modelData.ssid);
+              } else {
+                root.passwordRequested(modelData.ssid);
               }
             }
+          }
 
-            IButton {
-              visible: networkItem.modelData.connected && NetworkService.disconnectingFrom !== networkItem.modelData.ssid
-              text: "Disconnect"
-              outlined: !hovered
-              fontSize: Style.font.size.small
-              backgroundColor: ThemeService.palette.mError
-              onClicked: NetworkService.disconnect(networkItem.modelData.ssid)
-            }
+          IButton {
+            visible: isConnected && !isDisconnecting
+            text: "Disconnect"
+            outlined: !hovered
+            fontSize: Style.font.size.small
+            backgroundColor: ThemeService.palette.mError
+            onClicked: NetworkService.disconnect(modelData.ssid)
           }
         }
 
         // Connection Info Details
         Rectangle {
-          visible: root.infoSsid === networkItem.modelData.ssid && NetworkService.disconnectingFrom !== networkItem.modelData.ssid && NetworkService.forgettingNetwork !== networkItem.modelData.ssid
+          visible: root.infoSsid === modelData?.ssid && !isDisconnecting && !isForgetting
           Layout.fillWidth: true
-          color: ThemeService.palette.mSurfaceVariant
+          color: ThemeService.palette.mSurfaceContainer
           radius: Style.rounding.small
-          border.width: 1
-          border.color: Qt.alpha(ThemeService.palette.mOutline, 0.2)
           implicitHeight: infoGrid.implicitHeight + Style.padding.small * 2
           clip: true
 
-          // Grid Toggle
           IIconButton {
-            id: detailsToggle
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.margins: Style.padding.small
             icon: root.detailsGrid ? "view_list" : "grid_view"
             size: Style.widget.size * 0.8
-            onClicked: {
-              Settings.network.wifiDetailsViewMode = root.detailsGrid ? "list" : "grid";
-            }
+            onClicked: Settings.network.wifiDetailsViewMode = root.detailsGrid ? "list" : "grid"
             z: 1
           }
 
@@ -303,96 +304,52 @@ ColumnLayout {
             columnSpacing: Style.spacing.small
             rowSpacing: Style.spacing.smaller
 
-            // Rows...
-            // Interface
-            RowLayout {
-              Layout.fillWidth: true
-              spacing: Style.spacing.small
-              IIcon {
-                icon: "lan"
-                font.pointSize: Style.font.size.small
-                color: ThemeService.palette.mOnSurface
-              }
-              IText {
-                text: NetworkService.activeWifiIf || "-"
-                font.pointSize: Style.font.size.small
+            Repeater {
+              model: [
+                {
+                  icon: "lan",
+                  text: NetworkService.activeWifiIf || "-"
+                },
+                {
+                  icon: "router",
+                  text: NetworkService.activeWifiDetails.band || "-"
+                },
+                {
+                  icon: "speed",
+                  text: NetworkService.activeWifiDetails.rateShort || NetworkService.activeWifiDetails.rate || "-"
+                },
+                {
+                  icon: "dns",
+                  text: NetworkService.activeWifiDetails.ipv4 || "-"
+                },
+                {
+                  icon: "router",
+                  text: NetworkService.activeWifiDetails.gateway4 || "-"
+                },
+                {
+                  icon: "public",
+                  text: NetworkService.activeWifiDetails.dns || "-"
+                }
+              ]
+
+              RowLayout {
+                required property var modelData
+
                 Layout.fillWidth: true
-                elide: Text.ElideRight
-              }
-            }
-            // Band
-            RowLayout {
-              Layout.fillWidth: true
-              spacing: Style.spacing.small
-              IIcon {
-                icon: "router"
-                font.pointSize: Style.font.size.small
-                color: ThemeService.palette.mOnSurface
-              }
-              IText {
-                text: NetworkService.activeWifiDetails.band || "-"
-                font.pointSize: Style.font.size.small
-                Layout.fillWidth: true
-              }
-            }
-            // Link Speed
-            RowLayout {
-              Layout.fillWidth: true
-              spacing: Style.spacing.small
-              IIcon {
-                icon: "speed"
-                font.pointSize: Style.font.size.small
-                color: ThemeService.palette.mOnSurface
-              }
-              IText {
-                text: NetworkService.activeWifiDetails.rateShort || NetworkService.activeWifiDetails.rate || "-"
-                font.pointSize: Style.font.size.small
-                Layout.fillWidth: true
-              }
-            }
-            // IPv4
-            RowLayout {
-              Layout.fillWidth: true
-              spacing: Style.spacing.small
-              IIcon {
-                icon: "dns"
-                font.pointSize: Style.font.size.small
-                color: ThemeService.palette.mOnSurface
-              }
-              IText {
-                text: NetworkService.activeWifiDetails.ipv4 || "-"
-                font.pointSize: Style.font.size.small
-                Layout.fillWidth: true
-              }
-            }
-            // Gateway
-            RowLayout {
-              Layout.fillWidth: true
-              spacing: Style.spacing.small
-              IIcon {
-                icon: "router"
-                font.pointSize: Style.font.size.small
-                color: ThemeService.palette.mOnSurface
-              }
-              IText {
-                text: NetworkService.activeWifiDetails.gateway4 || "-"
-                font.pointSize: Style.font.size.small
-                Layout.fillWidth: true
-              }
-            }
-            // DNS
-            RowLayout {
-              Layout.fillWidth: true
-              spacing: Style.spacing.small
-              IIcon {
-                icon: "public"
-                font.pointSize: Style.font.size.small
-                color: ThemeService.palette.mOnSurface
-              }
-              IText {
-                text: NetworkService.activeWifiDetails.dns || "-"
-                font.pointSize: Style.font.size.small
-                Layout.fillWidth: true
+                spacing: Style.spacing.small
+
+                IIcon {
+                  icon: parent.modelData.icon
+                  font.pointSize: Style.font.size.small
+                  color: ThemeService.palette.mOnSurface
+                }
+
+                IText {
+                  text: parent.modelData.text
+                  font.pointSize: Style.font.size.small
+                  Layout.fillWidth: true
+                  elide: Text.ElideRight
+                }
               }
             }
           }
@@ -400,7 +357,7 @@ ColumnLayout {
 
         // Password Input
         Rectangle {
-          visible: networkItem.modelData && root.passwordSsid === networkItem.modelData.ssid && NetworkService.disconnectingFrom !== networkItem.modelData.ssid && NetworkService.forgettingNetwork !== networkItem.modelData.ssid
+          visible: root.passwordSsid === modelData?.ssid && !isDisconnecting && !isForgetting
           Layout.fillWidth: true
           Layout.preferredHeight: passwordRow.implicitHeight + Style.padding.small * 2
           color: ThemeService.palette.mSurfaceVariant
@@ -424,27 +381,25 @@ ColumnLayout {
 
               TextInput {
                 id: pwdInput
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.fill: parent
                 anchors.margins: Style.padding.small
                 font.family: Settings.appearance.font.mono
                 font.pointSize: Style.font.size.small
                 color: ThemeService.palette.mOnSurface
                 echoMode: TextInput.Password
                 selectByMouse: true
-                focus: visible
                 passwordCharacter: "●"
+                verticalAlignment: TextInput.AlignVCenter
+
                 onVisibleChanged: if (visible)
                   forceActiveFocus()
                 onAccepted: {
-                  if (text && !NetworkService.connecting) {
-                    root.passwordSubmitted(networkItem.modelData.ssid, text);
-                  }
+                  if (text && !NetworkService.connecting)
+                    root.passwordSubmitted(modelData.ssid, text);
                 }
 
                 IText {
-                  visible: parent.text.length === 0
+                  visible: !parent.text
                   anchors.verticalCenter: parent.verticalCenter
                   text: "Enter Password"
                   color: ThemeService.palette.mOnSurfaceVariant
@@ -456,9 +411,9 @@ ColumnLayout {
             IButton {
               text: "Connect"
               fontSize: Style.font.size.small
-              enabled: pwdInput.text.length > 0 && !NetworkService.connecting
+              enabled: pwdInput.text && !NetworkService.connecting
               outlined: true
-              onClicked: root.passwordSubmitted(networkItem.modelData.ssid, pwdInput.text)
+              onClicked: root.passwordSubmitted(modelData.ssid, pwdInput.text)
             }
 
             IIconButton {
@@ -469,9 +424,9 @@ ColumnLayout {
           }
         }
 
-        // Forget Network Confirmation
+        // Forget Confirmation
         Rectangle {
-          visible: networkItem.modelData && root.expandedSsid === networkItem.modelData.ssid && NetworkService.disconnectingFrom !== networkItem.modelData.ssid && NetworkService.forgettingNetwork !== networkItem.modelData.ssid
+          visible: root.expandedSsid === modelData?.ssid && !isDisconnecting && !isForgetting
           Layout.fillWidth: true
           Layout.preferredHeight: forgetRow.implicitHeight + Style.padding.small * 2
           color: ThemeService.palette.mSurfaceVariant
@@ -501,12 +456,11 @@ ColumnLayout {
             }
 
             IButton {
-              id: forgetButton
               text: "Forget"
               fontSize: Style.font.size.small
               backgroundColor: ThemeService.palette.mError
               outlined: !hovered
-              onClicked: root.forgetConfirmed(networkItem.modelData.ssid)
+              onClicked: root.forgetConfirmed(modelData.ssid)
             }
 
             IIconButton {

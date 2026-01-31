@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import qs.common
@@ -6,8 +8,7 @@ import qs.widgets
 ColumnLayout {
   id: root
 
-  readonly property int padding: Style.padding.normal
-  spacing: Style.spacing.larger
+  spacing: Style.spacing.small
 
   IToggle {
     label: "Persistent"
@@ -26,7 +27,7 @@ ColumnLayout {
 
   IDivider {
     Layout.fillWidth: true
-    Layout.topMargin: root.padding
-    Layout.bottomMargin: root.padding
+    Layout.topMargin: Style.padding.small
+    Layout.bottomMargin: Style.padding.small
   }
 }

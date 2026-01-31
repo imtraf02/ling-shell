@@ -13,7 +13,7 @@ SmartPanel {
   anchor: "center"
 
   enum Tab {
-    About,
+    General,
     Bar,
     Personalization
   }

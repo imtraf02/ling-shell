@@ -90,7 +90,7 @@ Singleton {
   }
 
   component Rounding: JsonObject {
-    property int small: 12
+    property int small: 9
     property int normal: 17
     property int large: 25
     property int full: 1000
@@ -168,6 +168,7 @@ Singleton {
     property int mediaWidth: 360
     property int controlCenterWidth: 420
     property int notificationsWidth: 480
+    property int bluetoothWidth: 480
   }
 
   component Shadow: JsonObject {

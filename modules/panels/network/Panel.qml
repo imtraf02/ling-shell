@@ -118,6 +118,7 @@ SmartPanel {
 
       // Tab Switcher
       ITabBar {
+        visible: NetworkService.hasEthernet()
         Layout.fillWidth: true
         ITabButton {
           text: "Wi-Fi"

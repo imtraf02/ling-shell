@@ -1,5 +1,4 @@
 pragma ComponentBehavior: Bound
-
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -10,14 +9,12 @@ import qs.services
 
 Popup {
   id: root
-
   property string title: "Select File"
   property string initialPath: Quickshell.env("HOME") || "/home"
   property string selectionMode: "files"
   property var nameFilters: ["*"]
   property bool showDirs: true
   property bool showHiddenFiles: false
-
   property var selectedPaths: []
   property string currentPath: initialPath
   property bool shouldResetSelection: false
@@ -97,7 +94,6 @@ Popup {
   function updateFilteredModel() {
     filteredModel.clear();
     const searchText = filePickerPanel.filterText.toLowerCase();
-
     for (var i = 0; i < folderModel.count; i++) {
       const fileName = folderModel.get(i, "fileName");
       const filePath = folderModel.get(i, "filePath");
@@ -110,6 +106,7 @@ Popup {
 
       if (root.selectionMode === "folders" && !fileIsDir)
         continue;
+
       if (searchText === "" || fileName.toLowerCase().includes(searchText)) {
         filteredModel.append({
           "fileName": fileName,
@@ -167,6 +164,7 @@ Popup {
       anchors.fill: parent
       spacing: Style.spacing.small
 
+      // Header
       RowLayout {
         Layout.fillWidth: true
         spacing: Style.spacing.small
@@ -176,6 +174,7 @@ Popup {
           color: ThemeService.palette.mPrimary
           font.pointSize: Style.font.size.extraLarge
         }
+
         IText {
           text: root.title
           font.pointSize: Style.font.size.large
@@ -203,6 +202,7 @@ Popup {
             Qt.callLater(root.updateFilteredModel);
           }
         }
+
         IIconButton {
           icon: "close"
           onClicked: {
@@ -216,6 +216,7 @@ Popup {
         Layout.fillWidth: true
       }
 
+      // Navigation Bar
       Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 45
@@ -225,9 +226,7 @@ Popup {
         border.width: 2
 
         RowLayout {
-          anchors.left: parent.left
-          anchors.right: parent.right
-          anchors.verticalCenter: parent.verticalCenter
+          anchors.fill: parent
           anchors.leftMargin: Style.padding.normal
           anchors.rightMargin: Style.padding.normal
           spacing: Style.padding.normal
@@ -271,10 +270,8 @@ Popup {
             text: root.currentPath
             placeholderText: "Enter path..."
             Layout.fillWidth: true
-
             visible: !filePickerPanel.showSearchBar
             enabled: !filePickerPanel.showSearchBar
-
             onEditingFinished: {
               const newPath = text.trim();
               if (newPath !== "" && newPath !== root.currentPath) {
@@ -284,6 +281,7 @@ Popup {
                 text = root.currentPath;
               }
             }
+
             Connections {
               target: root
               function onCurrentPathChanged() {
@@ -298,10 +296,8 @@ Popup {
             inputIconName: "search"
             placeholderText: "Search..."
             Layout.fillWidth: true
-
             visible: filePickerPanel.showSearchBar
             enabled: filePickerPanel.showSearchBar
-
             text: filePickerPanel.searchText
             onTextChanged: {
               filePickerPanel.searchText = text;
@@ -321,6 +317,7 @@ Popup {
             size: Style.widget.size * 0.8
             onClicked: filePickerPanel.viewMode = !filePickerPanel.viewMode
           }
+
           IIconButton {
             icon: root.showHiddenFiles ? "visibility_off" : "visibility"
             size: Style.widget.size * 0.8
@@ -335,6 +332,7 @@ Popup {
         }
       }
 
+      // File Browser Area
       Rectangle {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -342,6 +340,7 @@ Popup {
         radius: Style.rounding.small
         border.color: ThemeService.palette.mOutline
         border.width: 2
+        clip: true  // IMPORTANT: Clip content to prevent overflow
 
         FolderListModel {
           id: folderModel
@@ -382,6 +381,7 @@ Popup {
           id: filteredModel
         }
 
+        // Grid View
         GridView {
           id: gridView
           anchors.fill: parent
@@ -391,11 +391,11 @@ Popup {
           clip: true
           reuseItems: true
 
-          property int columns: Math.max(1, Math.floor(width / (120)))
+          property int columns: Math.max(1, Math.floor(width / 120))
           property int itemSize: Math.floor((width - leftMargin - rightMargin - (columns * Style.padding.normal)) / columns)
 
           cellWidth: Math.floor((width - leftMargin - rightMargin) / columns)
-          cellHeight: Math.floor(itemSize * 0.8) + Style.spacing.small + Style.font.size.small + Style.padding.normal
+          cellHeight: itemSize + 60  // Fixed height calculation
 
           leftMargin: Style.padding.normal
           rightMargin: Style.padding.normal
@@ -416,9 +416,6 @@ Popup {
               Behavior on opacity {
                 IAnim {}
               }
-              Behavior on color {
-                ICAnim {}
-              }
             }
             background: Rectangle {
               implicitWidth: 6
@@ -428,7 +425,7 @@ Popup {
                 let bar = parent as ScrollBar;
                 return (bar && (bar.policy === ScrollBar.AlwaysOn || bar.active)) ? 0.3 : 0.0;
               }
-              radius: (Style.rounding.small) / 2
+              radius: Style.rounding.small / 2
               Behavior on opacity {
                 IAnim {}
               }
@@ -443,35 +440,33 @@ Popup {
             required property int fileSize
 
             width: gridView.itemSize
-            height: gridView.cellHeight
+            height: gridView.cellHeight - Style.spacing.small
             color: "transparent"
             radius: Style.rounding.small
+            clip: true  // IMPORTANT: Prevent text overflow
 
             property bool isSelected: filePickerPanel.currentSelection.includes(filePath)
 
+            // Selection border
             Rectangle {
               anchors.fill: parent
               color: "transparent"
               radius: parent.radius
-              border.color: gridItem.isSelected ? ThemeService.palette.mSecondary : ThemeService.palette.mSurface
+              border.color: gridItem.isSelected ? ThemeService.palette.mSecondary : "transparent"
               border.width: 3
-              Behavior on color {
+              Behavior on border.color {
                 ICAnim {}
               }
             }
 
+            // Hover effect
             Rectangle {
               anchors.fill: parent
-              color: (gridMouseArea.containsMouse && !gridItem.isSelected) ? ThemeService.palette.mPrimary : "transparent"
-
+              color: (gridMouseArea.containsMouse && !gridItem.isSelected) ? Qt.alpha(ThemeService.palette.mPrimary, 0.1) : "transparent"
               radius: parent.radius
               border.color: (gridMouseArea.containsMouse && !gridItem.isSelected) ? ThemeService.palette.mPrimary : "transparent"
-
               border.width: 2
               Behavior on color {
-                ICAnim {}
-              }
-              Behavior on border.color {
                 ICAnim {}
               }
             }
@@ -481,10 +476,12 @@ Popup {
               anchors.margins: Style.padding.normal
               spacing: Style.spacing.small
 
+              // Icon/Thumbnail area
               Rectangle {
                 id: iconContainer
                 Layout.fillWidth: true
-                Layout.preferredHeight: Math.round(gridView.itemSize * 0.67)
+                Layout.preferredHeight: gridView.itemSize - 40
+                Layout.alignment: Qt.AlignHCenter
                 color: "transparent"
 
                 property bool isImage: {
@@ -506,22 +503,10 @@ Popup {
                   asynchronous: true
                   sourceSize.width: 120
                   sourceSize.height: 120
+
                   onStatusChanged: {
                     if (status === Image.Error)
                       visible = false;
-                  }
-
-                  Rectangle {
-                    anchors.fill: parent
-                    color: ThemeService.palette.mSurfaceVariant
-                    radius: Style.rounding.small
-                    visible: thumbnail.status === Image.Loading
-                    IIcon {
-                      icon: "photo"
-                      font.pointSize: Style.font.size.large
-                      color: ThemeService.palette.mOnSurfaceVariant
-                      anchors.centerIn: parent
-                    }
                   }
                 }
 
@@ -532,7 +517,7 @@ Popup {
                     if (gridItem.isSelected)
                       return ThemeService.palette.mSecondary;
                     else if (gridMouseArea.containsMouse)
-                      return ThemeService.palette.mOnPrimary;
+                      return ThemeService.palette.mPrimary;
                     else
                       return gridItem.fileIsDir ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurfaceVariant;
                   }
@@ -540,10 +525,10 @@ Popup {
                   visible: !iconContainer.isImage || thumbnail.status !== Image.Ready
                 }
 
+                // Selection checkmark
                 Rectangle {
                   anchors.top: parent.top
                   anchors.right: parent.right
-                  anchors.margins: Style.padding.normal
                   width: 24
                   height: 24
                   radius: width / 2
@@ -551,6 +536,8 @@ Popup {
                   border.color: ThemeService.palette.mOutline
                   border.width: 2
                   visible: gridItem.isSelected
+                  z: 10  // Ensure it's on top
+
                   IIcon {
                     icon: "check"
                     font.pointSize: Style.font.size.small
@@ -560,23 +547,32 @@ Popup {
                 }
               }
 
-              IText {
-                text: gridItem.fileName
-                color: {
-                  if (gridItem.isSelected)
-                    return ThemeService.palette.mSecondary;
-                  else if (gridMouseArea.containsMouse)
-                    return ThemeService.palette.mOnPrimary;
-                  else
-                    return ThemeService.palette.mOnSurfaceVariant;
-                }
-                font.pointSize: Style.font.size.small
-                font.weight: gridItem.isSelected ? Font.DemiBold : Font.Medium
+              // File name label - FIXED OVERLAY ISSUE
+              Item {
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WrapAnywhere
-                elide: Text.ElideRight
-                maximumLineCount: 2
+                Layout.preferredHeight: 36  // Fixed height for text area
+                Layout.alignment: Qt.AlignHCenter
+
+                IText {
+                  anchors.fill: parent
+                  text: gridItem.fileName
+                  color: {
+                    if (gridItem.isSelected)
+                      return ThemeService.palette.mSecondary;
+                    else if (gridMouseArea.containsMouse)
+                      return ThemeService.palette.mPrimary;
+                    else
+                      return ThemeService.palette.mOnSurfaceVariant;
+                  }
+                  font.pointSize: Style.font.size.small
+                  font.weight: gridItem.isSelected ? Font.DemiBold : Font.Medium
+                  horizontalAlignment: Text.AlignHCenter
+                  verticalAlignment: Text.AlignTop
+                  wrapMode: Text.Wrap
+                  elide: Text.ElideRight
+                  maximumLineCount: 2
+                  clip: true  // CRITICAL: Prevent text overflow
+                }
               }
             }
 
@@ -617,12 +613,14 @@ Popup {
           }
         }
 
+        // List View
         IListView {
           id: listView
           anchors.fill: parent
           anchors.margins: Style.padding.normal
           model: filteredModel
           visible: !filePickerPanel.viewMode
+          clip: true  // Prevent overflow
 
           delegate: Rectangle {
             id: listItem
@@ -637,10 +635,12 @@ Popup {
               if (filePickerPanel.currentSelection.includes(filePath))
                 return ThemeService.palette.mSecondary;
               if (listMouseArea.containsMouse)
-                return ThemeService.palette.mPrimary;
+                return Qt.alpha(ThemeService.palette.mPrimary, 0.1);
               return "transparent";
             }
             radius: Style.rounding.small
+            clip: true  // Prevent text overflow
+
             Behavior on color {
               ICAnim {}
             }
@@ -654,7 +654,15 @@ Popup {
               IIcon {
                 icon: listItem.fileIsDir ? "folder" : root.getFileIcon(listItem.fileName)
                 font.pointSize: Style.font.size.large
-                color: listItem.fileIsDir ? (filePickerPanel.currentSelection.includes(listItem.filePath) ? ThemeService.palette.mOnSecondary : ThemeService.palette.mPrimary) : ThemeService.palette.mOnSurfaceVariant
+                color: {
+                  if (filePickerPanel.currentSelection.includes(listItem.filePath))
+                    return ThemeService.palette.mOnSecondary;
+                  else if (listItem.fileIsDir)
+                    return ThemeService.palette.mPrimary;
+                  else
+                    return ThemeService.palette.mOnSurfaceVariant;
+                }
+                Layout.preferredWidth: implicitWidth
               }
 
               IText {
@@ -663,6 +671,7 @@ Popup {
                 font.weight: filePickerPanel.currentSelection.includes(listItem.filePath) ? Font.DemiBold : Font.Medium
                 Layout.fillWidth: true
                 elide: Text.ElideRight
+                clip: true
               }
 
               IText {
@@ -670,7 +679,8 @@ Popup {
                 color: filePickerPanel.currentSelection.includes(listItem.filePath) ? ThemeService.palette.mOnSecondary : ThemeService.palette.mOnSurfaceVariant
                 font.pointSize: Style.font.size.small
                 visible: !listItem.fileIsDir
-                Layout.preferredWidth: implicitWidth
+                Layout.preferredWidth: 80
+                horizontalAlignment: Text.AlignRight
               }
             }
 
@@ -712,6 +722,7 @@ Popup {
         }
       }
 
+      // Footer
       RowLayout {
         Layout.fillWidth: true
         spacing: Style.spacing.small
@@ -728,9 +739,9 @@ Popup {
             }
           }
           color: filePickerPanel.searchText.length > 0 ? ThemeService.palette.mPrimary : ThemeService.palette.mOnSurfaceVariant
-
           font.pointSize: Style.font.size.small
           Layout.fillWidth: true
+          elide: Text.ElideRight
         }
 
         IButton {

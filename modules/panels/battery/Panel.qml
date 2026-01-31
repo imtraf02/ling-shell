@@ -125,7 +125,7 @@ SmartPanel {
           implicitWidth: saver.implicitHeight + balance.implicitHeight + perf.implicitHeight + Style.spacing.small * 2 + Style.padding.small * 2
           implicitHeight: Math.max(saver.implicitHeight, balance.implicitHeight, perf.implicitHeight) + Style.spacing.small * 2
 
-          color: ThemeService.palette.mSurface
+          color: ThemeService.palette.mSurfaceContainerHigh
           radius: Style.rounding.small
 
           Rectangle {

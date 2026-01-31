@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import qs.common
 import qs.widgets
 import qs.services
+import qs.modules.panels.settings.tabs
 
 Item {
   id: root
@@ -22,19 +23,22 @@ Item {
   function initialize() {
     root.tabsModel = [
       {
-        id: Panel.Tab.About,
-        icon: "info",
-        label: "About"
+        id: Panel.Tab.General,
+        icon: "general_device",
+        label: "General",
+        source: generalTab
       },
       {
         id: Panel.Tab.Bar,
         icon: "crop_16_9",
-        label: "Bar"
+        label: "Bar",
+        source: barTab
       },
       {
         id: Panel.Tab.Personalization,
         icon: "palette",
-        label: "Personalization"
+        label: "Personalization",
+        source: barTab
       },
     ];
     root.currentTabIndex = requestedTab;
@@ -214,8 +218,49 @@ Item {
           Layout.fillWidth: true
           Layout.fillHeight: true
           color: "transparent"
+
+          Repeater {
+            model: root.tabsModel
+            delegate: Loader {
+              id: loader
+              required property int index
+
+              active: index === root.currentTabIndex
+              anchors.fill: parent
+
+              sourceComponent: IFlickable {
+                anchors.fill: parent
+                anchors.margins: Style.padding.small
+                contentWidth: parent.width
+                contentHeight: tabLoader.item ? tabLoader.item.implicitHeight : 0
+                boundsBehavior: Flickable.StopAtBounds
+
+                Loader {
+                  id: tabLoader
+                  active: true
+                  sourceComponent: root.tabsModel[index]?.source
+                  width: parent.width
+                  onLoaded: {
+                    if (item && item.hasOwnProperty("screen")) {
+                      item.screen = root.screen;
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
+  }
+
+  Component {
+    id: barTab
+    Bar {}
+  }
+
+  Component {
+    id: generalTab
+    General {}
   }
 }

@@ -13,6 +13,7 @@ import qs.modules.panels.controlcenter as ControlCenter
 import qs.modules.panels.session as Session
 import qs.modules.panels.notifications as Notifications
 import qs.modules.panels.settings as SettingsPanel
+import qs.modules.panels.bluetooth as Bluetooth
 import qs.modules.notifications as NotificationsPopout
 
 Item {
@@ -103,6 +104,12 @@ Item {
   Notifications.Panel {
     id: notificationsPanel
     objectName: "panel:notifications-" + (root.screen?.name || "unknown")
+    screen: root.screen
+  }
+
+  Bluetooth.Panel {
+    id: bluetoothPanel
+    objectName: "panel:bluetooth-" + (root.screen?.name || "unknown")
     screen: root.screen
   }
 
