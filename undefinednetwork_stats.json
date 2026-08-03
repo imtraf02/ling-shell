@@ -1,0 +1,70 @@
+{
+    "rxPeaks": [
+        {
+            "speed": 81,
+            "timestamp": 1785735822944
+        },
+        {
+            "speed": 409,
+            "timestamp": 1785735828942
+        },
+        {
+            "speed": 1506,
+            "timestamp": 1785735843941
+        },
+        {
+            "speed": 7944,
+            "timestamp": 1785735861942
+        },
+        {
+            "speed": 11158,
+            "timestamp": 1785735864941
+        },
+        {
+            "speed": 26185,
+            "timestamp": 1785735964807
+        },
+        {
+            "speed": 55943,
+            "timestamp": 1785735967807
+        },
+        {
+            "speed": 80828,
+            "timestamp": 1785736146420
+        },
+        {
+            "speed": 81054,
+            "timestamp": 1785736507842
+        },
+        {
+            "speed": 755317,
+            "timestamp": 1785736528842
+        }
+    ],
+    "txPeaks": [
+        {
+            "speed": 87,
+            "timestamp": 1785735828942
+        },
+        {
+            "speed": 41109,
+            "timestamp": 1785735843941
+        },
+        {
+            "speed": 42107,
+            "timestamp": 1785736090327
+        },
+        {
+            "speed": 91214,
+            "timestamp": 1785736143421
+        },
+        {
+            "speed": 96880,
+            "timestamp": 1785737377406
+        },
+        {
+            "speed": 97659,
+            "timestamp": 1785737403888
+        }
+    ]
+}

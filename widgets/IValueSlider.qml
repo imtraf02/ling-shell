@@ -11,7 +11,6 @@ RowLayout {
   property real to: 1
   property real value: 0
   property real stepSize: 0.01
-  property var cutoutColor: ThemeService.palette.mSurface
   property bool snapAlways: true
   property real heightRatio: 0.7
   property string text: ""
@@ -33,7 +32,6 @@ RowLayout {
     to: root.to
     value: root.value
     stepSize: root.stepSize
-    cutoutColor: root.cutoutColor
     snapAlways: root.snapAlways
     heightRatio: root.customHeightRatio > 0 ? root.customHeightRatio : root.heightRatio
     onMoved: root.moved(value)

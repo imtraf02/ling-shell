@@ -3,142 +3,132 @@ import QtQuick.Controls
 import qs.common
 import qs.services
 
+/**
+ * Compact Material 3 slider, following end4's StyledSlider geometry:
+ * a thick rounded track, a small gap around the thin handle, and a round
+ * stop indicator at the end of the range.
+ */
 Slider {
   id: root
 
-  property var cutoutColor: ThemeService.palette.mSurface
+  property list<real> stopIndicatorValues: [1]
   property bool snapAlways: true
   property real heightRatio: 0.7
   property bool hovering: false
 
-  readonly property real knobDiameter: Math.round((Style.widget.size * heightRatio) / 2) * 2
-  readonly property real trackHeight: Math.round((knobDiameter * 0.4) / 2) * 2
-  readonly property real cutoutExtra: Math.round((Style.widget.size * 0.1) / 2) * 2
+  readonly property real sizeScale: Math.max(0.5, heightRatio / 0.7)
+  readonly property real trackWidth: Math.max(4, Math.round(18 * sizeScale))
+  readonly property real trackRadius: trackWidth >= 42 ? 21 : trackWidth >= 30 ? 12 : trackWidth >= 18 ? 6 : trackWidth / 2
+  readonly property real unsharpenRadius: Math.min(trackWidth / 2, 2)
+  readonly property real handleHeight: Math.max(33, trackWidth + 9)
+  readonly property real handleDefaultWidth: 3
+  readonly property real handlePressedWidth: 1.5
+  readonly property real handleWidth: root.pressed ? handlePressedWidth : handleDefaultWidth
+  readonly property real handleMargins: 4
+  readonly property real effectiveDraggingWidth: Math.max(0, root.width - root.leftPadding - root.rightPadding)
+  readonly property real trackDotSize: 3
 
-  padding: cutoutExtra / 2
+  property color highlightColor: root.enabled ? ThemeService.palette.mPrimary : Qt.alpha(ThemeService.palette.mOnSurface, 0.38)
+  property color trackColor: root.enabled ? ThemeService.palette.mSurfaceVariant : Qt.alpha(ThemeService.palette.mOnSurface, 0.12)
+  property color handleColor: root.enabled ? ThemeService.palette.mPrimary : Qt.alpha(ThemeService.palette.mOnSurface, 0.38)
+  property color dotColor: root.enabled ? ThemeService.palette.mOnSurfaceVariant : Qt.alpha(ThemeService.palette.mOnSurface, 0.38)
+  property color dotColorHighlighted: root.enabled ? ThemeService.palette.mOnPrimary : Qt.alpha(ThemeService.palette.mOnSurface, 0.38)
+
+  leftPadding: handleMargins
+  rightPadding: handleMargins
   snapMode: snapAlways ? Slider.SnapAlways : Slider.SnapOnRelease
-  implicitHeight: Math.max(trackHeight, knobDiameter)
+  implicitWidth: Style.widget.sliderWidth
+  implicitHeight: handleHeight
 
-  background: Rectangle {
-    x: root.leftPadding
-    y: root.topPadding + root.availableHeight / 2 - height / 2
+  MouseArea {
+    anchors.fill: parent
+    hoverEnabled: true
+    cursorShape: root.pressed ? Qt.ClosedHandCursor : Qt.PointingHandCursor
+
+    onEntered: root.hovering = root.enabled
+    onExited: root.hovering = false
+    onPressed: mouse => mouse.accepted = false
+  }
+
+  background: Item {
+    id: background
+
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: root.width
     implicitWidth: Style.widget.sliderWidth
-    implicitHeight: root.trackHeight
-    width: root.availableWidth
+    implicitHeight: root.trackWidth
     height: implicitHeight
-    radius: height / 2
-    color: Qt.alpha(ThemeService.palette.mSurface, 0.5)
-    border.color: Qt.alpha(ThemeService.palette.mOutline, 0.5)
-    border.width: 2
 
-    // Active track with rounded leading edge and animated gradient
-    Item {
-      id: activeTrackContainer
-      width: root.visualPosition * parent.width
+    Rectangle {
+      id: activeTrack
+
+      x: 0
+      y: 0
+      width: Math.max(0, root.visualPosition * root.effectiveDraggingWidth - root.handleWidth / 2)
       height: parent.height
+      color: root.highlightColor
+      topLeftRadius: root.trackRadius
+      bottomLeftRadius: root.trackRadius
+      topRightRadius: root.unsharpenRadius
+      bottomRightRadius: root.unsharpenRadius
+    }
 
-      // Rounded start cap
-      Rectangle {
-        width: parent.height
-        height: parent.height
+    Rectangle {
+      id: inactiveTrack
+
+      x: root.leftPadding + root.visualPosition * root.effectiveDraggingWidth + root.handleWidth / 2 + root.handleMargins
+      y: 0
+      width: Math.max(0, (1 - root.visualPosition) * root.effectiveDraggingWidth - root.handleWidth / 2)
+      height: parent.height
+      color: root.trackColor
+      topLeftRadius: root.unsharpenRadius
+      bottomLeftRadius: root.unsharpenRadius
+      topRightRadius: root.trackRadius
+      bottomRightRadius: root.trackRadius
+    }
+
+    Repeater {
+      model: root.stopIndicatorValues
+
+      delegate: Rectangle {
+        required property real modelData
+
+        readonly property real normalizedValue: (modelData - root.from) / (root.to - root.from)
+
+        x: root.leftPadding + normalizedValue * root.effectiveDraggingWidth - root.trackDotSize / 2
+        y: parent.height / 2 - height / 2
+        width: root.trackDotSize
+        height: root.trackDotSize
         radius: width / 2
-        color: Qt.darker(ThemeService.palette.mPrimary, 1.2)
-      }
+        color: normalizedValue > root.visualPosition ? root.dotColor : root.dotColorHighlighted
 
-      // Main active track with gradient
-      Rectangle {
-        x: parent.height / 2
-        width: parent.width - x
-        height: parent.height
-        radius: 0
-
-        gradient: Gradient {
-          orientation: Gradient.Horizontal
-
-          GradientStop {
-            position: 0.0
-            color: Qt.darker(ThemeService.palette.mPrimary, 1.2)
-            Behavior on color {
-              ColorAnimation {
-                duration: 300
-              }
-            }
-          }
-
-          GradientStop {
-            position: 0.5
-            color: ThemeService.palette.mPrimary
-            SequentialAnimation on position {
-              loops: Animation.Infinite
-              NumberAnimation {
-                from: 0.3
-                to: 0.7
-                duration: 2000
-                easing.type: Easing.InOutSine
-              }
-              NumberAnimation {
-                from: 0.7
-                to: 0.3
-                duration: 2000
-                easing.type: Easing.InOutSine
-              }
-            }
-          }
-
-          GradientStop {
-            position: 1.0
-            color: Qt.lighter(ThemeService.palette.mPrimary, 1.2)
+        Behavior on color {
+          ColorAnimation {
+            duration: 120
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Style.anim.curves.standardDecel
           }
         }
       }
     }
-
-    // Circular cutout behind the knob
-    Rectangle {
-      id: knobCutout
-      implicitWidth: root.knobDiameter + root.cutoutExtra
-      implicitHeight: root.knobDiameter + root.cutoutExtra
-      radius: width / 2
-      color: root.cutoutColor !== undefined ? root.cutoutColor : ThemeService.palette.mSurface
-      x: root.leftPadding + root.visualPosition * (root.availableWidth - root.knobDiameter) - cutoutExtra
-      anchors.verticalCenter: parent.verticalCenter
-    }
   }
 
-  handle: Item {
-    implicitWidth: root.knobDiameter
-    implicitHeight: root.knobDiameter
-    x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
+  handle: Rectangle {
+    id: handle
+
+    implicitWidth: root.handleWidth
+    implicitHeight: root.handleHeight
+    x: root.leftPadding + root.visualPosition * root.effectiveDraggingWidth - root.handleWidth / 2
     anchors.verticalCenter: parent.verticalCenter
+    radius: width / 2
+    color: root.handleColor
 
-    Rectangle {
-      id: knob
-      implicitWidth: root.knobDiameter
-      implicitHeight: root.knobDiameter
-      radius: width / 2
-      color: root.pressed ? ThemeService.palette.mPrimary : ThemeService.palette.mSurface
-      border.color: ThemeService.palette.mPrimary
-      border.width: 3
-      anchors.centerIn: parent
-
-      Behavior on color {
-        ICAnim {}
-      }
-    }
-
-    MouseArea {
-      anchors.fill: parent
-      cursorShape: Qt.PointingHandCursor
-      hoverEnabled: true
-      acceptedButtons: Qt.NoButton
-      propagateComposedEvents: true
-
-      onEntered: {
-        root.hovering = true;
-      }
-
-      onExited: {
-        root.hovering = false;
+    Behavior on implicitWidth {
+      NumberAnimation {
+        duration: 120
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Style.anim.curves.standardDecel
       }
     }
   }

@@ -293,7 +293,7 @@ SmartPanel {
             id: progressWrapper
             visible: (MediaService.currentPlayer && MediaService.trackLength > 0)
             Layout.fillWidth: true
-            Layout.preferredHeight: Style.widget.size * 0.5
+            Layout.preferredHeight: progressSlider.implicitHeight
 
             property real localSeekRatio: -1
             property real lastSentSeekRatio: -1

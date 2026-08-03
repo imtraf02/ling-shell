@@ -8,9 +8,24 @@
   jsonfmt,
   lefthook,
   kdePackages,
+  makeFontsConf,
+  material-symbols,
+  rubik,
+  nerd-fonts,
   mkShellNoCC,
 }:
+let
+  fontconfig = makeFontsConf {
+    fontDirectories = [
+      material-symbols
+      rubik
+      nerd-fonts.caskaydia-cove
+    ];
+  };
+in
 mkShellNoCC {
+  FONTCONFIG_FILE = fontconfig;
+
   #it's faster than mkDerivation / mkShell
   packages = [
     quickshell
