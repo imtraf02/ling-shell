@@ -36,7 +36,7 @@ ClippingRectangle {
 
   Connections {
     target: CompositorService
-    function onWorkspacesChanged() {
+    function onWorkspaceChanged() {
       root.refreshWorkspaces();
     }
   }

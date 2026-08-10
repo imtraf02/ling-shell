@@ -71,13 +71,7 @@ Singleton {
     }
   }
   Component.onCompleted: {
-    if (ProgramCheckerService.nmcliAvailable) {
-      syncWifiState();
-      scan();
-
-      refreshActiveWifiDetails();
-      refreshActiveEthernetDetails();
-    }
+    ProgramCheckerService.ensure("nmcliAvailable");
   }
 
   Connections {
@@ -85,10 +79,9 @@ Singleton {
     function onNmcliAvailableChanged() {
       if (ProgramCheckerService.nmcliAvailable) {
         root.syncWifiState();
-        root.scan();
-
         root.refreshActiveWifiDetails();
         root.refreshActiveEthernetDetails();
+        nmcliMonitor.running = true;
       }
     }
   }
@@ -120,14 +113,6 @@ Singleton {
     onTriggered: root.scan()
   }
 
-  Timer {
-    id: ethernetCheckTimer
-    interval: 30000
-    running: ProgramCheckerService.nmcliAvailable
-    repeat: true
-    onTriggered: deviceListProcess.running = true
-  }
-
   function refreshActiveEthernetDetails() {
     const now = Date.now();
     if (ethernetDetailsLoading)
@@ -145,11 +130,39 @@ Singleton {
   }
 
   Timer {
-    id: connectivityCheckTimer
-    interval: 15000
-    running: ProgramCheckerService.nmcliAvailable
-    repeat: true
-    onTriggered: connectivityCheckProcess.running = true
+    id: monitorRefreshTimer
+    interval: 750
+    repeat: false
+    onTriggered: {
+      root.syncWifiState();
+      deviceListProcess.running = true;
+      connectivityCheckProcess.running = true;
+    }
+  }
+
+  Timer {
+    id: monitorRestartTimer
+    interval: 5000
+    repeat: false
+    onTriggered: {
+      if (ProgramCheckerService.nmcliAvailable)
+        nmcliMonitor.running = true;
+    }
+  }
+
+  Process {
+    id: nmcliMonitor
+    command: ["nmcli", "monitor"]
+    running: false
+
+    stdout: SplitParser {
+      onRead: monitorRefreshTimer.restart()
+    }
+
+    onExited: {
+      if (ProgramCheckerService.nmcliAvailable)
+        monitorRestartTimer.restart();
+    }
   }
 
   function syncWifiState() {

@@ -3,45 +3,73 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.common
-import qs.widgets
 import qs.services
-import qs.modules.panels.settings.tabs
+import qs.widgets
+import qs.modules.panels.settings.tabs as SettingsTabs
 
 Item {
   id: root
 
-  property int requestedTab: 0
-
   property int currentTabIndex: 0
+  property int previousTabIndex: 0
   property var tabsModel: []
-  property bool expanded: true
+  property bool expanded: width >= 840
+  property real tabOpacity: 1.0
+  property real tabOffset: 0
 
   readonly property int iconSize: Math.max(1, Math.round(Style.widget.size * 0.8))
+  readonly property var currentTab: tabsModel[currentTabIndex] || null
 
   signal closeRequested
 
   function initialize() {
-    root.tabsModel = [
-      {
-        id: Panel.Tab.General,
-        icon: "general_device",
-        label: "General",
-        source: generalTab
-      },
-      {
-        id: Panel.Tab.Bar,
-        icon: "crop_16_9",
-        label: "Bar",
-        source: barTab
-      },
-      {
-        id: Panel.Tab.Personalization,
-        icon: "palette",
-        label: "Personalization",
-        source: barTab
-      },
+    if (tabsModel.length > 0)
+      return;
+    tabsModel = [
+      { key: "general", icon: "person", label: "General", source: generalTab },
+      { key: "appearance", icon: "palette", label: "Appearance", source: appearanceTab },
+      { key: "bar", icon: "crop_16_9", label: "Bar", source: barTab },
+      { key: "displays", icon: "wallpaper", label: "Displays & Wallpaper", source: displaysTab },
+      { key: "network", icon: "network_wifi", label: "Network & Bluetooth", source: networkTab },
+      { key: "audio", icon: "volume_up", label: "Audio & Media", source: audioTab },
+      { key: "notifications", icon: "notifications", label: "Notifications", source: notificationsTab },
+      { key: "dashboard", icon: "dashboard", label: "Dashboard", source: dashboardTab },
+      { key: "system", icon: "lock", label: "System & Lock", source: systemTab },
+      { key: "about", icon: "info", label: "About", source: aboutTab }
     ];
-    root.currentTabIndex = requestedTab;
+    loadCurrentTab(false);
+  }
+
+  function selectTab(index) {
+    if (index < 0 || index >= tabsModel.length || index === currentTabIndex)
+      return;
+    previousTabIndex = currentTabIndex;
+    currentTabIndex = index;
+    loadCurrentTab(true);
+  }
+
+  function loadCurrentTab(animate) {
+    if (!currentTab)
+      return;
+    const direction = currentTabIndex >= previousTabIndex ? 1 : -1;
+    if (animate) {
+      tabOpacity = 0;
+      tabOffset = direction * 18;
+    }
+    tabLoader.active = false;
+    tabLoader.active = true;
+    if (animate) {
+      Qt.callLater(() => {
+        root.tabOffset = 0;
+        root.tabOpacity = 1;
+      });
+    }
+  }
+
+  Component.onCompleted: initialize()
+  onWidthChanged: {
+    if (width < 840)
+      expanded = false;
   }
 
   RowLayout {
@@ -51,94 +79,61 @@ Item {
 
     IBox {
       id: sidebar
-      Layout.preferredWidth: Math.round(root.expanded ? 200 : root.iconSize + Style.padding.small * 2 + Style.padding.small * 2)
+      Layout.preferredWidth: Math.round(root.expanded ? 218 : root.iconSize + Style.padding.small * 4)
       Layout.fillHeight: true
-      Layout.alignment: Qt.AlignTop
       color: "transparent"
 
-      Behavior on Layout.preferredWidth {
-        IAnim {}
-      }
+      Behavior on Layout.preferredWidth { IAnim {} }
 
-      ColumnLayout {
-        id: sidebarColumnLayout
+      IListView {
+        id: sidebarList
         anchors.fill: parent
         anchors.margins: Style.padding.small
+        model: root.tabsModel
         spacing: Style.spacing.small
+        clip: true
 
-        Item {
-          Layout.fillWidth: true
-          Layout.fillHeight: true
-          Layout.bottomMargin: Style.padding.small
-          IListView {
-            id: sidebarList
-            model: root.tabsModel
+        delegate: Rectangle {
+          id: tabItem
+          required property int index
+          required property var modelData
+          width: sidebarList.width - (sidebarList.verticalScrollBarActive ? Style.spacing.small : 0)
+          height: tabEntry.implicitHeight + Style.padding.small * 2
+          radius: Style.rounding.small
+          readonly property bool selected: index === root.currentTabIndex
+          color: selected ? ThemeService.palette.mPrimary : (tabMouse.containsMouse ? Qt.alpha(ThemeService.palette.mPrimary, 0.14) : "transparent")
+
+          Behavior on color { ICAnim {} }
+
+          RowLayout {
+            id: tabEntry
             anchors.fill: parent
+            anchors.leftMargin: Style.padding.small
+            anchors.rightMargin: Style.padding.small
             spacing: Style.spacing.small
-            currentIndex: root.currentTabIndex
-            delegate: Rectangle {
-              id: tabItem
-              required property int index
-              required property var modelData
-              width: sidebarList.width - (sidebarList.verticalScrollBarActive ? Style.spacing.small : 0)
-              height: tabEntryRow.implicitHeight + Style.padding.small * 2
-              radius: Style.rounding.small
-              color: selected ? ThemeService.palette.mPrimary : (tabItem.hovering ? ThemeService.palette.mPrimary : "transparent")
-              readonly property bool selected: index === root.currentTabIndex
-              property bool hovering: false
-              property color tabTextColor: selected ? ThemeService.palette.mOnPrimary : (tabItem.hovering ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface)
-
-              Behavior on color {
-                ICAnim {}
-              }
-
-              RowLayout {
-                id: tabEntryRow
-                anchors.fill: parent
-                anchors.leftMargin: Style.padding.small
-                anchors.rightMargin: Style.padding.small
-                spacing: Style.spacing.small
-                IIcon {
-                  icon: tabItem.modelData.icon
-                  color: tabTextColor
-                  font.pointSize: Style.font.size.large
-                  Layout.alignment: Qt.AlignVCenter
-                  Layout.preferredWidth: root.iconSize
-                  Layout.preferredHeight: root.iconSize
-                }
-                IText {
-                  text: tabItem.modelData.label
-                  color: tabTextColor
-                  font.pointSize: Style.font.size.smaller
-                  font.weight: Font.Medium
-                  Layout.fillWidth: true
-                  Layout.alignment: Qt.AlignVCenter
-                  visible: root.expanded
-                  opacity: root.expanded ? 1.0 : 0.0
-                  Behavior on opacity {
-                    IAnim {}
-                  }
-                }
-              }
-              MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                acceptedButtons: Qt.LeftButton
-                cursorShape: Qt.PointingHandCursor
-                onEntered: {
-                  tabItem.hovering = true;
-                }
-                onExited: {
-                  tabItem.hovering = false;
-                }
-                onCanceled: {
-                  tabItem.hovering = false;
-                }
-                onClicked: {
-                  root.currentTabIndex = tabItem.index;
-                }
-              }
+            IIcon {
+              icon: tabItem.modelData.icon
+              color: tabItem.selected ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
+              font.pointSize: Style.font.size.large
+              Layout.preferredWidth: root.iconSize
+              Layout.preferredHeight: root.iconSize
             }
+            IText {
+              text: tabItem.modelData.label
+              color: tabItem.selected ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
+              font.weight: Font.Medium
+              Layout.fillWidth: true
+              visible: root.expanded
+              opacity: root.expanded ? 1.0 : 0.0
+              Behavior on opacity { IAnim {} }
+            }
+          }
+          MouseArea {
+            id: tabMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.selectTab(tabItem.index)
           }
         }
       }
@@ -147,120 +142,80 @@ Item {
     IBox {
       Layout.fillWidth: true
       Layout.fillHeight: true
-      Layout.alignment: Qt.AlignTop
 
       ColumnLayout {
-        id: contentLayout
         anchors.fill: parent
         anchors.margins: Style.padding.small
         spacing: Style.spacing.small
 
         RowLayout {
-          id: headerRow
           Layout.fillWidth: true
           spacing: Style.spacing.small
-
-          Rectangle {
-            id: sidebarToggle
-            Layout.preferredWidth: root.iconSize + Style.padding.small * 2
-            Layout.preferredHeight: root.iconSize + Style.padding.small * 2
-            radius: Style.rounding.small
-            color: toggleMouseArea.containsMouse ? ThemeService.palette.mPrimary : "transparent"
-
-            Behavior on color {
-              ICAnim {}
-            }
-
-            IIcon {
-              anchors.centerIn: parent
-              icon: root.expanded ? "right_panel_close" : "left_panel_close"
-              color: toggleMouseArea.containsMouse ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
-              font.pointSize: Style.font.size.large
-              width: root.iconSize
-              height: root.iconSize
-            }
-
-            MouseArea {
-              id: toggleMouseArea
-              anchors.fill: parent
-              hoverEnabled: true
-              cursorShape: Qt.PointingHandCursor
-              onClicked: {
-                root.expanded = !root.expanded;
-              }
-            }
-          }
-
-          IDivider {
-            orientation: "vertical"
-            Layout.preferredHeight: sidebarToggle.height - Style.padding.small * 2
-          }
-
-          IText {
-            text: root.tabsModel[root.currentTabIndex]?.label ? root.tabsModel[root.currentTabIndex].label : ""
-            font.weight: Font.Medium
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-          }
-
           IIconButton {
-            icon: "close"
-            Layout.alignment: Qt.AlignVCenter
-            onClicked: root.closeRequested()
+            icon: root.expanded ? "right_panel_close" : "left_panel_close"
+            onClicked: root.expanded = !root.expanded
           }
+          IDivider { orientation: "vertical"; Layout.preferredHeight: Style.widget.size - Style.padding.small * 2 }
+          IText {
+            Layout.fillWidth: true
+            text: root.currentTab ? root.currentTab.label : "Settings"
+            font.weight: Font.Medium
+            font.pointSize: Style.font.size.larger
+          }
+          IIconButton { icon: "close"; onClicked: root.closeRequested() }
         }
+        IDivider { Layout.fillWidth: true }
 
-        IDivider {
-          Layout.fillWidth: true
-        }
-
-        Rectangle {
+        Item {
+          id: tabViewport
           Layout.fillWidth: true
           Layout.fillHeight: true
-          color: "transparent"
+          clip: true
 
-          Repeater {
-            model: root.tabsModel
-            delegate: Loader {
-              id: loader
-              required property int index
+          Loader {
+            id: tabLoader
+            width: parent.width
+            height: parent.height
+            x: root.tabOffset
+            opacity: root.tabOpacity
+            asynchronous: false
 
-              active: index === root.currentTabIndex
-              anchors.fill: parent
+            Behavior on x { IAnim {} }
+            Behavior on opacity { IAnim {} }
 
-              sourceComponent: IFlickable {
-                anchors.fill: parent
-                anchors.margins: Style.padding.small
-                contentWidth: parent.width
-                contentHeight: tabLoader.item ? tabLoader.item.implicitHeight : 0
-                boundsBehavior: Flickable.StopAtBounds
-
-                Loader {
-                  id: tabLoader
-                  active: true
-                  sourceComponent: root.tabsModel[index]?.source
-                  width: parent.width
-                  onLoaded: {
-                    if (item && item.hasOwnProperty("screen")) {
-                      item.screen = root.screen;
-                    }
-                  }
-                }
-              }
-            }
+            sourceComponent: tabPageContainer
           }
         }
       }
     }
   }
 
-  Component {
-    id: barTab
-    Bar {}
-  }
+  Component { id: generalTab; SettingsTabs.General {} }
+  Component { id: appearanceTab; SettingsTabs.Appearance {} }
+  Component { id: barTab; SettingsTabs.Bar {} }
+  Component { id: displaysTab; SettingsTabs.Displays {} }
+  Component { id: networkTab; SettingsTabs.Network {} }
+  Component { id: audioTab; SettingsTabs.Audio {} }
+  Component { id: notificationsTab; SettingsTabs.Notifications {} }
+  Component { id: dashboardTab; SettingsTabs.Dashboard {} }
+  Component { id: systemTab; SettingsTabs.System {} }
+  Component { id: aboutTab; SettingsTabs.About {} }
 
   Component {
-    id: generalTab
-    General {}
+    id: tabPageContainer
+    IFlickable {
+      anchors.fill: parent
+      anchors.margins: Style.padding.small
+      contentWidth: width
+      contentHeight: Math.max(height, pageLoader.item ? pageLoader.item.implicitHeight : 0)
+      boundsBehavior: Flickable.StopAtBounds
+      clip: true
+
+      Loader {
+        id: pageLoader
+        width: parent.width
+        sourceComponent: root.currentTab ? root.currentTab.source : null
+      }
+    }
   }
 }

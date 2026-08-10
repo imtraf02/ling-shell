@@ -104,12 +104,13 @@ Singleton {
   }
 
   function generateFromWallpaper(mode, type) {
-    if (!ProgramCheckerService.matugenAvailable) {
-      console.warn("Matugen not available");
+    if (!ProgramCheckerService.ensure("matugenAvailable")) {
+      if (ProgramCheckerService.isChecked("matugenAvailable"))
+        console.warn("Matugen not available");
       root.loading = false;
       return;
     }
-    const wallpaper = WallpaperService.getWallpaper(Screen.name);
+    const wallpaper = LiveWallpaperService.hasFrame(Screen.name) ? LiveWallpaperService.framePath(Screen.name) : WallpaperService.getWallpaper(Screen.name);
     if (!wallpaper) {
       root.loading = false;
       return;
@@ -173,6 +174,26 @@ Singleton {
   Connections {
     target: WallpaperService
     function onWallpaperChanged() {
+      if (Settings.appearance.theme.dynamic)
+        root.refresh();
+    }
+  }
+
+  Connections {
+    target: LiveWallpaperService
+    function onFrameChanged() {
+      if (Settings.appearance.theme.dynamic)
+        root.refresh();
+    }
+    function onLiveWallpaperChanged() {
+      if (Settings.appearance.theme.dynamic)
+        root.refresh();
+    }
+  }
+
+  Connections {
+    target: ProgramCheckerService
+    function onMatugenAvailableChanged() {
       if (Settings.appearance.theme.dynamic)
         root.refresh();
     }

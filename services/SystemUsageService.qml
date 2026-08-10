@@ -12,6 +12,8 @@ Singleton {
 
   readonly property int minimumIntervalMs: 250
   readonly property int defaultIntervalMs: 3000
+  property var activeConsumers: ({})
+  readonly property bool active: Object.keys(activeConsumers).length > 0
 
   function normalizeInterval(value) {
     return Math.max(minimumIntervalMs, value || defaultIntervalMs);
@@ -169,7 +171,7 @@ Singleton {
     }
   }
 
-  Component.onCompleted: {
+  function startSampling() {
     cpuTempNameReader.checkNext();
     gpuTempNameReader.checkNext();
     zfsArcStatsFile.reload();
@@ -177,10 +179,28 @@ Singleton {
     loadAvgFile.reload();
   }
 
+  function setConsumer(id, enabled) {
+    const next = Object.assign({}, activeConsumers);
+    if (enabled)
+      next[id] = true;
+    else
+      delete next[id];
+    const wasActive = active;
+    activeConsumers = next;
+    if (!wasActive && active)
+      startSampling();
+  }
+
+  // Compatibility for external widgets using the previous API.
+  function setActive(value) {
+    setConsumer("legacy", value);
+  }
+
   Connections {
     target: Settings.systemMonitor
     function onEnableDgpuMonitoringChanged() {
-      restartGpuDetection();
+      if (root.active)
+        restartGpuDetection();
     }
   }
 
@@ -200,7 +220,7 @@ Singleton {
     id: cpuUsageTimer
     interval: root.normalizeInterval(Settings.systemMonitor.cpuPollingInterval)
     repeat: true
-    running: true
+    running: root.active
     triggeredOnStart: true
     onIntervalChanged: {
       if (running) {
@@ -214,7 +234,7 @@ Singleton {
     id: loadAvgTimer
     interval: root.normalizeInterval(Settings.systemMonitor.loadAvgPollingInterval)
     repeat: true
-    running: true
+    running: root.active
     triggeredOnStart: true
     onIntervalChanged: {
       if (running) {
@@ -228,7 +248,7 @@ Singleton {
     id: cpuTempTimer
     interval: root.normalizeInterval(Settings.systemMonitor.tempPollingInterval)
     repeat: true
-    running: true
+    running: root.active
     triggeredOnStart: true
     onIntervalChanged: {
       if (running) {
@@ -242,7 +262,7 @@ Singleton {
     id: memoryTimer
     interval: root.normalizeInterval(Settings.systemMonitor.memPollingInterval)
     repeat: true
-    running: true
+    running: root.active
     triggeredOnStart: true
     onIntervalChanged: {
       if (running) {
@@ -259,7 +279,7 @@ Singleton {
     id: diskTimer
     interval: root.normalizeInterval(Settings.systemMonitor.diskPollingInterval)
     repeat: true
-    running: true
+    running: root.active
     triggeredOnStart: true
     onIntervalChanged: {
       if (running) {
@@ -273,7 +293,7 @@ Singleton {
     id: networkTimer
     interval: root.normalizeInterval(Settings.systemMonitor.networkPollingInterval)
     repeat: true
-    running: true
+    running: root.active
     triggeredOnStart: true
     onIntervalChanged: {
       if (running) {
@@ -287,7 +307,7 @@ Singleton {
     id: gpuTempTimer
     interval: root.normalizeInterval(Settings.systemMonitor.gpuPollingInterval)
     repeat: true
-    running: root.gpuAvailable
+    running: root.active && root.gpuAvailable
     triggeredOnStart: true
     onIntervalChanged: {
       if (running) {

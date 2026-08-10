@@ -103,17 +103,10 @@ Singleton {
 
     let cmd = [];
 
-    if (ProgramCheckerService.app2unitAvailable) {
-      if (entry.runInTerminal)
-        cmd = ["app2unit", "--", "ghostty", "-e", ...entry.command];
-      else
-        cmd = ["app2unit", "--", ...entry.command];
-    } else {
-      if (entry.runInTerminal)
-        cmd = ["ghostty", "-e", ...entry.command];
-      else
-        cmd = [...entry.command];
-    }
+    if (entry.runInTerminal)
+      cmd = ["ghostty", "-e", ...entry.command];
+    else
+      cmd = [...entry.command];
 
     Quickshell.execDetached({
       command: cmd,

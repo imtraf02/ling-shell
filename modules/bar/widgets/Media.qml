@@ -15,6 +15,7 @@ Item {
   property string placeholderText: "No active player"
 
   readonly property bool hasActivePlayer: MediaService.currentPlayer !== null
+  readonly property bool shouldVisualize: root.visible && MediaService.isPlaying
   readonly property real padding: Style.padding.normal
   readonly property real spacing: Style.spacing.small
   readonly property real maxWidth: 280
@@ -22,6 +23,23 @@ Item {
 
   implicitWidth: Math.min(calculateContentWidth(), maxWidth)
   implicitHeight: Style.bar.innerHeight
+
+  function cavaId() {
+    return "bar-media-" + (root.screen?.name || "unknown");
+  }
+
+  onShouldVisualizeChanged: {
+    if (shouldVisualize)
+      CavaService.registerComponent(cavaId());
+    else
+      CavaService.unregisterComponent(cavaId());
+  }
+
+  Component.onCompleted: {
+    if (shouldVisualize)
+      CavaService.registerComponent(cavaId());
+  }
+  Component.onDestruction: CavaService.unregisterComponent(cavaId())
 
   Behavior on implicitWidth {
     IAnim {}
@@ -68,7 +86,7 @@ Item {
 
       Loader {
         anchors.centerIn: parent
-        active: MediaService.isPlaying
+        active: MediaService.isPlaying && CavaService.available
         z: 0
 
         sourceComponent: ILinearSpectrum {

@@ -43,6 +43,58 @@ Scope {
   }
 
   IpcHandler {
+    target: "media"
+
+    function toggle() {
+      root.withTargetScreen(screen => {
+        const panel = PanelService.getPanel("panel:media", screen);
+        if (panel) {
+          panel.toggle();
+          return;
+        }
+        Qt.callLater(() => PanelService.getPanel("panel:media", screen)?.toggle());
+      });
+    }
+  }
+
+  IpcHandler {
+    target: "dashboard"
+
+    function toggle() {
+      if (!Settings.dashboard.enabled)
+        return;
+      root.withTargetScreen(screen => {
+        const panel = PanelService.getPanel("panel:dashboard", screen);
+        if (panel) {
+          panel.toggle();
+          return;
+        }
+        Qt.callLater(() => PanelService.getPanel("panel:dashboard", screen)?.toggle());
+      });
+    }
+
+    function open(tab: string) {
+      if (!Settings.dashboard.enabled)
+        return;
+      DashboardService.select(tab || Settings.dashboard.defaultTab);
+      root.withTargetScreen(screen => {
+        const panel = PanelService.getPanel("panel:dashboard", screen);
+        if (panel) {
+          panel.open();
+          return;
+        }
+        Qt.callLater(() => PanelService.getPanel("panel:dashboard", screen)?.open());
+      });
+    }
+
+    function close() {
+      const panel = PanelService.openedPanel;
+      if (panel && String(panel.objectName).startsWith("panel:dashboard-"))
+        panel.close();
+    }
+  }
+
+  IpcHandler {
     target: "audio"
 
     function volume(action: string) {

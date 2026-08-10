@@ -6,15 +6,14 @@ import Quickshell.Io
 import Quickshell.Services.Notifications
 import QtQuick
 import qs.common
-import qs.widgets
 import qs.services
 
 Singleton {
   id: root
 
-  property list<Notif> list: []
-  readonly property list<Notif> notClosed: list.filter(n => !n.closed)
-  readonly property list<Notif> popups: list.filter(n => n.popup)
+  property var list: []
+  readonly property var notClosed: (list || []).filter(n => n && !n.closed)
+  readonly property var popups: (list || []).filter(n => n && n.popup && !n.closed)
   property alias dnd: props.dnd
 
   property bool loaded
@@ -70,6 +69,7 @@ Singleton {
         notification: notif
       });
       root.list = [comp, ...root.list];
+      root.pruneHistory();
     }
   }
 
@@ -78,11 +78,17 @@ Singleton {
     path: Directories.shellConfigNotificationsPath
 
     onLoaded: {
-      const data = JSON.parse(text());
-      for (const n of data)
-        root.list.push(notifComp.createObject(root, n));
-      root.list.sort((a, b) => b.time - a.time);
+      try {
+        const data = JSON.parse(text());
+        const cutoff = root.retentionCutoff();
+        const limit = Math.max(10, Settings.notifications.historyLimit);
+        const valid = data.filter(n => n && new Date(n.time).getTime() >= cutoff).sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, limit);
+        root.list = valid.map(n => notifComp.createObject(root, n)).filter(Boolean);
+      } catch (e) {
+        root.list = [];
+      }
       root.loaded = true;
+      root.pruneHistory();
     }
 
     onLoadFailed: err => {
@@ -93,14 +99,48 @@ Singleton {
     }
   }
 
+  Connections {
+    target: Settings.notifications
+    function onHistoryLimitChanged() { root.pruneHistory(); }
+    function onHistoryRetentionDaysChanged() { root.pruneHistory(); }
+  }
+
+  function retentionCutoff() {
+    const days = Math.max(1, Settings.notifications.historyRetentionDays);
+    return Date.now() - days * 24 * 60 * 60 * 1000;
+  }
+
+  function destroyNotification(notif) {
+    if (!notif)
+      return;
+    notif.closed = true;
+    notif.notification?.dismiss();
+    notif.destroy();
+  }
+
+  function pruneHistory() {
+    const cutoff = retentionCutoff();
+    const limit = Math.max(10, Settings.notifications.historyLimit);
+    const valid = (root.list || []).filter(n => n && !n.closed && n.time.getTime() >= cutoff).sort((a, b) => b.time.getTime() - a.time.getTime());
+    const keep = valid.slice(0, limit);
+    const removed = (root.list || []).filter(n => n && !keep.includes(n));
+    if (removed.length === 0 && keep.length === root.list.length)
+      return;
+    root.list = keep;
+    for (const notif of removed)
+      destroyNotification(notif);
+  }
+
   function clear() {
+    const oldList = (root.list || []).slice();
+    root.list = [];
+    for (const notif of oldList)
+      root.destroyNotification(notif);
     try {
-      Quickshell.execDetached(["sh", "-c", `rm -rf "
-${Directories.shellCacheNotificationsDir}"*`]);
+      Quickshell.execDetached(["find", Directories.shellCacheNotificationsDir, "-maxdepth", "1", "-type", "f", "-delete"]);
     } catch (e) {
       console.error("Notifications", "Failed to clear cache directory:", e);
     }
-    root.list = [];
   }
 
   component Notif: QtObject {
@@ -115,7 +155,7 @@ ${Directories.shellCacheNotificationsDir}"*`]);
       const diff = TimeService.date.getTime() - time.getTime();
       const m = Math.floor(diff / 60000);
       if (m < 1)
-        return qsTr("now");
+        return "now";
       const h = Math.floor(m / 60);
       const d = Math.floor(h / 24);
       if (d > 0)
@@ -139,31 +179,11 @@ ${Directories.shellCacheNotificationsDir}"*`]);
     property list<var> actions
 
     readonly property Timer timer: Timer {
-      running: true
+      running: notif.popup && Settings.notifications.expire
       interval: notif.expireTimeout > 0 ? notif.expireTimeout : Settings.notifications.defaultExpireTimeout
       onTriggered: {
         if (Settings.notifications.expire)
           notif.popup = false;
-      }
-    }
-
-    readonly property LazyLoader dummyImageLoader: LazyLoader {
-      active: false
-      PanelWindow {
-        implicitWidth: Style.notifications.image
-        implicitHeight: Style.notifications.image
-        color: "transparent"
-        mask: Region {}
-        IImageCached {
-          anchors.fill: parent
-          fillMode: Image.PreserveAspectCrop
-          cache: false
-          asynchronous: true
-          opacity: 0
-          maxCacheDimension: 384
-          imagePath: Qt.resolvedUrl(notif.image)
-          cacheFolder: Directories.shellCacheNotificationsDir
-        }
       }
     }
 
@@ -187,8 +207,6 @@ ${Directories.shellCacheNotificationsDir}"*`]);
       }
       function onImageChanged() {
         notif.image = notif.notification.image;
-        if (notif.notification?.image)
-          notif.dummyImageLoader.active = true;
       }
       function onExpireTimeoutChanged() {
         notif.expireTimeout = notif.notification.expireTimeout;
@@ -248,8 +266,6 @@ ${Directories.shellCacheNotificationsDir}"*`]);
             text: a.text,
             invoke: () => a.invoke()
           }));
-      if (notification.image)
-        dummyImageLoader.active = true;
     }
   }
 

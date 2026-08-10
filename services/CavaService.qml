@@ -12,6 +12,12 @@ Singleton {
   property var registeredComponents: ({})
 
   property bool shouldRun: Object.keys(registeredComponents).length > 0
+  readonly property bool available: ProgramCheckerService.cavaAvailable
+
+  onShouldRunChanged: {
+    if (shouldRun)
+      ProgramCheckerService.ensure("cavaAvailable");
+  }
 
   function registerComponent(componentId) {
     root.registeredComponents[componentId] = true;
@@ -52,7 +58,7 @@ Singleton {
   Process {
     id: process
     stdinEnabled: true
-    running: root.shouldRun
+    running: root.shouldRun && root.available
     command: ["cava", "-p", "/dev/stdin"]
 
     onExited: {
@@ -77,7 +83,13 @@ Singleton {
 
     stdout: SplitParser {
       onRead: data => {
-        root.values = data.slice(0, -1).split(";").map(v => parseInt(v, 10) / 100);
+        const fields = String(data).trim().split(";").filter(value => value !== "");
+        const nextValues = [];
+        for (let i = 0; i < root.barsCount; i++) {
+          const parsed = i < fields.length ? parseInt(fields[i], 10) : 0;
+          nextValues.push(isFinite(parsed) ? Math.max(0, Math.min(1, parsed / 100)) : 0);
+        }
+        root.values = nextValues;
       }
     }
 

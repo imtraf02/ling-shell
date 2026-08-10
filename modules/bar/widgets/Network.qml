@@ -66,7 +66,10 @@ Item {
     }
   }
 
-  Component.onCompleted: netState.update()
+  Component.onCompleted: {
+    ProgramCheckerService.ensure("nmcliAvailable");
+    netState.update();
+  }
 
   BarPill {
     id: pill

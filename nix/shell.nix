@@ -1,5 +1,7 @@
 {
   quickshell,
+  cava,
+  matugen,
   alejandra,
   statix,
   deadnix,
@@ -29,6 +31,8 @@ mkShellNoCC {
   #it's faster than mkDerivation / mkShell
   packages = [
     quickshell
+    cava
+    matugen
 
     # nix
     alejandra # formatter

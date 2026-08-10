@@ -14,11 +14,24 @@ Singleton {
   property bool isReady: false
 
   property string uptime: "--"
+  property var uptimeConsumers: ({})
+  readonly property bool uptimeActive: Object.keys(uptimeConsumers).length > 0
   readonly property string user: Quickshell.env("USER") || "user"
   readonly property string wm: Quickshell.env("XDG_CURRENT_DESKTOP") || Quickshell.env("XDG_SESSION_DESKTOP")
   readonly property string shell: Quickshell.env("SHELL").split("/").pop()
 
   function init() {
+  }
+
+  function setUptimeConsumer(id, enabled) {
+    const next = Object.assign({}, uptimeConsumers);
+    if (enabled)
+      next[id] = true;
+    else
+      delete next[id];
+    uptimeConsumers = next;
+    if (uptimeActive && !uptimeProcess.running)
+      uptimeProcess.running = true;
   }
 
   // Internal helpers
@@ -115,14 +128,14 @@ Singleton {
   Timer {
     interval: 60000
     repeat: true
-    running: true
+    running: root.uptimeActive
     onTriggered: uptimeProcess.running = true
   }
 
   Process {
     id: uptimeProcess
     command: ["cat", "/proc/uptime"]
-    running: true
+    running: false
 
     stdout: StdioCollector {
       onStreamFinished: {

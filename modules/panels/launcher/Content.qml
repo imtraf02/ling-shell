@@ -14,14 +14,15 @@ Item {
   required property real maxHeight
 
   readonly property bool showWallpapers: searchInput.inputItem.text.startsWith(`${Settings.launcher.actionPrefix}wallpaper `)
-  readonly property var currentList: showWallpapers ? wallpaperList.item : appList.item
+  readonly property bool showLiveWallpapers: searchInput.inputItem.text.startsWith(`${Settings.launcher.actionPrefix}live-wallpaper `)
+  readonly property var currentList: showWallpapers ? wallpaperList.item : (showLiveWallpapers ? liveWallpaperList.item : appList.item)
 
   anchors.horizontalCenter: parent.horizontalCenter
   anchors.bottom: parent.bottom
 
   clip: true
 
-  state: showWallpapers ? "wallpapers" : "apps"
+  state: showWallpapers ? "wallpapers" : (showLiveWallpapers ? "live-wallpapers" : "apps")
 
   states: [
     State {
@@ -45,6 +46,15 @@ Item {
         root.implicitWidth: wallpaperList.implicitWidth
         root.implicitHeight: wallpaperList.implicitHeight
         wallpaperList.active: true
+      }
+    },
+    State {
+      name: "live-wallpapers"
+
+      PropertyChanges {
+        root.implicitWidth: liveWallpaperList.implicitWidth
+        root.implicitHeight: liveWallpaperList.implicitHeight
+        liveWallpaperList.active: true
       }
     }
   ]
@@ -83,6 +93,19 @@ Item {
   }
 
   Loader {
+    id: liveWallpaperList
+    active: false
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    sourceComponent: WallpaperList {
+      searchInput: root.searchInput
+      panel: root.panel
+      liveMode: true
+    }
+  }
+
+  Loader {
     id: wallpaperList
 
     active: false
@@ -110,7 +133,7 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
 
     IIcon {
-      icon: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
+      icon: root.state === "apps" ? "manage_search" : (root.state === "live-wallpapers" ? "movie" : "wallpaper_slideshow")
       color: ThemeService.palette.mOnSurfaceVariant
       font.pointSize: Style.font.size.extraLarge
 
@@ -121,7 +144,7 @@ Item {
       anchors.verticalCenter: parent.verticalCenter
 
       IText {
-        text: root.state === "wallpapers" ? "No wallpapers found" : "No results"
+        text: root.state === "apps" ? "No results" : (root.state === "live-wallpapers" ? "No live wallpapers found" : "No wallpapers found")
         color: ThemeService.palette.mOnSurfaceVariant
         font.pointSize: Style.font.size.large
       }

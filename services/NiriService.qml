@@ -9,6 +9,7 @@ Item {
 
   property ListModel workspaces: ListModel {}
   property var windows: []
+  property var windowsByWorkspace: ({})
   property int focusedWindowIndex: -1
 
   property bool overviewActive: false
@@ -24,6 +25,11 @@ Item {
   property var workspaceCache: ({})
 
   function initialize() {
+    if (!Quickshell.env("NIRI_SOCKET")) {
+      console.error("Niri", "NIRI_SOCKET is required; start Ling Shell from a Niri session.");
+      return;
+    }
+
     niriEventStream.connected = true;
     niriCommandSocket.connected = true;
 
@@ -275,6 +281,7 @@ Item {
       windowsList.push(getWindowData(win));
     }
     windows = toSortedWindowList(windowsList);
+    rebuildWindowIndex();
     windowListChanged();
 
     // Find focused window index in the SORTED windows array
@@ -286,6 +293,17 @@ Item {
       }
     }
     activeWindowChanged();
+  }
+
+  function rebuildWindowIndex() {
+    const grouped = {};
+    for (const window of windows) {
+      const workspaceId = window.workspaceId;
+      if (!grouped[workspaceId])
+        grouped[workspaceId] = [];
+      grouped[workspaceId].push(window);
+    }
+    windowsByWorkspace = grouped;
   }
 
   function handleWindowOpenedOrChanged(eventData) {
@@ -303,6 +321,7 @@ Item {
         windows.push(newWindow);
       }
       windows = toSortedWindowList(windows);
+      rebuildWindowIndex();
 
       if (newWindow.isFocused) {
         focusedWindowIndex = windows.findIndex(w => w.id === windowData.id);
@@ -335,6 +354,7 @@ Item {
         }
 
         windows.splice(windowIndex, 1);
+        rebuildWindowIndex();
         windowListChanged();
       }
     } catch (e) {}

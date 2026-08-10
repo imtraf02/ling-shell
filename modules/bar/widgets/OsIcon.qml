@@ -45,8 +45,19 @@ Rectangle {
     onExited: {
       root.hovered = false;
     }
-    onClicked: {
-      PanelService.getPanel("panel:control-center", root.screen).toggle(this);
+    onClicked: mouse => {
+      if (mouse.button === Qt.RightButton || !Settings.dashboard.enabled) {
+        PanelService.getPanel("panel:control-center", root.screen).toggle(root);
+        return;
+      }
+      if (mouse.button === Qt.LeftButton) {
+        DashboardService.resetToDefault();
+        const panel = PanelService.getPanel("panel:dashboard", root.screen);
+        if (panel)
+          panel.toggle();
+        else
+          Qt.callLater(() => PanelService.getPanel("panel:dashboard", root.screen)?.toggle());
+      }
     }
   }
 }

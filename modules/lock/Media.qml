@@ -60,7 +60,7 @@ Item {
 
     Loader {
       anchors.fill: parent
-      active: true
+      active: CavaService.available
       sourceComponent: ILinearSpectrum {
         anchors.fill: parent
         values: CavaService.values

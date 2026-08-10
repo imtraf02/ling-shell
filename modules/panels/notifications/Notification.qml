@@ -125,12 +125,12 @@ Rectangle {
 
         Layout.fillWidth: true
         textFormat: Text.MarkdownText
-        text: root.modelData.body.replace(/(.)\n(?!\n)/g, "$1\n\n") || qsTr("No body here! :/")
+        text: root.modelData.body.replace(/(.)\n(?!\n)/g, "$1\n\n") || "No body here! :/"
         color: root.modelData.urgency === "critical" ? ThemeService.palette.mSecondary : ThemeService.palette.mOutline
         wrapMode: Text.WordWrap
 
         onLinkActivated: link => {
-          Quickshell.execDetached(["app2unit", "-O", "--", link]);
+          Quickshell.execDetached(["xdg-open", link]);
           PanelService.openedPanel.close();
         }
       }

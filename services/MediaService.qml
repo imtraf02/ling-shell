@@ -9,22 +9,44 @@ Singleton {
   id: root
 
   property var currentPlayer: null
+  readonly property var statePlayer: currentPlayer ? (currentPlayer._stateSource || currentPlayer) : null
+  readonly property var controlPlayer: currentPlayer ? (currentPlayer._controlTarget || currentPlayer) : null
   property real currentPosition: 0
   property bool isSeeking: false
   property int selectedPlayerIndex: 0
-  property bool isPlaying: currentPlayer ? (currentPlayer.playbackState === MprisPlaybackState.Playing || currentPlayer.isPlaying) : false
-  property string trackTitle: currentPlayer ? (currentPlayer.trackTitle !== undefined ? currentPlayer.trackTitle.replace(/(\r\n|\n|\r)/g, "") : "") : ""
-  property string trackArtist: currentPlayer ? (currentPlayer.trackArtist || "") : ""
-  property string trackAlbum: currentPlayer ? (currentPlayer.trackAlbum || "") : ""
-  property string trackArtUrl: currentPlayer ? (currentPlayer.trackArtUrl || "") : ""
-  property real trackLength: currentPlayer ? ((currentPlayer.length < infiniteTrackLength) ? currentPlayer.length : 0) : 0
+  property bool isPlaying: statePlayer ? (statePlayer.playbackState === MprisPlaybackState.Playing || statePlayer.isPlaying) : false
+  property string trackTitle: statePlayer ? (statePlayer.trackTitle !== undefined ? statePlayer.trackTitle.replace(/(\r\n|\n|\r)/g, "") : "") : ""
+  property string trackArtist: statePlayer ? (statePlayer.trackArtist || "") : ""
+  property string trackAlbum: statePlayer ? (statePlayer.trackAlbum || "") : ""
+  property string trackArtUrl: statePlayer ? (statePlayer.trackArtUrl || "") : ""
+  property real trackLength: 0
 
-  property bool canPlay: currentPlayer ? currentPlayer.canPlay : false
-  property bool canPause: currentPlayer ? currentPlayer.canPause : false
-  property bool canGoNext: currentPlayer ? currentPlayer.canGoNext : false
-  property bool canGoPrevious: currentPlayer ? currentPlayer.canGoPrevious : false
-  property bool canSeek: currentPlayer ? currentPlayer.canSeek : false
+  property bool canPlay: controlPlayer ? controlPlayer.canPlay : false
+  property bool canPause: controlPlayer ? controlPlayer.canPause : false
+  property bool canGoNext: controlPlayer ? controlPlayer.canGoNext : false
+  property bool canGoPrevious: controlPlayer ? controlPlayer.canGoPrevious : false
+  property bool canSeek: statePlayer ? statePlayer.canSeek : false
   property real infiniteTrackLength: 922337203685
+
+  function sourceTrackLength() {
+    if (!statePlayer)
+      return 0;
+    if (statePlayer.lengthSupported === false)
+      return 0;
+    const value = Number(statePlayer.length);
+    return isFinite(value) && value > 0 && value < infiniteTrackLength ? value : 0;
+  }
+
+  function refreshTrackLength(allowDecrease) {
+    const candidate = sourceTrackLength();
+    if (candidate <= 0) {
+      if (allowDecrease || (statePlayer && statePlayer.lengthSupported === false))
+        trackLength = 0;
+      return;
+    }
+    if (allowDecrease || trackLength <= 0 || candidate > trackLength)
+      trackLength = candidate;
+  }
 
   Component.onCompleted: {
     updateCurrentPlayer();
@@ -173,7 +195,7 @@ Singleton {
       if (newPlayer !== currentPlayer) {
         currentPlayer = newPlayer;
         selectedPlayerIndex = index;
-        currentPosition = currentPlayer ? currentPlayer.position : 0;
+        currentPosition = statePlayer ? statePlayer.position : 0;
       }
     }
   }
@@ -182,18 +204,16 @@ Singleton {
     let newPlayer = findActivePlayer();
     if (newPlayer !== currentPlayer) {
       currentPlayer = newPlayer;
-      currentPosition = currentPlayer ? currentPlayer.position : 0;
+      currentPosition = statePlayer ? statePlayer.position : 0;
     }
   }
 
   function playPause() {
-    if (currentPlayer) {
-      let stateSource = currentPlayer._stateSource || currentPlayer;
-      let controlTarget = currentPlayer._controlTarget || currentPlayer;
-      if (stateSource.playbackState === MprisPlaybackState.Playing) {
-        controlTarget.pause();
+    if (statePlayer && controlPlayer) {
+      if (statePlayer.playbackState === MprisPlaybackState.Playing) {
+        controlPlayer.pause();
       } else {
-        controlTarget.play();
+        controlPlayer.play();
       }
     }
   }
@@ -234,30 +254,40 @@ Singleton {
   }
 
   function seek(position) {
-    let target = currentPlayer ? (currentPlayer._controlTarget || currentPlayer) : null;
+    const target = statePlayer;
     if (target && target.canSeek) {
-      target.position = position;
-      currentPosition = position;
+      const maximum = trackLength > 0 ? trackLength : sourceTrackLength();
+      const boundedPosition = Math.max(0, maximum > 0 ? Math.min(maximum, position) : position);
+      target.position = boundedPosition;
+      currentPosition = boundedPosition;
     }
   }
 
   function seekByRatio(ratio) {
-    let target = currentPlayer ? (currentPlayer._controlTarget || currentPlayer) : null;
-    if (target && target.canSeek && target.length > 0) {
-      let seekPosition = ratio * target.length;
-      target.position = seekPosition;
-      currentPosition = seekPosition;
+    const target = statePlayer;
+    if (target && target.canSeek && trackLength > 0) {
+      const boundedRatio = Math.max(0, Math.min(1, Number(ratio) || 0));
+      seek(boundedRatio * trackLength);
     }
+  }
+
+  function seekRelative(seconds) {
+    const target = statePlayer;
+    if (!target || !target.canSeek)
+      return;
+    const sourcePosition = Number(target.position);
+    const basePosition = isFinite(sourcePosition) ? sourcePosition : currentPosition;
+    seek(basePosition + seconds);
   }
 
   Timer {
     id: positionTimer
     interval: 1000
-    running: currentPlayer && !root.isSeeking && currentPlayer.isPlaying && currentPlayer.length > 0 && currentPlayer.playbackState === MprisPlaybackState.Playing
+    running: statePlayer && !root.isSeeking && root.isPlaying && statePlayer.length > 0
     repeat: true
     onTriggered: {
-      if (currentPlayer && !root.isSeeking && currentPlayer.isPlaying && currentPlayer.playbackState === MprisPlaybackState.Playing) {
-        currentPosition = currentPlayer.position;
+      if (statePlayer && !root.isSeeking && root.isPlaying) {
+        currentPosition = statePlayer.position;
       } else {
         running = false;
       }
@@ -265,37 +295,42 @@ Singleton {
   }
 
   Connections {
-    target: currentPlayer
+    target: statePlayer
     function onPositionChanged() {
-      if (!root.isSeeking && currentPlayer) {
-        currentPosition = currentPlayer.position;
+      if (!root.isSeeking && statePlayer) {
+        currentPosition = statePlayer.position;
       }
     }
     function onPlaybackStateChanged() {
-      if (!root.isSeeking && currentPlayer) {
-        currentPosition = currentPlayer.position;
+      if (!root.isSeeking && statePlayer) {
+        currentPosition = statePlayer.position;
       }
+      if (!autoSwitchingPaused)
+        Qt.callLater(root.updateCurrentPlayer);
+    }
+    function onLengthChanged() {
+      root.refreshTrackLength(false);
+    }
+    function onLengthSupportedChanged() {
+      root.refreshTrackLength(true);
+    }
+    function onTrackChanged() {
+      root.trackLength = 0;
+      Qt.callLater(() => root.refreshTrackLength(true));
     }
   }
 
   onCurrentPlayerChanged: {
-    if (!currentPlayer || !currentPlayer.isPlaying || currentPlayer.playbackState !== MprisPlaybackState.Playing) {
+    if (!statePlayer || !isPlaying) {
       currentPosition = 0;
     }
   }
 
-  Timer {
-    id: playerStateMonitor
-    interval: 2000
-    repeat: true
-    running: true
-    onTriggered: {
-      if (autoSwitchingPaused)
-        return;
-      if (!currentPlayer || !currentPlayer.isPlaying || currentPlayer.playbackState !== MprisPlaybackState.Playing) {
-        updateCurrentPlayer();
-      }
-    }
+  onStatePlayerChanged: {
+    trackLength = 0;
+    refreshTrackLength(true);
+    if (!root.isSeeking)
+      currentPosition = statePlayer ? statePlayer.position : 0;
   }
 
   Connections {

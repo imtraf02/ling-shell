@@ -23,9 +23,105 @@ Singleton {
   readonly property alias lock: adapter.lock
   readonly property alias notifications: adapter.notifications
   readonly property alias systemMonitor: adapter.systemMonitor
+  readonly property alias dashboard: adapter.dashboard
 
   signal settingsLoaded
   signal settingsSaved
+
+  // Defaults used by the Settings UI. Keep these plain values so a section can
+  // be restored without replacing a JsonObject owned by the adapter.
+  readonly property var sectionDefaults: ({
+      general: {
+        avatarImage: Directories.defaultAvatarPath,
+        maxShown: 7,
+        specialPrefix: "@",
+        actionPrefix: ">",
+        hiddenApps: [],
+        maxWallpapers: 5
+      },
+      appearance: {
+        thickness: 6,
+        cornerRadius: 8,
+        mode: "light",
+        light: "Ling Light",
+        dark: "Ling Dark",
+        dynamic: false,
+        matugenType: "scheme-tonal-spot",
+        sans: "Rubik",
+        mono: "CaskaydiaCove NF",
+        clock: "Rubik"
+      },
+      bar: {
+        persistent: false,
+        showOnHover: false,
+        pillDelay: 200,
+        monitors: [],
+        workspace: {
+          shown: 5, activeIndicator: true, occupiedBg: false, showWindows: true,
+          showWindowsOnSpecialWorkspaces: true, activeTrail: false,
+          perMonitorWorkspaces: true, label: "  ", occupiedLabel: "󰮯",
+          activeLabel: "󰮯", capitalisation: "preserve"
+        },
+        tray: { blacklist: [], favorites: [], colorize: false }
+      },
+      display: {
+        brightnessStep: 5.0,
+        enforceMinimum: true,
+        enableDdcSupport: false,
+        enabled: true,
+        overviewEnabled: true,
+        directory: Directories.defaultWallpaperDir,
+        enableMultiMonitorDirectories: false,
+        recursiveSearch: false,
+        setWallpaperOnAllMonitors: true,
+        defaultWallpaper: "",
+        fillMode: "crop",
+        fillColor: "#000000",
+        monitors: [],
+        liveWallpapers: [],
+        transitionDuration: 500,
+        transitionEdgeSmoothness: 0.05
+      },
+      network: {
+        wifiEnabled: true, bluetoothRssiPollingEnabled: false,
+        bluetoothRssiPollIntervalMs: 10000, bluetoothHideUnnamedDevices: false,
+        wifiDetailsViewMode: "grid", networkPanelView: "wifi"
+      },
+      audio: {
+        volumeStep: 5.0, volumeOverdrive: false, cavaFrameRate: 30,
+        visualizerType: "linear", mprisBlacklist: [], preferredPlayer: ""
+      },
+      notifications: {
+        enabled: true, expire: true, defaultExpireTimeout: 5000,
+        clearThreshold: 0.3, expandThreshold: 20, actionOnClick: false,
+        groupPreviewNum: 3, historyLimit: 100, historyRetentionDays: 30
+      },
+      dashboard: {
+        enabled: true, defaultTab: "home", showHome: true, showMedia: true,
+        showPerformance: true, showWeather: true,
+        weatherLocation: "Ho Chi Minh City", weatherRefreshInterval: 1800000,
+        performance: {
+          showCpu: true, showGpu: true, showMemory: true, showSwap: true,
+          showStorage: true, showNetwork: true, showBattery: true
+        }
+      },
+      system: {
+        gif: "root:/assets/jingliu.gif", dragThreshold: 30, vimKeybinds: false,
+        recolourLogo: false, enableFprint: true, maxFprintTries: 3,
+        cpuWarningThreshold: 80, cpuCriticalThreshold: 90,
+        tempWarningThreshold: 80, tempCriticalThreshold: 90,
+        gpuWarningThreshold: 80, gpuCriticalThreshold: 90,
+        memWarningThreshold: 80, memCriticalThreshold: 90,
+        swapWarningThreshold: 80, swapCriticalThreshold: 90,
+        diskWarningThreshold: 80, diskCriticalThreshold: 90,
+        cpuPollingInterval: 3000, tempPollingInterval: 3000,
+        gpuPollingInterval: 3000, enableDgpuMonitoring: false,
+        memPollingInterval: 3000, diskPollingInterval: 30000,
+        networkPollingInterval: 3000, loadAvgPollingInterval: 3000,
+        useCustomColors: false, warningColor: "", criticalColor: "",
+        externalMonitor: "resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+      }
+    })
 
   Component.onCompleted: {
     settingsFileView.adapter = adapter;
@@ -44,6 +140,78 @@ Singleton {
     settingsFileView.writeAdapter();
     root.ready = true;
     root.settingsSaved();
+  }
+
+  function resetSection(sectionId) {
+    const d = sectionDefaults[sectionId];
+    if (!d)
+      return;
+
+    if (sectionId === "general") {
+      general.avatarImage = d.avatarImage;
+      launcher.maxShown = d.maxShown;
+      launcher.specialPrefix = d.specialPrefix;
+      launcher.actionPrefix = d.actionPrefix;
+      launcher.hiddenApps = d.hiddenApps.slice();
+      launcher.maxWallpapers = d.maxWallpapers;
+    } else if (sectionId === "appearance") {
+      appearance.thickness = d.thickness;
+      appearance.cornerRadius = d.cornerRadius;
+      appearance.theme.mode = d.mode;
+      appearance.theme.light = d.light;
+      appearance.theme.dark = d.dark;
+      appearance.theme.dynamic = d.dynamic;
+      appearance.theme.matugenType = d.matugenType;
+      appearance.font.sans = d.sans;
+      appearance.font.mono = d.mono;
+      appearance.font.clock = d.clock;
+    } else if (sectionId === "bar") {
+      bar.persistent = d.persistent;
+      bar.showOnHover = d.showOnHover;
+      delay.pill = d.pillDelay;
+      bar.monitors = d.monitors.slice();
+      Object.assign(bar.workspace, d.workspace);
+      bar.tray.blacklist = d.tray.blacklist.slice();
+      bar.tray.favorites = d.tray.favorites.slice();
+      bar.tray.colorize = d.tray.colorize;
+    } else if (sectionId === "display") {
+      brightness.brightnessStep = d.brightnessStep;
+      brightness.enforceMinimum = d.enforceMinimum;
+      brightness.enableDdcSupport = d.enableDdcSupport;
+      wallpaper.enabled = d.enabled;
+      wallpaper.overviewEnabled = d.overviewEnabled;
+      wallpaper.directory = d.directory;
+      wallpaper.enableMultiMonitorDirectories = d.enableMultiMonitorDirectories;
+      wallpaper.recursiveSearch = d.recursiveSearch;
+      wallpaper.setWallpaperOnAllMonitors = d.setWallpaperOnAllMonitors;
+      wallpaper.defaultWallpaper = d.defaultWallpaper;
+      wallpaper.fillMode = d.fillMode;
+      wallpaper.fillColor = d.fillColor;
+      wallpaper.monitors = d.monitors.slice();
+      wallpaper.liveWallpapers = d.liveWallpapers.slice();
+      wallpaper.transitionDuration = d.transitionDuration;
+      wallpaper.transitionEdgeSmoothness = d.transitionEdgeSmoothness;
+    } else if (sectionId === "network" || sectionId === "audio" || sectionId === "notifications" || sectionId === "dashboard") {
+      const target = sectionId === "network" ? network : (sectionId === "audio" ? audio : (sectionId === "notifications" ? notifications : dashboard));
+      for (const key in d) {
+        if (sectionId === "dashboard" && key === "performance")
+          Object.assign(target.performance, d.performance);
+        else
+          target[key] = Array.isArray(d[key]) ? d[key].slice() : d[key];
+      }
+    } else if (sectionId === "system") {
+      const sessionKeys = ["gif", "dragThreshold", "vimKeybinds"];
+      const lockKeys = ["recolourLogo", "enableFprint", "maxFprintTries"];
+      for (const key of sessionKeys)
+        session[key] = d[key];
+      for (const key of lockKeys)
+        lock[key] = d[key];
+      for (const key in d) {
+        if (!sessionKeys.includes(key) && !lockKeys.includes(key))
+          systemMonitor[key] = d[key];
+      }
+    }
+    saveImmediate();
   }
 
   FileView {
@@ -87,6 +255,7 @@ Singleton {
     property Lock lock: Lock {}
     property Notifications notifications: Notifications {}
     property SystemMonitor systemMonitor: SystemMonitor {}
+    property Dashboard dashboard: Dashboard {}
   }
 
   component Bar: JsonObject {
@@ -174,6 +343,7 @@ Singleton {
     property string fillMode: "crop"
     property color fillColor: "#000000"
     property list<var> monitors: []
+    property list<var> liveWallpapers: []
     property int transitionDuration: 500
     property real transitionEdgeSmoothness: 0.05
   }
@@ -248,6 +418,30 @@ Singleton {
     property int expandThreshold: 20
     property bool actionOnClick: false
     property int groupPreviewNum: 3
+    property int historyLimit: 100
+    property int historyRetentionDays: 30
+  }
+
+  component Dashboard: JsonObject {
+    property bool enabled: true
+    property string defaultTab: "home"
+    property bool showHome: true
+    property bool showMedia: true
+    property bool showPerformance: true
+    property bool showWeather: true
+    property string weatherLocation: "Ho Chi Minh City"
+    property int weatherRefreshInterval: 1800000
+    property DashboardPerformance performance: DashboardPerformance {}
+  }
+
+  component DashboardPerformance: JsonObject {
+    property bool showCpu: true
+    property bool showGpu: true
+    property bool showMemory: true
+    property bool showSwap: true
+    property bool showStorage: true
+    property bool showNetwork: true
+    property bool showBattery: true
   }
 
   component SystemMonitor: JsonObject {

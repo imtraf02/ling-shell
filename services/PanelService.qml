@@ -7,6 +7,7 @@ Singleton {
   id: root
 
   property var registeredPanels: ({})
+  property var panelHosts: ({})
   property var openedPanel: null
   property var closingPanel: null
   property bool closedImmediately: false
@@ -32,6 +33,39 @@ Singleton {
 
   function registerPanel(panel) {
     registeredPanels[panel.objectName] = panel;
+    registeredPanels = Object.assign({}, registeredPanels);
+  }
+
+  function unregisterPanel(panel) {
+    if (!panel)
+      return;
+    const next = Object.assign({}, registeredPanels);
+    for (const key in next) {
+      if (next[key] === panel)
+        delete next[key];
+    }
+    registeredPanels = next;
+    if (openedPanel === panel)
+      openedPanel = null;
+    if (closingPanel === panel)
+      closingPanel = null;
+    for (let i = 0; i < backgroundSlotAssignments.length; i++) {
+      if (backgroundSlotAssignments[i] === panel)
+        assignToSlot(i, null);
+    }
+  }
+
+  function registerPanelHost(screen, host) {
+    if (screen && host)
+      panelHosts[screen.name] = host;
+  }
+
+  function unregisterPanelHost(screen, host) {
+    if (!screen || panelHosts[screen.name] !== host)
+      return;
+    const next = Object.assign({}, panelHosts);
+    delete next[screen.name];
+    panelHosts = next;
   }
 
   function registerPopupMenuWindow(screen, window) {
@@ -64,7 +98,8 @@ Singleton {
       return registeredPanels[panelKey];
     }
 
-    return null;
+    const host = panelHosts[screen.name];
+    return host ? host.ensurePanel(name) : null;
   }
 
   function hasPanel(name) {

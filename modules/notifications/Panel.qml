@@ -9,6 +9,7 @@ Item {
 
   property ShellScreen screen
   property var panel
+  readonly property bool historyPanelOpen: root.panel?.isPanelOpen === true
 
   visible: height > 0
   implicitWidth: content.implicitWidth
@@ -16,7 +17,7 @@ Item {
 
   states: State {
     name: "hidden"
-    when: root.panel.isPanelOpen
+    when: root.historyPanelOpen
 
     PropertyChanges {
       root.implicitHeight: 0

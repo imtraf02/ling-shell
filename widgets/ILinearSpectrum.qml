@@ -9,6 +9,7 @@ Item {
   property color strokeColor: ThemeService.palette.mOnSurface
   property int strokeWidth: 0
   property var values: []
+  property real barWidthRatio: 0.56
 
   // Minimum signal properties
   property bool showMinimumSignal: false
@@ -28,18 +29,23 @@ Item {
       property int valueIndex: index < root.valuesCount ? root.valuesCount - 1 - index // Mirrored half
       : index - root.valuesCount // Normal half
 
-      property real rawAmp: root.values[valueIndex]
-      property real amp: (root.showMinimumSignal && rawAmp === 0) ? root.minimumSignalValue : rawAmp
+      readonly property real sourceAmp: Number(root.values[valueIndex] ?? 0)
+      readonly property real rawAmp: isFinite(sourceAmp) ? Math.max(0, Math.min(1, sourceAmp)) : 0
+      readonly property real amp: root.showMinimumSignal
+        ? Math.max(root.minimumSignalValue, rawAmp)
+        : rawAmp
 
       color: root.fillColor
       border.color: root.strokeColor
       border.width: root.strokeWidth
-      antialiasing: true
+      antialiasing: false
 
-      width: root.barSlotSize * 0.5
-      height: root.height * amp
-      x: index * root.barSlotSize + (root.barSlotSize * 0.25)
+      width: Math.max(1, root.barSlotSize * Math.max(0.1, Math.min(0.95, root.barWidthRatio)))
+      height: Math.max(root.showMinimumSignal ? 2 : 0, root.height * amp)
+      x: index * root.barSlotSize + (root.barSlotSize - width) / 2
       y: root.height - height
+      radius: Math.min(width / 2, height / 2)
+      visible: root.barSlotSize > 0 && height > 0
     }
   }
 }

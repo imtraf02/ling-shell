@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.common
+import qs.services
 
 Singleton {
   id: root
@@ -40,16 +41,14 @@ Singleton {
   signal monitorBrightnessChanged(var monitor, real newBrightness)
 
   Component.onCompleted: {
-    if (Settings.brightness.enableDdcSupport) {
-      ddcProc.running = true;
-    }
+    if (Settings.brightness.enableDdcSupport)
+      ProgramCheckerService.ensure("ddcutilAvailable");
   }
 
   onMonitorsChanged: {
     ddcMonitors = [];
-    if (Settings.brightness.enableDdcSupport) {
-      ddcProc.running = true;
-    }
+    if (Settings.brightness.enableDdcSupport)
+      ProgramCheckerService.ensure("ddcutilAvailable");
   }
 
   Connections {
@@ -57,10 +56,18 @@ Singleton {
     function onEnableDdcSupportChanged() {
       if (Settings.brightness.enableDdcSupport) {
         root.ddcMonitors = [];
-        ddcProc.running = true;
+        ProgramCheckerService.ensure("ddcutilAvailable");
       } else {
         root.ddcMonitors = [];
       }
+    }
+  }
+
+  Connections {
+    target: ProgramCheckerService
+    function onDdcutilAvailableChanged() {
+      if (Settings.brightness.enableDdcSupport && ProgramCheckerService.ddcutilAvailable)
+        ddcProc.running = true;
     }
   }
 

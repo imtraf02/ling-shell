@@ -10,10 +10,19 @@ Singleton {
   property bool capsLockOn: false
   property bool numLockOn: false
   property bool scrollLockOn: false
+  property bool active: false
 
   signal capsLockChanged(bool active)
   signal numLockChanged(bool active)
   signal scrollLockChanged(bool active)
+
+  function setActive(value) {
+    if (active === value)
+      return;
+    active = value;
+    if (active && !stateCheckProcess.running)
+      stateCheckProcess.running = true;
+  }
 
   Process {
     id: stateCheckProcess
@@ -59,8 +68,8 @@ scroll=0; cat /sys/class/leds/input*::scrolllock/brightness 2>/dev/null | grep -
 
   Timer {
     id: pollTimer
-    interval: 200
-    running: true
+    interval: 500
+    running: root.active
     repeat: true
     onTriggered: {
       if (!stateCheckProcess.running)
@@ -68,5 +77,4 @@ scroll=0; cat /sys/class/leds/input*::scrolllock/brightness 2>/dev/null | grep -
     }
   }
 
-  Component.onCompleted: stateCheckProcess.running = true
 }

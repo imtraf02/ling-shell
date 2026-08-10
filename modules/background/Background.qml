@@ -14,7 +14,7 @@ Variants {
     id: loader
     required property ShellScreen modelData
 
-    active: modelData && Settings.wallpaper.enabled
+    active: modelData && Settings.wallpaper.enabled && !LiveWallpaperService.isRunningForScreen(modelData.name)
 
     sourceComponent: PanelWindow {
       id: root
@@ -41,7 +41,7 @@ Variants {
       property string futureWallpaper: ""
 
       // Fillmode default is "crop"
-      property real fillMode: WallpaperService.getFillModeUniform()
+      property real fillMode: Settings.wallpaper.fillMode === "fit" ? Image.PreserveAspectFit : (Settings.wallpaper.fillMode === "stretch" ? Image.Stretch : Image.PreserveAspectCrop)
       property vector4d fillColor: Qt.vector4d(Settings.wallpaper.fillColor.r, Settings.wallpaper.fillColor.g, Settings.wallpaper.fillColor.b, 1.0)
 
       color: "transparent"
@@ -94,6 +94,11 @@ Variants {
         }
       }
 
+      Rectangle {
+        anchors.fill: parent
+        color: Settings.wallpaper.fillColor
+      }
+
       Image {
         id: currentWallpaper
 
@@ -102,7 +107,9 @@ Variants {
         source: ""
         smooth: true
         mipmap: false
-        visible: false
+        anchors.fill: parent
+        fillMode: root.fillMode
+        visible: !shaderLoader.active
         cache: false
         asynchronous: true
         sourceSize: undefined
@@ -153,7 +160,7 @@ Variants {
       Loader {
         id: shaderLoader
         anchors.fill: parent
-        active: true
+        active: root.transitioning || nextWallpaper.source !== ""
         sourceComponent: ShaderEffect {
           anchors.fill: parent
 

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import qs.common
 import qs.services
+import qs.widgets
 
 Item {
   id: root
@@ -19,6 +20,9 @@ Item {
   property Component panelContent
   property bool closeWithEscape: true
   property bool exclusiveKeyboard: true
+  // Top/bottom panels normally animate only their edge-facing dimension.
+  // Opt in when a panel changes width with its current content.
+  property bool animateContentWidth: false
 
   // Button positioning (for BarPanel behavior)
   property var buttonItem: null
@@ -383,7 +387,7 @@ Item {
       }
 
       Behavior on width {
-        enabled: !PanelService.closedImmediately && root._animateWidth
+        enabled: !PanelService.closedImmediately && (root._animateWidth || (root.animateContentWidth && panelBackground.dimensionsInitialized))
         NumberAnimation {
           duration: {
             if (!panelBackground.dimensionsInitialized)
@@ -460,4 +464,5 @@ Item {
   }
 
   Component.onCompleted: PanelService.registerPanel(root)
+  Component.onDestruction: PanelService.unregisterPanel(root)
 }

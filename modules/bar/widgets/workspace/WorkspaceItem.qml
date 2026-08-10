@@ -13,20 +13,13 @@ Item {
   required property var workspace
   required property int activeWsIdx
 
-  property ListModel windows: ListModel {}
+  property var windows: []
 
   implicitWidth: layout.implicitWidth + (Settings.bar.workspace.showWindows ? Style.padding.small : 0)
   implicitHeight: layout.implicitHeight
 
   function refreshWindows() {
-    windows.clear();
-    if (!workspace)
-      return;
-    for (let i = 0; i < CompositorService.windows.count; i++) {
-      const win = CompositorService.windows.get(i);
-      if (win?.workspaceId === workspace.id)
-        windows.append(win);
-    }
+    windows = workspace ? (CompositorService.windowsByWorkspace[workspace.id] || []) : [];
   }
 
   Connections {
@@ -38,6 +31,11 @@ Item {
   }
 
   onActiveWsIdxChanged: {
+    if (Settings.bar.workspace.showWindows)
+      root.refreshWindows();
+  }
+
+  onWorkspaceChanged: {
     if (Settings.bar.workspace.showWindows)
       root.refreshWindows();
   }

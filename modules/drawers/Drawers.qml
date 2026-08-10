@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import qs.common
@@ -74,13 +73,6 @@ Variants {
       Item {
         id: container
         anchors.fill: parent
-
-        layer.enabled: true
-        layer.effect: MultiEffect {
-          shadowEnabled: true
-          blurMax: 15
-          shadowColor: ThemeService.palette.mShadow
-        }
 
         Borders {
           bar: bar

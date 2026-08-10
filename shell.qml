@@ -31,16 +31,12 @@ ShellRoot {
     active: root.settingsLoaded && root.styleLoaded && Directories.ready
     sourceComponent: Item {
       Component.onCompleted: {
-        ProgramCheckerService.init();
         WallpaperService.init();
+        LiveWallpaperService.init();
         ThemeService.init();
-        DistroService.init();
-        FontService.init();
       }
 
       Background {}
-      // TODO: Implement LiveBackground.qml
-      // LiveBackground {}
       Overview {}
       Drawers {}
       Lock {

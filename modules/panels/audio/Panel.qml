@@ -36,7 +36,7 @@ SmartPanel {
 
   Timer {
     interval: 100
-    running: true
+    running: root.isPanelOpen
     repeat: true
     onTriggered: {
       if (Math.abs(root.localOutputVolume - AudioService.volume) >= 0.01) {

@@ -1,6 +1,6 @@
 # Ling Shell
 
-**Ling Shell** is a UI shell written in **QuickShell**, designed to run on Wayland compositors (like **niri**, **Hyprland**) and integrates well with **NixOS**.
+**Ling Shell** is a Niri-only UI shell written in **QuickShell** and integrated with **NixOS**.
 
 ---
 
@@ -8,11 +8,11 @@
 
 ### Manual Installation (Non-NixOS)
 
-> Suitable for other distros or for quick testing.
+> Suitable for Niri users on other distros or for quick testing.
 
 #### Requirements
 
-- `A Wayland compositor`
+- `niri`
 - `quickshell` (qs)
 - `Qt 6`
 - `git`
@@ -24,14 +24,8 @@ For manual installation, you will need to install the following dependencies you
 **Runtime Dependencies:**
 
 - `brightnessctl`
-- `cava`
-- `cliphist`
-- `ddcutil`
-- `matugen`
-- `wlsunset`
-- `wl-clipboard`
-- `imagemagick`
-- `wget`
+
+`cava` and `matugen` are bundled for spectrum visuals and dynamic themes. `ddcutil`, `mpvpaper`, `mpv`, and `xdg-utils` remain optional; add them to `extraRuntimePackages` for external DDC brightness, live wallpapers, or notification hyperlinks.
 
 **Fonts:**
 
@@ -49,10 +43,12 @@ cd ling-shell
 #### Run directly with QuickShell
 
 ```bash
-qs -p .
+qs --no-duplicate -p .
 ```
 
 > ⚠️ This method **does not install system-wide**, and is only for testing or development.
+> Run Ling Shell from exactly one startup path. Do not enable the systemd service and a
+> `spawn-at-startup "ling-shell"` entry at the same time.
 
 ---
 
@@ -116,6 +112,7 @@ outputs = { self, nixpkgs, ling-shell, ... }: {
       ling-shell.nixosModules.default
       ({ pkgs, ... }: {
         services.ling-shell.enable = true;
+        services.ling-shell.extraRuntimePackages = with pkgs; [ ddcutil mpvpaper mpv xdg-utils ];
       })
     ];
   };
@@ -128,7 +125,7 @@ outputs = { self, nixpkgs, ling-shell, ... }: {
 | --------- | ------- | -------------------------------------- | ---------------------------------------------- |
 | `enable`  | boolean | `false`                                | Enable Ling shell systemd service.             |
 | `package` | package | `ling-shell.packages.<system>.default` | The ling-shell package to use.                 |
-| `target`  | string  | `graphical-session.target`             | The systemd target for the ling-shell service. |
+| `extraRuntimePackages` | list of packages | `[]` | Optional executables such as `ddcutil`, `mpvpaper`, and `mpv`; Cava and Matugen are bundled. |
 
 ### Home Manager Module
 
@@ -164,8 +161,8 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | `systemd.enable` | boolean                 | `false`                                | Enable Ling shell systemd integration.                                                        |
 | `package`        | package                 | `ling-shell.packages.<system>.default` | The ling-shell package to use.                                                                |
 | `settings`       | attrset, string or path | `{}`                                   | Ling shell configuration settings, written to `~/.local/state/quickshell/ling/settings.json`. |
-| `config`         | attrset, string or path | `{}`                                   | Ling shell configuration, written to `~/.config/quickshell/ling/config.json`.                 |
 | `colours`        | attrset, string or path | `{}`                                   | Ling shell color configuration, written to `~/.local/state/quickshell/ling/colours.json`.     |
+| `extraRuntimePackages` | list of packages | `[]` | Optional executables such as `ddcutil`, `mpvpaper`, and `mpv`; Cava and Matugen are bundled. |
 
 ### Development Shell
 
@@ -183,7 +180,7 @@ nix develop
 
 If you are using the NixOS or home-manager module with `systemd.enable = true;`, this should be handled automatically.
 
-If you are not using the systemd service, you can configure your compositor to launch `ling-shell` at startup.
+If you are not using the systemd service, you can configure Niri to launch `ling-shell` at startup.
 
 **Example for niri:**
 

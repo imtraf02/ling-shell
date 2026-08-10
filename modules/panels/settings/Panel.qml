@@ -12,14 +12,6 @@ SmartPanel {
   position: "top"
   anchor: "center"
 
-  enum Tab {
-    General,
-    Bar,
-    Personalization
-  }
-
-  property int currentTabIndex: 0
-  property var tabsModel: []
   property var _content: null
 
   onOpened: {

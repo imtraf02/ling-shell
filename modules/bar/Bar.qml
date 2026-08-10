@@ -20,14 +20,6 @@ Item {
   visible: height > Settings.appearance.thickness
   implicitHeight: Settings.appearance.thickness
 
-  onVisibleChanged: {
-    if (visible) {
-      CavaService.registerComponent("bar");
-    } else {
-      CavaService.unregisterComponent("bar");
-    }
-  }
-
   states: State {
     name: "visible"
     when: root.shouldBeVisible

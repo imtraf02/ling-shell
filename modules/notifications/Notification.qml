@@ -120,9 +120,11 @@ Rectangle {
           implicitWidth: Style.notifications.image
           implicitHeight: Style.notifications.image
 
-          Image {
+          IImageCached {
             anchors.fill: parent
-            source: Qt.resolvedUrl(root.modelData.image)
+            imagePath: Qt.resolvedUrl(root.modelData.image)
+            cacheFolder: Directories.shellCacheNotificationsDir
+            maxCacheDimension: 384
             fillMode: Image.PreserveAspectCrop
             cache: false
             asynchronous: true
@@ -390,7 +392,7 @@ Rectangle {
           if (!root.expanded)
             return;
 
-          Quickshell.execDetached(["app2unit", "-O", "--", link]);
+          Quickshell.execDetached(["xdg-open", link]);
           root.modelData.popup = false;
         }
 
@@ -418,7 +420,7 @@ Rectangle {
 
         Action {
           modelData: QtObject {
-            readonly property string text: qsTr("Close")
+            readonly property string text: "Close"
             function invoke(): void {
               root.modelData.close();
             }

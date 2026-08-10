@@ -78,6 +78,12 @@ Singleton {
         icon: "image",
         description: "Change the desktop wallpaper",
         command: ["autocomplete", "wallpaper"]
+      },
+      {
+        name: "Live Wallpaper",
+        icon: "movie",
+        description: "Play a video as the desktop wallpaper",
+        command: ["autocomplete", "live-wallpaper"]
       }
     ]
     Action {}

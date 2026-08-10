@@ -13,6 +13,20 @@ Item {
   id: root
   required property var panel
   required property ITextInput searchInput
+  property bool liveMode: false
+
+  Component.onCompleted: {
+    if (liveMode)
+      LiveWallpaperService.acquireCatalog();
+    else
+      WallpaperService.acquireCatalog();
+  }
+  Component.onDestruction: {
+    if (liveMode)
+      LiveWallpaperService.releaseCatalog();
+    else
+      WallpaperService.releaseCatalog();
+  }
 
   property int currentScreenIndex: {
     if (panel.screen !== null) {
@@ -49,7 +63,10 @@ Item {
       const currentItem = pathView.currentItem;
 
       if (currentItem && currentItem.wallpaperPath) {
-        WallpaperService.changeWallpaper(currentItem.wallpaperPath, pathView.targetScreen.name);
+        if (root.liveMode)
+          LiveWallpaperService.setLiveWallpaper(currentItem.wallpaperPath, pathView.targetScreen.name);
+        else
+          WallpaperService.changeWallpaper(currentItem.wallpaperPath, pathView.targetScreen.name);
       }
     }
   }
@@ -65,13 +82,13 @@ Item {
       spacing: Style.spacing.small
 
       IIcon {
-        icon: "image"
+        icon: root.liveMode ? "movie" : "image"
         font.pointSize: Style.widget.size * 0.8
         color: ThemeService.palette.mPrimary
       }
 
       IText {
-        text: "Wallpaper selector"
+        text: root.liveMode ? "Live wallpaper selector" : "Wallpaper selector"
         color: ThemeService.palette.mOnSurface
         Layout.fillWidth: true
       }
@@ -80,7 +97,10 @@ Item {
         icon: "refresh"
         size: Style.widget.size * 0.8
         onClicked: {
-          WallpaperService.refreshWallpapersList();
+          if (root.liveMode)
+            LiveWallpaperService.refresh();
+          else
+            WallpaperService.refreshWallpapersList();
         }
       }
     }
@@ -173,8 +193,8 @@ Item {
     }
 
     Component.onCompleted: {
-      wallpapersList = WallpaperService.getWallpapersList(targetScreen.name);
-      currentWallpaper = WallpaperService.getWallpaper(targetScreen.name);
+      wallpapersList = root.liveMode ? LiveWallpaperService.getLiveWallpapersList(targetScreen.name) : WallpaperService.getWallpapersList(targetScreen.name);
+      currentWallpaper = root.liveMode ? LiveWallpaperService.getLiveWallpaper(targetScreen.name) : WallpaperService.getWallpaper(targetScreen.name);
       currentIndex = wallpapersList.indexOf(currentWallpaper);
     }
 
@@ -203,6 +223,7 @@ Item {
 
     Connections {
       target: WallpaperService
+      enabled: !root.liveMode
 
       function onWallpaperChanged(screenName, path) {
         if (pathView.targetScreen && screenName === pathView.targetScreen.name) {
@@ -222,6 +243,24 @@ Item {
         if (pathView.targetScreen && screenName === pathView.targetScreen.name) {
           pathView.wallpapersList = WallpaperService.getWallpapersList(pathView.targetScreen.name);
           pathView.currentWallpaper = WallpaperService.getWallpaper(pathView.targetScreen.name);
+          pathView.currentIndex = pathView.wallpapersList.indexOf(pathView.currentWallpaper);
+        }
+      }
+    }
+
+    Connections {
+      target: LiveWallpaperService
+      enabled: root.liveMode
+
+      function onLiveWallpaperChanged(screenName) {
+        if (pathView.targetScreen && screenName === pathView.targetScreen.name)
+          pathView.currentWallpaper = LiveWallpaperService.getLiveWallpaper(screenName);
+      }
+
+      function onLiveWallpaperListChanged(screenName) {
+        if (pathView.targetScreen && screenName === pathView.targetScreen.name) {
+          pathView.wallpapersList = LiveWallpaperService.getLiveWallpapersList(screenName);
+          pathView.currentWallpaper = LiveWallpaperService.getLiveWallpaper(screenName);
           pathView.currentIndex = pathView.wallpapersList.indexOf(pathView.currentWallpaper);
         }
       }
@@ -286,7 +325,10 @@ Item {
         radius: Style.rounding.small
 
         function onClicked() {
-          WallpaperService.changeWallpaper(delegateItem.wallpaperPath, pathView.targetScreen.name);
+          if (root.liveMode)
+            LiveWallpaperService.setLiveWallpaper(delegateItem.wallpaperPath, pathView.targetScreen.name);
+          else
+            WallpaperService.changeWallpaper(delegateItem.wallpaperPath, pathView.targetScreen.name);
           pathView.currentIndex = delegateItem.index;
         }
       }
@@ -318,10 +360,19 @@ Item {
         radius: Style.rounding.small
 
         IImageCached {
+          visible: !root.liveMode
           maxCacheDimension: 384
           imagePath: delegateItem.wallpaperPath
           cacheFolder: Directories.shellCacheWallpaperDir
           anchors.fill: parent
+        }
+
+        IIcon {
+          anchors.centerIn: parent
+          visible: root.liveMode
+          icon: "movie"
+          font.pointSize: Style.font.size.extraLarge
+          color: delegateItem.isSelected ? ThemeService.palette.mOnPrimary : ThemeService.palette.mPrimary
         }
       }
 

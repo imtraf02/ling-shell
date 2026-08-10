@@ -19,6 +19,8 @@ Singleton {
   readonly property bool scanning: (scanningCount > 0)
   property var currentWallpapers: ({})
   property bool isInitialized: false
+  property int catalogUsers: 0
+  readonly property bool catalogActive: catalogUsers > 0
 
   signal wallpaperChanged(string screenName, string path)
   signal wallpaperDirectoryChanged(string screenName, string directory)
@@ -28,7 +30,8 @@ Singleton {
     target: Settings.wallpaper
 
     function onDirectoryChanged() {
-      root.refreshWallpapersList();
+      if (root.catalogActive)
+        root.refreshWallpapersList();
       if (!Settings.wallpaper.enableMultiMonitorDirectories) {
         for (let i = 0; i < Quickshell.screens.length; i++) {
           root.wallpaperDirectoryChanged(Quickshell.screens[i].name, root.defaultDirectory);
@@ -45,7 +48,8 @@ Singleton {
     }
 
     function onEnableMultiMonitorDirectoriesChanged() {
-      root.refreshWallpapersList();
+      if (root.catalogActive)
+        root.refreshWallpapersList();
       for (let i = 0; i < Quickshell.screens.length; i++) {
         var screenName = Quickshell.screens[i].name;
         root.wallpaperDirectoryChanged(screenName, root.getMonitorDirectory(screenName));
@@ -53,7 +57,8 @@ Singleton {
     }
 
     function onRecursiveSearchChanged() {
-      root.refreshWallpapersList();
+      if (root.catalogActive)
+        root.refreshWallpapersList();
     }
   }
 
@@ -67,7 +72,32 @@ Singleton {
     }
 
     isInitialized = true;
-    Qt.callLater(refreshWallpapersList);
+  }
+
+  function acquireCatalog() {
+    catalogUsers++;
+    if (catalogUsers === 1)
+      Qt.callLater(refreshWallpapersList);
+  }
+
+  function releaseCatalog() {
+    catalogUsers = Math.max(0, catalogUsers - 1);
+    if (catalogUsers !== 0)
+      return;
+    for (const screenName in recursiveProcesses) {
+      const process = recursiveProcesses[screenName];
+      if (process) {
+        process.cancelled = true;
+        if (process.counted) {
+          process.counted = false;
+          scanningCount = Math.max(0, scanningCount - 1);
+        }
+        process.running = false;
+      }
+    }
+    recursiveProcesses = ({});
+    wallpaperLists = ({});
+    scanningCount = 0;
   }
 
   function getFillModeUniform() {
@@ -196,6 +226,8 @@ Singleton {
   }
 
   function refreshWallpapersList() {
+    if (!catalogActive)
+      return;
     scanningCount = 0;
 
     if (Settings.wallpaper.recursiveSearch) {
@@ -217,6 +249,8 @@ Singleton {
   property var recursiveProcesses: ({})
 
   function scanDirectoryRecursive(screenName, directory) {
+    if (!catalogActive)
+      return;
     if (!directory) {
       wallpaperLists[screenName] = [];
       wallpaperListChanged(screenName, 0);
@@ -224,10 +258,13 @@ Singleton {
     }
 
     if (recursiveProcesses[screenName]) {
+      recursiveProcesses[screenName].cancelled = true;
+      if (recursiveProcesses[screenName].counted) {
+        recursiveProcesses[screenName].counted = false;
+        scanningCount = Math.max(0, scanningCount - 1);
+      }
       recursiveProcesses[screenName].running = false;
-      recursiveProcesses[screenName].destroy();
       delete recursiveProcesses[screenName];
-      scanningCount--;
     }
 
     scanningCount++;
@@ -237,6 +274,8 @@ Singleton {
             import Quickshell.Io
             Process {
                 id: process
+                property bool cancelled: false
+                property bool counted: true
                 command: ["find", "` + directory + `", "-type", "f",
                     "(", "-iname", "*.jpg", "-o", "-iname", "*.jpeg",
                     "-o", "-iname", "*.png", "-o", "-iname", "*.gif",
@@ -250,9 +289,12 @@ Singleton {
     recursiveProcesses[screenName] = processObject;
 
     var handler = function (exitCode) {
-      scanningCount--;
+      if (processObject.counted) {
+        processObject.counted = false;
+        scanningCount = Math.max(0, scanningCount - 1);
+      }
 
-      if (exitCode === 0) {
+      if (!processObject.cancelled && root.catalogActive && exitCode === 0) {
         var lines = processObject.stdout.text.split("\n");
         var files = [];
         for (let i = 0; i < lines.length; i++) {
@@ -264,12 +306,13 @@ Singleton {
         files.sort();
         wallpaperLists[screenName] = files;
         wallpaperListChanged(screenName, files.length);
-      } else {
+      } else if (!processObject.cancelled && root.catalogActive) {
         wallpaperLists[screenName] = [];
         wallpaperListChanged(screenName, 0);
       }
 
-      delete recursiveProcesses[screenName];
+      if (recursiveProcesses[screenName] === processObject)
+        delete recursiveProcesses[screenName];
       processObject.destroy();
     };
 
@@ -279,7 +322,7 @@ Singleton {
 
   Instantiator {
     id: wallpaperScanners
-    model: Quickshell.screens
+    model: root.catalogActive && !Settings.wallpaper.recursiveSearch ? Quickshell.screens : []
 
     delegate: Item {
       id: scannerItem

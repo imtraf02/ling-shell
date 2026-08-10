@@ -9,6 +9,8 @@ IBox {
 
   property int month: TimeService.date.getMonth()
   property int year: TimeService.date.getFullYear()
+  readonly property var monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  readonly property var weekdayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   function getDaysInMonth(year, month) {
     return new Date(year, month + 1, 0).getDate();
@@ -26,7 +28,7 @@ IBox {
     const daysInMonth = lastOfMonth.getDate();
     const today = TimeService.date;
 
-    const firstDayOfWeek = Qt.locale().firstDayOfWeek;
+    const firstDayOfWeek = 0;
     const firstOfMonthDayOfWeek = firstOfMonth.getDay();
     let daysBefore = (firstOfMonthDayOfWeek - firstDayOfWeek + 7) % 7;
     const lastOfMonthDayOfWeek = lastOfMonth.getDay();
@@ -113,7 +115,7 @@ IBox {
         IText {
           id: monthYearDisplay
           anchors.centerIn: parent
-          text: Qt.locale().monthName(root.month, Locale.LongFormat) + " " + root.year
+          text: root.monthNames[root.month] + " " + root.year
           color: ThemeService.palette.mPrimary
           font.pointSize: Style.font.size.normal
           font.weight: 500
@@ -153,12 +155,12 @@ IBox {
           Layout.fillWidth: true
           Layout.preferredHeight: dayNameText.implicitHeight + Style.spacing.small
 
-          property int dayIndex: (Qt.locale().firstDayOfWeek + index) % 7
+          property int dayIndex: index
 
           IText {
             id: dayNameText
             anchors.centerIn: parent
-            text: Qt.locale().dayName(parent.dayIndex, Locale.ShortFormat)
+            text: root.weekdayNames[parent.dayIndex]
             horizontalAlignment: Text.AlignHCenter
             font.weight: 500
             color: (parent.dayIndex === 0 || parent.dayIndex === 6) ? ThemeService.palette.mSecondary : ThemeService.palette.mOnSurfaceVariant

@@ -1,42 +1,36 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
+import QtQuick.Shapes
 import qs.common
 import qs.services
 
-Item {
+Shape {
   id: root
 
   required property Item bar
 
   anchors.fill: parent
 
-  Rectangle {
-    anchors.fill: parent
-    color: ThemeService.palette.mSurface
+  preferredRendererType: Shape.CurveRenderer
 
-    layer.enabled: true
-    layer.effect: MultiEffect {
-      maskSource: mask
-      maskEnabled: true
-      maskInverted: true
-      maskThresholdMin: 0.5
-      maskSpreadAtMin: 1
+  ShapePath {
+    fillColor: ThemeService.palette.mSurface
+    strokeWidth: -1
+    fillRule: ShapePath.OddEvenFill
+
+    PathRectangle {
+      x: 0
+      y: 0
+      width: root.width
+      height: root.height
     }
-  }
 
-  Item {
-    id: mask
-
-    anchors.fill: parent
-    layer.enabled: true
-    visible: false
-
-    Rectangle {
-      anchors.fill: parent
-      anchors.margins: Settings.appearance.thickness
-      anchors.topMargin: root.bar.implicitHeight
+    PathRectangle {
+      x: Settings.appearance.thickness
+      y: root.bar.implicitHeight
+      width: Math.max(0, root.width - Settings.appearance.thickness * 2)
+      height: Math.max(0, root.height - root.bar.implicitHeight - Settings.appearance.thickness)
       radius: Settings.appearance.cornerRadius
     }
   }

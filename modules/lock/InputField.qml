@@ -41,10 +41,10 @@ Item {
 
     text: {
       if (root.pam.passwd.active)
-        return qsTr("Loading...");
+        return "Loading...";
       if (root.pam.state === "max")
-        return qsTr("You have reached the maximum number of tries");
-      return qsTr("Enter your password");
+        return "You have reached the maximum number of tries";
+      return "Enter your password";
     }
 
     color: root.pam.passwd.active ? ThemeService.palette.mSecondary : ThemeService.palette.mOutline

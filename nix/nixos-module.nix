@@ -2,9 +2,11 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.services.ling-shell;
-in {
+in
+{
   options.services.ling-shell = {
     enable = lib.mkEnableOption "Ling shell systemd service";
 
@@ -13,34 +15,30 @@ in {
       description = "The ling-shell package to use";
     };
 
-    target = lib.mkOption {
-      type = lib.types.str;
-      default = "graphical-session.target";
-      example = "hyprland-session.target";
-      description = "The systemd target for the ling-shell service.";
+    extraRuntimePackages = lib.mkOption {
+      type = with lib.types; listOf package;
+      default = [ ];
+      description = "Optional executables exposed to Ling Shell, such as ddcutil, mpvpaper, or mpv. Cava and Matugen are bundled.";
     };
   };
 
   config = lib.mkIf cfg.enable {
     systemd.user.services.ling-shell = {
       description = "Ling Shell - Wayland desktop shell";
-      documentation = [""];
-      after = [cfg.target];
-      partOf = [cfg.target];
-      wantedBy = [cfg.target];
-      restartTriggers = [cfg.package];
-
-      environment = {
-        PATH = lib.mkForce null;
-      };
+      documentation = [ "" ];
+      after = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "graphical-session.target" ];
+      restartTriggers = [ cfg.package ];
+      unitConfig.ConditionEnvironment = "NIRI_SOCKET";
 
       serviceConfig = {
         ExecStart = lib.getExe cfg.package;
         Restart = "on-failure";
-        Environment = [];
+        RestartSec = "2s";
       };
     };
 
-    environment.systemPackages = [cfg.package];
+    environment.systemPackages = [ cfg.package ] ++ cfg.extraRuntimePackages;
   };
 }

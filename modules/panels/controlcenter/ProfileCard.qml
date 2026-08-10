@@ -11,6 +11,15 @@ IBox {
   required property var panel
 
   property string uptimeText: "--"
+  readonly property bool uptimeVisible: root.panel?.isPanelOpen === true
+
+  function uptimeConsumerId() {
+    return "control-center-" + (root.panel?.screen?.name || "unknown");
+  }
+
+  onUptimeVisibleChanged: DistroService.setUptimeConsumer(uptimeConsumerId(), uptimeVisible)
+  Component.onCompleted: DistroService.setUptimeConsumer(uptimeConsumerId(), uptimeVisible)
+  Component.onDestruction: DistroService.setUptimeConsumer(uptimeConsumerId(), false)
 
   RowLayout {
     anchors.left: parent.left

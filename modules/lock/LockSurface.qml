@@ -14,15 +14,45 @@ WlSessionLockSurface {
   required property Pam pam
 
   readonly property alias unlocking: unlockAnim.running
+  readonly property bool shouldVisualize: root.lock.locked && MediaService.isPlaying
 
   color: "transparent"
+
+  function cavaId() {
+    return "lockscreen-" + (root.screen?.name || "unknown");
+  }
+
+  onShouldVisualizeChanged: {
+    if (shouldVisualize)
+      CavaService.registerComponent(cavaId());
+    else
+      CavaService.unregisterComponent(cavaId());
+  }
+
+  Component.onCompleted: {
+    if (shouldVisualize)
+      CavaService.registerComponent(cavaId());
+    LockKeysService.setActive(root.lock.locked);
+    SystemUsageService.setConsumer(cavaId(), root.lock.locked);
+    DistroService.setUptimeConsumer("lockscreen-" + (root.screen?.name || "unknown"), root.lock.locked);
+  }
+  Component.onDestruction: {
+    CavaService.unregisterComponent(cavaId());
+    SystemUsageService.setConsumer(cavaId(), false);
+    DistroService.setUptimeConsumer("lockscreen-" + (root.screen?.name || "unknown"), false);
+  }
 
   Connections {
     target: root.lock
 
+    function onLockedChanged(): void {
+      LockKeysService.setActive(root.lock.locked);
+      SystemUsageService.setConsumer(root.cavaId(), root.lock.locked);
+      DistroService.setUptimeConsumer("lockscreen-" + (root.screen?.name || "unknown"), root.lock.locked);
+    }
+
     function onUnlock(): void {
       unlockAnim.start();
-      CavaService.unregisterComponent("lockscreen");
     }
   }
 
