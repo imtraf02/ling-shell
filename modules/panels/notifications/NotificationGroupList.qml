@@ -17,6 +17,7 @@ ColumnLayout {
 
   readonly property int spacing: Math.round(Style.spacing.small / 2)
   property bool showAllNotifs
+  readonly property bool collapsing: showAllNotifs && !expanded
   property bool flag
 
   signal requestToggleExpand(expand: bool)
@@ -30,18 +31,23 @@ ColumnLayout {
     }
   }
 
+  Component.onCompleted: {
+    if (expanded)
+      showAllNotifs = true;
+  }
+
   Layout.fillWidth: true
 
   Timer {
     id: clearTimer
-    interval: Style.anim.durations.normal
+    interval: Style.anim.durations.expressiveDefaultSpatial
     onTriggered: root.showAllNotifs = false
   }
 
   Repeater {
     id: repeater
     model: ScriptModel {
-      values: root.showAllNotifs ? root.notifs : root.notifs.slice(0, Settings.notifications.groupPreviewNum + 1)
+      values: root.showAllNotifs ? root.notifs : root.notifs.slice(0, Settings.notifications.groupPreviewNum)
       onValuesChanged: root.flagChanged()
     }
 
@@ -65,7 +71,7 @@ ColumnLayout {
 
       Layout.fillWidth: true
       Layout.preferredHeight: (modelData.closed || previewHidden) ? 0 : notifInner.implicitHeight
-      Layout.topMargin: (index > 0 && (modelData.closed || previewHidden)) ? -Style.spacing.small : 0
+      Layout.topMargin: (index > 0 && (modelData.closed || previewHidden)) ? -root.spacing : 0
 
       clip: true
       visible: Layout.preferredHeight > 0 || opacity > 0
@@ -148,7 +154,7 @@ ColumnLayout {
         anchors.fill: parent
         modelData: notif.modelData
         props: root.props
-        expanded: root.expanded
+        expanded: root.expanded || (root.collapsing && notif.previewHidden)
       }
 
       Behavior on Layout.preferredHeight {
@@ -166,10 +172,16 @@ ColumnLayout {
       }
 
       Behavior on opacity {
-        IAnim {}
+        IAnim {
+          duration: Style.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.anim.curves.expressiveDefaultSpatial
+        }
       }
       Behavior on scale {
-        IAnim {}
+        IAnim {
+          duration: Style.anim.durations.expressiveDefaultSpatial
+          easing.bezierCurve: Style.anim.curves.expressiveDefaultSpatial
+        }
       }
 
       Behavior on x {

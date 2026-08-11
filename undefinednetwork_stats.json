@@ -1,70 +1,54 @@
 {
     "rxPeaks": [
         {
-            "speed": 81,
-            "timestamp": 1785735822944
+            "speed": 5230,
+            "timestamp": 1786373387715
         },
         {
-            "speed": 409,
-            "timestamp": 1785735828942
+            "speed": 8009,
+            "timestamp": 1786373439107
         },
         {
-            "speed": 1506,
-            "timestamp": 1785735843941
+            "speed": 131994,
+            "timestamp": 1786373569668
         },
         {
-            "speed": 7944,
-            "timestamp": 1785735861942
+            "speed": 164502,
+            "timestamp": 1786373861376
         },
         {
-            "speed": 11158,
-            "timestamp": 1785735864941
+            "speed": 510389,
+            "timestamp": 1786374226351
         },
         {
-            "speed": 26185,
-            "timestamp": 1785735964807
-        },
-        {
-            "speed": 55943,
-            "timestamp": 1785735967807
-        },
-        {
-            "speed": 80828,
-            "timestamp": 1785736146420
-        },
-        {
-            "speed": 81054,
-            "timestamp": 1785736507842
-        },
-        {
-            "speed": 755317,
-            "timestamp": 1785736528842
+            "speed": 1943810,
+            "timestamp": 1786420643705
         }
     ],
     "txPeaks": [
         {
-            "speed": 87,
-            "timestamp": 1785735828942
+            "speed": 2631,
+            "timestamp": 1786373387715
         },
         {
-            "speed": 41109,
-            "timestamp": 1785735843941
+            "speed": 3121,
+            "timestamp": 1786373411418
         },
         {
-            "speed": 42107,
-            "timestamp": 1785736090327
+            "speed": 31698,
+            "timestamp": 1786373414419
         },
         {
-            "speed": 91214,
-            "timestamp": 1785736143421
+            "speed": 181492,
+            "timestamp": 1786373569668
         },
         {
-            "speed": 96880,
-            "timestamp": 1785737377406
+            "speed": 225429,
+            "timestamp": 1786373713055
         },
         {
-            "speed": 97659,
-            "timestamp": 1785737403888
+            "speed": 356755,
+            "timestamp": 1786373861376
         }
     ]
 }
