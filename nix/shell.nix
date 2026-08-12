@@ -9,14 +9,14 @@
   shellcheck,
   jsonfmt,
   lefthook,
+  qt6,
   kdePackages,
   makeFontsConf,
   material-symbols,
   rubik,
   nerd-fonts,
   mkShellNoCC,
-}:
-let
+}: let
   fontconfig = makeFontsConf {
     fontDirectories = [
       material-symbols
@@ -25,29 +25,35 @@ let
     ];
   };
 in
-mkShellNoCC {
-  FONTCONFIG_FILE = fontconfig;
+  mkShellNoCC {
+    FONTCONFIG_FILE = fontconfig;
 
-  #it's faster than mkDerivation / mkShell
-  packages = [
-    quickshell
-    cava
-    matugen
+    shellHook = ''
+      export NIXPKGS_QT6_QML_IMPORT_PATH="${qt6.qtmultimedia}/lib/qt-6/qml:$NIXPKGS_QT6_QML_IMPORT_PATH"
+      export QT_PLUGIN_PATH="${qt6.qtmultimedia}/lib/qt-6/plugins:$QT_PLUGIN_PATH"
+    '';
 
-    # nix
-    alejandra # formatter
-    statix # linter
-    deadnix # linter
+    #it's faster than mkDerivation / mkShell
+    packages = [
+      quickshell
+      cava
+      matugen
+      qt6.qtmultimedia
 
-    # shell
-    shfmt # formatter
-    shellcheck # linter
+      # nix
+      alejandra # formatter
+      statix # linter
+      deadnix # linter
 
-    # json
-    jsonfmt # formatter
+      # shell
+      shfmt # formatter
+      shellcheck # linter
 
-    # CoC
-    lefthook # githooks
-    kdePackages.qtdeclarative # qmlfmt, qmllint, qmlls and etc; Qt6
-  ];
-}
+      # json
+      jsonfmt # formatter
+
+      # CoC
+      lefthook # githooks
+      kdePackages.qtdeclarative # qmlfmt, qmllint, qmlls and etc; Qt6
+    ];
+  }

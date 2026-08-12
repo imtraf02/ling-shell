@@ -13,23 +13,20 @@ Singleton {
   property int catalogUsers: 0
   property var liveWallpaperLists: ({})
   property var scanProcesses: ({})
-  property var pendingFrameSources: ({})
-  property var extractedFrameSources: ({})
-  // A frame is only considered usable after mpv has finished writing it. This
-  // keeps the static wallpaper as the safe fallback while the first frame is
-  // prepared.
+  property var capturedFrameSources: ({})
+  // The background surface captures a rendered Qt Multimedia frame. Until the
+  // capture is complete, overview and dynamic colors keep using the static
+  // wallpaper as their safe fallback.
   property var generatedFrames: ({})
 
   signal liveWallpaperChanged(string screenName, string path)
   signal liveWallpaperListChanged(string screenName, int count)
   signal frameChanged(string screenName, string path)
 
-  readonly property bool available: ProgramCheckerService.mpvpaperAvailable && ProgramCheckerService.mpvAvailable
+  readonly property bool available: true
 
   function init() {
     initialized = true;
-    ProgramCheckerService.ensure("mpvpaperAvailable");
-    ProgramCheckerService.ensure("mpvAvailable");
   }
 
   function acquireCatalog() {
@@ -66,20 +63,24 @@ Singleton {
     return getLiveWallpaper(screenName) !== "";
   }
 
-  function isRunningForScreen(screenName) {
-    return root.available && hasLiveWallpaper(screenName);
-  }
-
-  function frameDirectory(screenName) {
-    return Directories.shellCacheWallpaperDir + "/live-" + screenName.replace(/[^a-zA-Z0-9_.-]/g, "_");
-  }
-
   function framePath(screenName) {
-    return frameDirectory(screenName) + "/00000001.jpg";
+    return Directories.shellCacheWallpaperDir + "/live-" + screenName.replace(/[^a-zA-Z0-9_.-]/g, "_") + ".jpg";
   }
 
   function hasFrame(screenName) {
     return generatedFrames[screenName] === true;
+  }
+
+  function needsFrame(screenName, path) {
+    return path !== "" && getLiveWallpaper(screenName) === path && capturedFrameSources[screenName] !== path;
+  }
+
+  function markFrameReady(screenName, path) {
+    if (!needsFrame(screenName, path))
+      return;
+    generatedFrames = Object.assign({}, generatedFrames, { [screenName]: true });
+    capturedFrameSources = Object.assign({}, capturedFrameSources, { [screenName]: path });
+    frameChanged(screenName, framePath(screenName));
   }
 
   function setLiveWallpaper(path, screenName) {
@@ -94,6 +95,8 @@ Singleton {
   }
 
   function setLiveWallpaperForScreen(path, screenName) {
+    if (getLiveWallpaper(screenName) === path)
+      return;
     const entries = Settings.wallpaper.liveWallpapers || [];
     let found = false;
     const next = entries.map(entry => {
@@ -105,19 +108,18 @@ Singleton {
     });
     if (!found)
       next.push({ name: screenName, path: path });
-    root.generatedFrames = Object.assign({}, root.generatedFrames, { [screenName]: false });
-    root.extractedFrameSources = Object.assign({}, root.extractedFrameSources, { [screenName]: "" });
+    generatedFrames = Object.assign({}, generatedFrames, { [screenName]: false });
+    capturedFrameSources = Object.assign({}, capturedFrameSources, { [screenName]: "" });
     Settings.wallpaper.liveWallpapers = next;
-    root.liveWallpaperChanged(screenName, path);
+    liveWallpaperChanged(screenName, path);
   }
 
   function clearLiveWallpaper(screenName) {
     const entries = Settings.wallpaper.liveWallpapers || [];
     Settings.wallpaper.liveWallpapers = entries.filter(entry => entry.name !== screenName);
-    root.generatedFrames = Object.assign({}, root.generatedFrames, { [screenName]: false });
-    root.extractedFrameSources = Object.assign({}, root.extractedFrameSources, { [screenName]: "" });
-    root.pendingFrameSources = Object.assign({}, root.pendingFrameSources, { [screenName]: "" });
-    root.liveWallpaperChanged(screenName, "");
+    generatedFrames = Object.assign({}, generatedFrames, { [screenName]: false });
+    capturedFrameSources = Object.assign({}, capturedFrameSources, { [screenName]: "" });
+    liveWallpaperChanged(screenName, "");
   }
 
   function getLiveWallpapersList(screenName) {
@@ -165,59 +167,8 @@ Singleton {
     process.running = true;
   }
 
-  function extractFrame(screenName, path) {
-    if (!ProgramCheckerService.ensure("mpvAvailable") || !path)
-      return;
-    if (root.extractedFrameSources[screenName] === path && root.hasFrame(screenName))
-      return;
-    if (root.pendingFrameSources[screenName] === path)
-      return;
-    root.pendingFrameSources = Object.assign({}, root.pendingFrameSources, { [screenName]: path });
-    const directory = frameDirectory(screenName);
-    const mkdir = Qt.createQmlObject(`
-      import Quickshell.Io
-      Process {}
-    `, root, "LiveWallpaperFrameDirectory_" + screenName);
-    mkdir.command = ["mkdir", "-p", directory];
-    mkdir.exited.connect(exitCode => {
-      mkdir.destroy();
-      if (root.pendingFrameSources[screenName] !== path || root.getLiveWallpaper(screenName) !== path)
-        return;
-      if (exitCode !== 0) {
-        root.pendingFrameSources = Object.assign({}, root.pendingFrameSources, { [screenName]: "" });
-        return;
-      }
-      const extractor = Qt.createQmlObject(`
-        import Quickshell.Io
-        Process {
-          stdout: StdioCollector {}
-          stderr: StdioCollector {}
-        }
-      `, root, "LiveWallpaperFrame_" + screenName);
-      extractor.command = ["mpv", "--no-config", "--really-quiet", "--frames=1", "--vo=image", "--vo-image-format=jpg", "--vo-image-outdir=" + directory, "--ao=null", path];
-      extractor.exited.connect(result => {
-        const isCurrent = root.pendingFrameSources[screenName] === path && root.getLiveWallpaper(screenName) === path;
-        if (isCurrent && result === 0) {
-          root.generatedFrames = Object.assign({}, root.generatedFrames, { [screenName]: true });
-          root.extractedFrameSources = Object.assign({}, root.extractedFrameSources, { [screenName]: path });
-          root.frameChanged(screenName, root.framePath(screenName));
-        }
-        if (isCurrent)
-          root.pendingFrameSources = Object.assign({}, root.pendingFrameSources, { [screenName]: "" });
-        extractor.destroy();
-      });
-      extractor.running = true;
-    });
-    mkdir.running = true;
-  }
-
   Connections {
     target: Settings.wallpaper
-    function onLiveWallpapersChanged() {
-      const entries = Settings.wallpaper.liveWallpapers || [];
-      for (let i = 0; i < entries.length; i)
-        root.extractFrame(entries[i].name, entries[i].path);
-    }
     function onDirectoryChanged() { if (root.catalogUsers > 0) root.refresh(); }
     function onEnableMultiMonitorDirectoriesChanged() { if (root.catalogUsers > 0) root.refresh(); }
     function onRecursiveSearchChanged() { if (root.catalogUsers > 0) root.refresh(); }
@@ -226,30 +177,5 @@ Singleton {
   Connections {
     target: WallpaperService
     function onWallpaperDirectoryChanged() { if (root.catalogUsers > 0) root.refresh(); }
-  }
-
-  Connections {
-    target: ProgramCheckerService
-    function onMpvAvailableChanged() {
-      if (!ProgramCheckerService.mpvAvailable)
-        return;
-      const entries = Settings.wallpaper.liveWallpapers || [];
-      for (let i = 0; i < entries.length; i++)
-        root.extractFrame(entries[i].name, entries[i].path);
-    }
-  }
-
-  Instantiator {
-    model: Settings.wallpaper.liveWallpapers || []
-    delegate: Item {
-      required property var modelData
-      readonly property string output: modelData.name || ""
-      readonly property string source: modelData.path || ""
-      Component.onCompleted: root.extractFrame(output, source)
-      Process {
-        command: ["mpvpaper", "--auto-pause", "--mpv-options", "no-audio loop-file=inf hwdec=auto-safe cache=no demuxer-max-bytes=16MiB demuxer-max-back-bytes=4MiB vd-lavc-threads=2", parent.output, parent.source]
-        running: root.initialized && root.available && parent.output !== "" && parent.source !== ""
-      }
-    }
   }
 }

@@ -14,7 +14,7 @@
 
 - `niri`
 - `quickshell` (qs)
-- `Qt 6`
+- `Qt 6` with Qt Multimedia
 - `git`
 
 #### Dependencies
@@ -25,7 +25,7 @@ For manual installation, you will need to install the following dependencies you
 
 - `brightnessctl`
 
-`cava` and `matugen` are bundled for spectrum visuals and dynamic themes. `ddcutil`, `mpvpaper`, `mpv`, and `xdg-utils` remain optional; add them to `extraRuntimePackages` for external DDC brightness, live wallpapers, or notification hyperlinks.
+`cava` and `matugen` are bundled for spectrum visuals and dynamic themes. Live wallpapers are rendered natively with Qt Multimedia. `ddcutil` and `xdg-utils` remain optional; add them to `extraRuntimePackages` for external DDC brightness or notification hyperlinks.
 
 **Fonts:**
 
@@ -112,7 +112,7 @@ outputs = { self, nixpkgs, ling-shell, ... }: {
       ling-shell.nixosModules.default
       ({ pkgs, ... }: {
         services.ling-shell.enable = true;
-        services.ling-shell.extraRuntimePackages = with pkgs; [ ddcutil mpvpaper mpv xdg-utils ];
+        services.ling-shell.extraRuntimePackages = with pkgs; [ ddcutil xdg-utils ];
       })
     ];
   };
@@ -125,7 +125,7 @@ outputs = { self, nixpkgs, ling-shell, ... }: {
 | --------- | ------- | -------------------------------------- | ---------------------------------------------- |
 | `enable`  | boolean | `false`                                | Enable Ling shell systemd service.             |
 | `package` | package | `ling-shell.packages.<system>.default` | The ling-shell package to use.                 |
-| `extraRuntimePackages` | list of packages | `[]` | Optional executables such as `ddcutil`, `mpvpaper`, and `mpv`; Cava and Matugen are bundled. |
+| `extraRuntimePackages` | list of packages | `[]` | Optional executables such as `ddcutil` and `xdg-utils`; Cava and Matugen are bundled. |
 
 ### Home Manager Module
 
@@ -162,7 +162,7 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | `package`        | package                 | `ling-shell.packages.<system>.default` | The ling-shell package to use.                                                                |
 | `settings`       | attrset, string or path | `{}`                                   | Ling shell configuration settings, written to `~/.local/state/quickshell/ling/settings.json`. |
 | `colours`        | attrset, string or path | `{}`                                   | Ling shell color configuration, written to `~/.local/state/quickshell/ling/colours.json`.     |
-| `extraRuntimePackages` | list of packages | `[]` | Optional executables such as `ddcutil`, `mpvpaper`, and `mpv`; Cava and Matugen are bundled. |
+| `extraRuntimePackages` | list of packages | `[]` | Optional executables such as `ddcutil` and `xdg-utils`; Cava and Matugen are bundled. |
 
 ### Development Shell
 

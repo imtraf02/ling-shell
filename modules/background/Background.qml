@@ -1,10 +1,12 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtMultimedia
 import Quickshell
 import Quickshell.Wayland
 import qs.common
 import qs.services
+import qs.utils
 
 Variants {
   id: backgroundVariants
@@ -14,7 +16,7 @@ Variants {
     id: loader
     required property ShellScreen modelData
 
-    active: modelData && Settings.wallpaper.enabled && !LiveWallpaperService.isRunningForScreen(modelData.name)
+    active: modelData && Settings.wallpaper.enabled
 
     sourceComponent: PanelWindow {
       id: root
@@ -40,8 +42,19 @@ Variants {
       // Used to debounce wallpaper changes
       property string futureWallpaper: ""
 
+      // The requested live source can change while the previous video is
+      // fading out. loadedLiveSource always describes the MediaPlayer source.
+      property string liveSource: ""
+      property string loadedLiveSource: ""
+      property bool liveFrameReady: false
+      property bool frameCapturePending: false
+      property int frameCaptureGeneration: 0
+      readonly property bool liveFrameNeeded: loadedLiveSource !== "" && LiveWallpaperService.needsFrame(loader.modelData.name, loadedLiveSource)
+      readonly property bool playbackAllowed: loadedLiveSource !== "" && (liveFrameNeeded || (!CompositorService.overviewActive && !(CompositorService.lockscreen && CompositorService.lockscreen.locked)))
+
       // Fillmode default is "crop"
       property real fillMode: Settings.wallpaper.fillMode === "fit" ? Image.PreserveAspectFit : (Settings.wallpaper.fillMode === "stretch" ? Image.Stretch : Image.PreserveAspectCrop)
+      property real videoFillMode: Settings.wallpaper.fillMode === "fit" ? VideoOutput.PreserveAspectFit : (Settings.wallpaper.fillMode === "stretch" ? VideoOutput.Stretch : VideoOutput.PreserveAspectCrop)
       property vector4d fillColor: Qt.vector4d(Settings.wallpaper.fillColor.r, Settings.wallpaper.fillColor.g, Settings.wallpaper.fillColor.b, 1.0)
 
       color: "transparent"
@@ -67,10 +80,18 @@ Variants {
         }
       }
 
-      Component.onCompleted: setWallpaperInitial()
+      Component.onCompleted: {
+        setWallpaperInitial();
+        requestLiveSource(LiveWallpaperService.getLiveWallpaper(loader.modelData.name));
+      }
 
       Component.onDestruction: {
         transitionAnimation.stop();
+        liveFadeIn.stop();
+        liveFadeOut.stop();
+        frameCaptureTimer.stop();
+        livePlayer.stop();
+        livePlayer.source = "";
         debounceTimer.stop();
         shaderLoader.active = false;
         currentWallpaper.source = "";
@@ -84,6 +105,21 @@ Variants {
             root.futureWallpaper = path;
             debounceTimer.restart();
           }
+        }
+      }
+
+      Connections {
+        target: LiveWallpaperService
+        function onLiveWallpaperChanged(screenName, path) {
+          if (screenName === loader.modelData.name)
+            root.requestLiveSource(path);
+        }
+      }
+
+      Connections {
+        target: Settings.wallpaper
+        function onLiveWallpapersChanged() {
+          root.requestLiveSource(LiveWallpaperService.getLiveWallpaper(loader.modelData.name));
         }
       }
 
@@ -186,6 +222,77 @@ Variants {
         }
       }
 
+      Item {
+        id: liveVideoLayer
+
+        anchors.fill: parent
+        opacity: 0
+
+        VideoOutput {
+          id: liveVideoOutput
+
+          anchors.fill: parent
+          fillMode: root.videoFillMode
+        }
+      }
+
+      MediaPlayer {
+        id: livePlayer
+
+        activeAudioTrack: -1
+        loops: MediaPlayer.Infinite
+        videoOutput: liveVideoOutput
+
+        onErrorOccurred: function(error, errorString) {
+          if (root.loadedLiveSource === "")
+            return;
+          console.warn("Live wallpaper failed to play:", root.loadedLiveSource, errorString);
+          root.liveFrameReady = false;
+          liveFadeIn.stop();
+          liveFadeOut.restart();
+        }
+      }
+
+      Connections {
+        target: liveVideoOutput.videoSink
+        enabled: !root.liveFrameReady || LiveWallpaperService.needsFrame(loader.modelData.name, root.loadedLiveSource)
+        function onVideoFrameChanged() {
+          root.handleLiveVideoFrame();
+        }
+      }
+
+      Timer {
+        id: frameCaptureTimer
+
+        interval: 50
+        repeat: false
+        onTriggered: root.captureLiveFrame()
+      }
+
+      NumberAnimation {
+        id: liveFadeIn
+
+        target: liveVideoLayer
+        property: "opacity"
+        to: 1
+        duration: Math.min(400, Math.max(150, Settings.wallpaper.transitionDuration))
+        easing.type: Easing.OutCubic
+      }
+
+      NumberAnimation {
+        id: liveFadeOut
+
+        target: liveVideoLayer
+        property: "opacity"
+        to: 0
+        duration: 200
+        easing.type: Easing.InCubic
+        onFinished: {
+          if (root.loadedLiveSource !== root.liveSource)
+            root.applyLiveSource();
+        }
+      }
+
       NumberAnimation {
         id: transitionAnimation
         target: root
@@ -210,6 +317,107 @@ Variants {
               currentWallpaper.asynchronous = true;
             });
           });
+        }
+      }
+
+      onPlaybackAllowedChanged: updateLivePlayback()
+
+      function mediaUrl(path) {
+        if (!path)
+          return "";
+        if (path.indexOf("://") >= 0)
+          return path;
+        const normalized = FileUtils.trimFileProtocol(path);
+        if (!normalized.startsWith("/"))
+          return normalized;
+        return "file://" + normalized.split("/").map(segment => encodeURIComponent(segment)).join("/");
+      }
+
+      function requestLiveSource(source) {
+        const requested = source || "";
+        if (requested === liveSource && requested === loadedLiveSource)
+          return;
+        liveSource = requested;
+        frameCaptureTimer.stop();
+
+        if (liveVideoLayer.opacity > 0) {
+          liveFadeIn.stop();
+          liveFadeOut.restart();
+        } else {
+          applyLiveSource();
+        }
+      }
+
+      function applyLiveSource() {
+        liveFadeIn.stop();
+        liveFadeOut.stop();
+        livePlayer.stop();
+        livePlayer.source = "";
+        liveVideoLayer.opacity = 0;
+        liveFrameReady = false;
+        frameCaptureGeneration++;
+        frameCapturePending = false;
+        loadedLiveSource = liveSource;
+
+        if (loadedLiveSource === "")
+          return;
+        livePlayer.source = mediaUrl(loadedLiveSource);
+        updateLivePlayback();
+      }
+
+      function updateLivePlayback() {
+        if (playbackAllowed) {
+          if (livePlayer.playbackState !== MediaPlayer.PlayingState)
+            livePlayer.play();
+        } else if (livePlayer.playbackState === MediaPlayer.PlayingState) {
+          livePlayer.pause();
+        }
+      }
+
+      function handleLiveVideoFrame() {
+        if (loadedLiveSource === "" || loadedLiveSource !== liveSource)
+          return;
+        if (!liveFrameReady) {
+          liveFrameReady = true;
+          liveFadeOut.stop();
+          liveFadeIn.restart();
+          if (LiveWallpaperService.needsFrame(loader.modelData.name, loadedLiveSource))
+            livePlayer.pause();
+        }
+        if (LiveWallpaperService.needsFrame(loader.modelData.name, loadedLiveSource) && !frameCapturePending && !frameCaptureTimer.running)
+          frameCaptureTimer.start();
+      }
+
+      function captureLiveFrame() {
+        if (!liveFrameReady || frameCapturePending || loadedLiveSource === "" || loadedLiveSource !== liveSource)
+          return;
+        if (!LiveWallpaperService.needsFrame(loader.modelData.name, loadedLiveSource))
+          return;
+        if (liveVideoOutput.width <= 0 || liveVideoOutput.height <= 0) {
+          frameCaptureTimer.restart();
+          return;
+        }
+
+        const capturedSource = loadedLiveSource;
+        const captureGeneration = frameCaptureGeneration;
+        const scale = Math.min(1, 960 / liveVideoOutput.width, 540 / liveVideoOutput.height);
+        const targetSize = Qt.size(Math.max(1, Math.round(liveVideoOutput.width * scale)), Math.max(1, Math.round(liveVideoOutput.height * scale)));
+        frameCapturePending = true;
+        const accepted = liveVideoOutput.grabToImage(result => {
+          if (captureGeneration !== root.frameCaptureGeneration)
+            return;
+          root.frameCapturePending = false;
+          if (capturedSource !== root.loadedLiveSource || capturedSource !== root.liveSource)
+            return;
+          if (result.saveToFile(LiveWallpaperService.framePath(loader.modelData.name)))
+            LiveWallpaperService.markFrameReady(loader.modelData.name, capturedSource);
+          else
+            console.warn("Failed to cache live wallpaper frame for", loader.modelData.name);
+          root.updateLivePlayback();
+        }, targetSize);
+        if (!accepted) {
+          frameCapturePending = false;
+          updateLivePlayback();
         }
       }
 

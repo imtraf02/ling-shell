@@ -15,8 +15,26 @@ WlSessionLockSurface {
 
   readonly property alias unlocking: unlockAnim.running
   readonly property bool shouldVisualize: root.lock.locked && MediaService.isPlaying
+  property string lockBackground: ""
 
   color: "transparent"
+
+  function refreshLockBackground(forceReload = false) {
+    if (!root.screen)
+      return;
+
+    const screenName = root.screen.name;
+    const nextBackground = LiveWallpaperService.hasFrame(screenName) ? LiveWallpaperService.framePath(screenName) : WallpaperService.getWallpaper(screenName);
+    if (!nextBackground)
+      return;
+
+    if (forceReload && nextBackground === lockBackground) {
+      lockBackground = "";
+      Qt.callLater(() => lockBackground = nextBackground);
+    } else {
+      lockBackground = nextBackground;
+    }
+  }
 
   function cavaId() {
     return "lockscreen-" + (root.screen?.name || "unknown");
@@ -30,6 +48,7 @@ WlSessionLockSurface {
   }
 
   Component.onCompleted: {
+    refreshLockBackground();
     if (shouldVisualize)
       CavaService.registerComponent(cavaId());
     LockKeysService.setActive(root.lock.locked);
@@ -55,6 +74,31 @@ WlSessionLockSurface {
       unlockAnim.start();
     }
   }
+
+  Connections {
+    target: WallpaperService
+
+    function onWallpaperChanged(screenName) {
+      if (root.screen && screenName === root.screen.name)
+        root.refreshLockBackground();
+    }
+  }
+
+  Connections {
+    target: LiveWallpaperService
+
+    function onFrameChanged(screenName) {
+      if (root.screen && screenName === root.screen.name)
+        root.refreshLockBackground(true);
+    }
+
+    function onLiveWallpaperChanged(screenName) {
+      if (root.screen && screenName === root.screen.name)
+        root.refreshLockBackground();
+    }
+  }
+
+  onScreenChanged: refreshLockBackground()
 
   SequentialAnimation {
     id: unlockAnim
@@ -182,10 +226,19 @@ WlSessionLockSurface {
     id: lockBgImage
     anchors.fill: parent
     fillMode: Image.PreserveAspectCrop
-    source: root.screen ? WallpaperService.getWallpaper(root.screen.name) : ""
-    cache: true
+    source: root.lockBackground
+    cache: false
+    asynchronous: true
     smooth: true
     mipmap: false
+    opacity: status === Image.Ready ? 1 : 0
+
+    Behavior on opacity {
+      NumberAnimation {
+        duration: Style.anim.durations.small
+        easing.type: Easing.OutCubic
+      }
+    }
   }
 
   Rectangle {

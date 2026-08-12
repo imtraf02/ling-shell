@@ -11,17 +11,13 @@ Singleton {
   property bool nmcliAvailable: false
   property bool ddcutilAvailable: false
   property bool cavaAvailable: false
-  property bool mpvpaperAvailable: false
-  property bool mpvAvailable: false
   property var checked: ({})
 
   readonly property var programsToCheck: ({
       "matugenAvailable": ["which", "matugen"],
       "nmcliAvailable": ["which", "nmcli"],
       "ddcutilAvailable": ["which", "ddcutil"],
-      "cavaAvailable": ["which", "cava"],
-      "mpvpaperAvailable": ["which", "mpvpaper"],
-      "mpvAvailable": ["which", "mpv"]
+      "cavaAvailable": ["which", "cava"]
     })
 
   property var checkQueue: []

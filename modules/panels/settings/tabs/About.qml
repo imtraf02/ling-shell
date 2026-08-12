@@ -26,9 +26,9 @@ ColumnLayout {
         title: "Optional integrations"
         description: "Bundled and optional runtime executables."
         icon: "extension"
-        Component.onCompleted: { ProgramCheckerService.ensure("matugenAvailable"); ProgramCheckerService.ensure("ddcutilAvailable"); ProgramCheckerService.ensure("cavaAvailable"); ProgramCheckerService.ensure("nmcliAvailable"); ProgramCheckerService.ensure("mpvpaperAvailable"); ProgramCheckerService.ensure("mpvAvailable"); }
+        Component.onCompleted: { ProgramCheckerService.ensure("matugenAvailable"); ProgramCheckerService.ensure("ddcutilAvailable"); ProgramCheckerService.ensure("cavaAvailable"); ProgramCheckerService.ensure("nmcliAvailable"); }
         Repeater {
-          model: [{ name: "Matugen", property: "matugenAvailable" }, { name: "ddcutil", property: "ddcutilAvailable" }, { name: "Cava", property: "cavaAvailable" }, { name: "nmcli", property: "nmcliAvailable" }, { name: "mpvpaper", property: "mpvpaperAvailable" }, { name: "mpv", property: "mpvAvailable" }]
+          model: [{ name: "Matugen", property: "matugenAvailable" }, { name: "ddcutil", property: "ddcutilAvailable" }, { name: "Cava", property: "cavaAvailable" }, { name: "nmcli", property: "nmcliAvailable" }]
           delegate: IBox {
             required property var modelData
             Layout.fillWidth: true; implicitHeight: 34; color: ThemeService.palette.mSurfaceVariant

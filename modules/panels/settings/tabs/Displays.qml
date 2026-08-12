@@ -11,8 +11,6 @@ ColumnLayout {
   spacing: Style.spacing.normal
   Component.onCompleted: {
     ProgramCheckerService.ensure("ddcutilAvailable");
-    ProgramCheckerService.ensure("mpvpaperAvailable");
-    ProgramCheckerService.ensure("mpvAvailable");
   }
 
   SettingsPage {
@@ -61,12 +59,11 @@ ColumnLayout {
       }
       SettingsCard {
         title: "Live wallpaper"
-        description: "Video playback is handled by mpvpaper; the first frame also powers overview and dynamic colors."
+        description: "Qt Multimedia renders video natively; its first frame also powers overview and dynamic colors."
         icon: "movie"
         Layout.columnSpan: grid.columns
-        badge: LiveWallpaperService.available ? "Ready" : (ProgramCheckerService.isChecked("mpvpaperAvailable") && ProgramCheckerService.isChecked("mpvAvailable") ? "Unavailable" : "Checking")
-        SettingsNotice { visible: ProgramCheckerService.isChecked("mpvpaperAvailable") && ProgramCheckerService.isChecked("mpvAvailable") && !LiveWallpaperService.available; warning: true; icon: "extension_off"; text: "mpvpaper and mpv are required. Add both to extraRuntimePackages, then reload Ling Shell." }
-        IText { Layout.fillWidth: true; text: "Choose a video from the launcher: > Live Wallpaper. It uses the same wallpaper directory and monitor rules."; wrapMode: Text.WordWrap; color: ThemeService.palette.mOnSurfaceVariant; font.pointSize: Style.font.size.small }
+        badge: "Native"
+        IText { Layout.fillWidth: true; text: "Choose a video from the launcher: > Live Wallpaper. Playback needs no external player and follows the same directory and monitor rules."; wrapMode: Text.WordWrap; color: ThemeService.palette.mOnSurfaceVariant; font.pointSize: Style.font.size.small }
         Repeater {
           model: Quickshell.screens
           delegate: IBox {

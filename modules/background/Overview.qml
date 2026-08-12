@@ -34,8 +34,13 @@ Loader {
       Connections {
         target: LiveWallpaperService
         function onFrameChanged(screenName, path) {
-          if (screenName === panelWindow.modelData.name)
-            panelWindow.wallpaper = path || WallpaperService.getWallpaper(screenName);
+          if (screenName === panelWindow.modelData.name) {
+            const nextWallpaper = path || WallpaperService.getWallpaper(screenName);
+            // Captures reuse a stable cache path. Clear first so Image reloads
+            // the newly written frame instead of keeping the previous texture.
+            panelWindow.wallpaper = "";
+            Qt.callLater(() => panelWindow.wallpaper = nextWallpaper);
+          }
         }
         function onLiveWallpaperChanged(screenName) {
           if (screenName === panelWindow.modelData.name)

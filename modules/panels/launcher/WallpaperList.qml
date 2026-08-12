@@ -362,17 +362,34 @@ Item {
         IImageCached {
           visible: !root.liveMode
           maxCacheDimension: 384
-          imagePath: delegateItem.wallpaperPath
+          imagePath: root.liveMode ? "" : delegateItem.wallpaperPath
           cacheFolder: Directories.shellCacheWallpaperDir
           anchors.fill: parent
         }
 
+        ILiveWallpaperThumbnail {
+          id: liveThumbnail
+
+          anchors.fill: parent
+          visible: root.liveMode
+          active: root.liveMode && delegateItem.PathView.onPath
+          videoPath: delegateItem.wallpaperPath
+        }
+
         IIcon {
           anchors.centerIn: parent
-          visible: root.liveMode
+          visible: opacity > 0
+          opacity: root.liveMode && !liveThumbnail.hasPreview ? 1 : 0
           icon: "movie"
           font.pointSize: Style.font.size.extraLarge
           color: delegateItem.isSelected ? ThemeService.palette.mOnPrimary : ThemeService.palette.mPrimary
+
+          Behavior on opacity {
+            NumberAnimation {
+              duration: 200
+              easing.type: Easing.OutCubic
+            }
+          }
         }
       }
 
