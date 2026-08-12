@@ -12,6 +12,8 @@ import qs.modules.panels
 SmartPanel {
   id: root
 
+  animateContentHeight: false
+
   readonly property int notifCount: NotificationService.list.reduce((acc, n) => n.closed ? acc : acc + 1, 0)
 
   PersistentProperties {
@@ -116,12 +118,20 @@ SmartPanel {
         IFlickable {
           id: view
 
+          function clampContentPosition(): void {
+            const maxContentY = Math.max(0, contentHeight - height);
+            contentY = Math.max(0, Math.min(contentY, maxContentY));
+          }
+
           anchors.fill: parent
           anchors.margins: Style.padding.small
           clip: true
           contentWidth: width
           contentHeight: notifList.implicitHeight
           boundsBehavior: Flickable.StopAtBounds
+
+          onContentHeightChanged: Qt.callLater(clampContentPosition)
+          onHeightChanged: Qt.callLater(clampContentPosition)
 
           NotificationList {
             id: notifList

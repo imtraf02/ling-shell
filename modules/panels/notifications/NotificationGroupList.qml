@@ -17,6 +17,7 @@ ColumnLayout {
 
   readonly property int spacing: Math.round(Style.spacing.small / 2)
   property bool showAllNotifs
+  property bool visualExpanded
   readonly property bool collapsing: showAllNotifs && !expanded
   property bool flag
 
@@ -24,30 +25,53 @@ ColumnLayout {
 
   onExpandedChanged: {
     if (expanded) {
-      clearTimer.stop();
       showAllNotifs = true;
+      Qt.callLater(() => {
+        if (root.expanded)
+          root.visualExpanded = true;
+      });
     } else {
-      clearTimer.start();
+      visualExpanded = false;
+      Qt.callLater(finishCollapseIfReady);
     }
   }
 
   Component.onCompleted: {
-    if (expanded)
+    if (expanded) {
       showAllNotifs = true;
+      visualExpanded = true;
+    }
   }
 
   Layout.fillWidth: true
 
-  Timer {
-    id: clearTimer
-    interval: Style.anim.durations.expressiveDefaultSpatial
-    onTriggered: root.showAllNotifs = false
+  function finishCollapseIfReady(): void {
+    if (!collapsing)
+      return;
+
+    for (let i = 0; i < repeater.count; i++) {
+      const item = repeater.itemAt(i);
+      if (item?.previewHidden && item.animatedHeight > 0.5)
+        return;
+    }
+
+    showAllNotifs = false;
   }
 
   Repeater {
     id: repeater
     model: ScriptModel {
-      values: root.showAllNotifs ? root.notifs : root.notifs.slice(0, Settings.notifications.groupPreviewNum)
+      values: {
+        if (root.showAllNotifs)
+          return root.notifs;
+
+        let activeCount = 0;
+        return root.notifs.filter(notif => {
+          if (notif.closed)
+            return true;
+          return activeCount++ < Settings.notifications.groupPreviewNum;
+        });
+      }
       onValuesChanged: root.flagChanged()
     }
 
@@ -58,7 +82,7 @@ ColumnLayout {
       required property NotificationService.Notif modelData
 
       readonly property bool previewHidden: {
-        if (root.expanded)
+        if (root.visualExpanded)
           return false;
         let extraHidden = 0;
         for (let i = 0; i < index; i++)
@@ -66,11 +90,15 @@ ColumnLayout {
             extraHidden++;
         return index >= Settings.notifications.groupPreviewNum + extraHidden;
       }
+      readonly property real targetHeight: (modelData.closed || previewHidden) ? 0 : notifInner.implicitHeight
+      property real animatedHeight: targetHeight
 
       property int startY
 
       Layout.fillWidth: true
-      Layout.preferredHeight: (modelData.closed || previewHidden) ? 0 : notifInner.implicitHeight
+      // The expressive easing overshoots. Clamp the value so a negative
+      // preferredHeight is never interpreted by Qt Layout as "unset".
+      Layout.preferredHeight: Math.max(0, animatedHeight)
       Layout.topMargin: (index > 0 && (modelData.closed || previewHidden)) ? -root.spacing : 0
 
       clip: true
@@ -154,13 +182,20 @@ ColumnLayout {
         anchors.fill: parent
         modelData: notif.modelData
         props: root.props
+        // Load expanded content before revealing its height, and keep hidden
+        // delegates expanded until their collapse animation has completed.
         expanded: root.expanded || (root.collapsing && notif.previewHidden)
       }
 
-      Behavior on Layout.preferredHeight {
+      Behavior on animatedHeight {
         IAnim {
           duration: Style.anim.durations.expressiveDefaultSpatial
           easing.bezierCurve: Style.anim.curves.expressiveDefaultSpatial
+
+          onRunningChanged: {
+            if (!running)
+              Qt.callLater(root.finishCollapseIfReady);
+          }
         }
       }
 

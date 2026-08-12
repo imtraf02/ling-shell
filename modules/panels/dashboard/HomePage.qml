@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Services.UPower
 import qs.common
 import qs.services
 import qs.widgets
@@ -14,28 +13,95 @@ Item {
 
   required property ShellScreen screen
   property bool active: false
+  property int calendarMonth: TimeService.date.getMonth()
+  property int calendarYear: TimeService.date.getFullYear()
+  property int pendingCalendarDelta: 0
   implicitWidth: 872
   implicitHeight: 472
 
-  readonly property real mediaRatio: MediaService.trackLength > 0
-    ? Math.max(0, Math.min(1, MediaService.currentPosition / MediaService.trackLength)) : 0
+  readonly property real mediaRatio: MediaService.trackLength > 0 ? Math.max(0, Math.min(1, MediaService.currentPosition / MediaService.trackLength)) : 0
+  readonly property var calendarDays: {
+    const first = new Date(calendarYear, calendarMonth, 1);
+    const mondayOffset = (first.getDay() + 6) % 7;
+    const start = new Date(calendarYear, calendarMonth, 1 - mondayOffset);
+    const today = TimeService.date;
+    const days = [];
+
+    for (let index = 0; index < 42; index++) {
+      const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
+      days.push({
+        day: date.getDate(),
+        currentMonth: date.getFullYear() === calendarYear && date.getMonth() === calendarMonth,
+        today: date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate(),
+        weekend: date.getDay() === 0 || date.getDay() === 6
+      });
+    }
+
+    return days;
+  }
 
   function formatDuration(value) {
     const seconds = Math.max(0, Math.floor(Number(value) || 0));
     return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
   }
 
-  function calendarCell(index) {
-    const today = TimeService.date;
-    const first = new Date(today.getFullYear(), today.getMonth(), 1);
-    const offset = (first.getDay() + 6) % 7;
-    const day = index - offset + 1;
-    const days = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    return {
-      day: day,
-      currentMonth: day > 0 && day <= days,
-      today: day === today.getDate()
-    };
+  function changeCalendarMonth(delta) {
+    if (delta === 0 || calendarMonthAnimation.running)
+      return;
+    pendingCalendarDelta = delta;
+    calendarMonthAnimation.start();
+  }
+
+  SequentialAnimation {
+    id: calendarMonthAnimation
+
+    ParallelAnimation {
+      NumberAnimation {
+        target: calendarContent
+        property: "x"
+        to: -root.pendingCalendarDelta * 12
+        duration: 80
+        easing.type: Easing.InQuad
+      }
+      NumberAnimation {
+        target: calendarContent
+        property: "opacity"
+        to: 0
+        duration: 80
+        easing.type: Easing.InQuad
+      }
+    }
+
+    ScriptAction {
+      script: {
+        const next = new Date(root.calendarYear, root.calendarMonth + root.pendingCalendarDelta, 1);
+        root.calendarYear = next.getFullYear();
+        root.calendarMonth = next.getMonth();
+      }
+    }
+
+    PropertyAction {
+      target: calendarContent
+      property: "x"
+      value: root.pendingCalendarDelta * 12
+    }
+
+    ParallelAnimation {
+      NumberAnimation {
+        target: calendarContent
+        property: "x"
+        to: 0
+        duration: 120
+        easing.type: Easing.OutQuint
+      }
+      NumberAnimation {
+        target: calendarContent
+        property: "opacity"
+        to: 1
+        duration: 120
+        easing.type: Easing.OutQuint
+      }
+    }
   }
 
   RowLayout {
@@ -67,9 +133,7 @@ Item {
             spacing: Style.spacing.normal
 
             IIcon {
-              icon: WeatherService.current.weather_code !== undefined
-                ? WeatherService.weatherInfo(WeatherService.current.weather_code, WeatherService.current.is_day).icon
-                : "partly_cloudy_day"
+              icon: WeatherService.current.weather_code !== undefined ? WeatherService.weatherInfo(WeatherService.current.weather_code, WeatherService.current.is_day).icon : "partly_cloudy_day"
               color: ThemeService.palette.mPrimary
               font.pointSize: Style.font.size.extraLarge * 2.25
             }
@@ -85,18 +149,13 @@ Item {
                 elide: Text.ElideRight
               }
               IText {
-                text: WeatherService.current.temperature_2m !== undefined
-                  ? Math.round(WeatherService.current.temperature_2m) + "°"
-                  : "--°"
+                text: WeatherService.current.temperature_2m !== undefined ? Math.round(WeatherService.current.temperature_2m) + "°" : "--°"
                 font.pointSize: Style.font.size.extraLarge * 1.65
                 font.weight: Font.Bold
               }
               IText {
                 Layout.fillWidth: true
-                text: WeatherService.loading ? "Updating…" : (WeatherService.error ||
-                  (WeatherService.current.weather_code !== undefined
-                    ? WeatherService.weatherInfo(WeatherService.current.weather_code, WeatherService.current.is_day).description
-                    : "Forecast unavailable"))
+                text: WeatherService.loading ? "Updating…" : (WeatherService.error || (WeatherService.current.weather_code !== undefined ? WeatherService.weatherInfo(WeatherService.current.weather_code, WeatherService.current.is_day).description : "Forecast unavailable"))
                 color: WeatherService.error ? ThemeService.palette.mError : ThemeService.palette.mOnSurfaceVariant
                 font.pointSize: Style.font.size.small
                 elide: Text.ElideRight
@@ -160,8 +219,14 @@ Item {
                 Layout.fillWidth: true
                 Layout.minimumWidth: 0
                 spacing: Style.spacing.small
-                StatusChip { icon: "deployed_code"; text: DistroService.osPretty || "NixOS" }
-                StatusChip { icon: "schedule"; text: DistroService.uptime }
+                StatusChip {
+                  icon: "deployed_code"
+                  text: DistroService.osPretty || "NixOS"
+                }
+                StatusChip {
+                  icon: "schedule"
+                  text: DistroService.uptime
+                }
               }
             }
           }
@@ -183,7 +248,9 @@ Item {
           ColumnLayout {
             anchors.fill: parent
             spacing: 0
-            Item { Layout.fillHeight: true }
+            Item {
+              Layout.fillHeight: true
+            }
             IText {
               Layout.alignment: Qt.AlignHCenter
               text: TimeService.format("HH:mm")
@@ -202,7 +269,9 @@ Item {
               text: TimeService.format("d MMM")
               color: ThemeService.palette.mOnSurfaceVariant
             }
-            Item { Layout.fillHeight: true }
+            Item {
+              Layout.fillHeight: true
+            }
           }
         }
 
@@ -210,16 +279,25 @@ Item {
           Layout.fillWidth: true
           Layout.minimumWidth: 0
           Layout.fillHeight: true
-          title: TimeService.format("MMMM yyyy")
-          icon: "calendar_month"
 
           ColumnLayout {
+            id: calendarContent
             anchors.fill: parent
             spacing: 2
+
+            IText {
+              Layout.alignment: Qt.AlignHCenter
+              Layout.preferredHeight: 24
+              text: Qt.formatDate(new Date(root.calendarYear, root.calendarMonth, 1), "MMMM yyyy")
+              color: ThemeService.palette.mPrimary
+              font.weight: Font.DemiBold
+              horizontalAlignment: Text.AlignHCenter
+            }
 
             GridLayout {
               Layout.fillWidth: true
               columns: 7
+              uniformCellWidths: true
               columnSpacing: 1
               rowSpacing: 0
               Repeater {
@@ -230,6 +308,7 @@ Item {
                   Layout.preferredHeight: 18
                   text: modelData
                   horizontalAlignment: Text.AlignHCenter
+                  verticalAlignment: Text.AlignVCenter
                   color: ThemeService.palette.mOnSurfaceVariant
                   font.pointSize: Style.font.size.small
                   font.weight: Font.Medium
@@ -241,15 +320,16 @@ Item {
               Layout.fillWidth: true
               Layout.fillHeight: true
               columns: 7
+              uniformCellWidths: true
+              uniformCellHeights: true
               columnSpacing: 1
               rowSpacing: 1
 
               Repeater {
-                model: 42
+                model: root.calendarDays
                 delegate: Item {
                   id: dayCell
-                  required property int index
-                  readonly property var cell: root.calendarCell(index)
+                  required property var modelData
                   Layout.fillWidth: true
                   Layout.fillHeight: true
 
@@ -258,44 +338,62 @@ Item {
                     width: Math.max(0, Math.min(27, parent.width - 2, parent.height - 2))
                     height: width
                     radius: width / 2
-                    color: dayCell.cell.today ? ThemeService.palette.mPrimary : "transparent"
+                    color: dayCell.modelData.today ? ThemeService.palette.mPrimary : "transparent"
                     IText {
-                      anchors.centerIn: parent
-                      text: dayCell.cell.currentMonth ? dayCell.cell.day : ""
-                      color: dayCell.cell.today ? ThemeService.palette.mOnPrimary : ThemeService.palette.mOnSurface
+                      anchors.fill: parent
+                      text: dayCell.modelData.day
+                      horizontalAlignment: Text.AlignHCenter
+                      verticalAlignment: Text.AlignVCenter
+                      color: dayCell.modelData.today ? ThemeService.palette.mOnPrimary : (dayCell.modelData.weekend ? ThemeService.palette.mSecondary : ThemeService.palette.mOnSurface)
+                      opacity: dayCell.modelData.currentMonth ? 1 : 0.38
                       font.pointSize: Style.font.size.small
-                      font.weight: dayCell.cell.today ? Font.Bold : Font.Normal
+                      font.weight: dayCell.modelData.today ? Font.Bold : Font.Normal
                     }
                   }
                 }
               }
             }
           }
+
+          MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.MiddleButton
+
+            onWheel: event => {
+              const delta = event.angleDelta.y > 0 ? -1 : (event.angleDelta.y < 0 ? 1 : 0);
+              if (delta !== 0) {
+                root.changeCalendarMonth(delta);
+                event.accepted = true;
+              }
+            }
+          }
         }
 
         DashboardCard {
-          Layout.preferredWidth: 154
-          Layout.minimumWidth: 144
-          Layout.maximumWidth: 154
+          Layout.preferredWidth: 126
+          Layout.minimumWidth: 116
+          Layout.maximumWidth: 126
           Layout.fillHeight: true
-          title: "Resources"
-          icon: "monitoring"
 
-          ColumnLayout {
+          RowLayout {
             anchors.fill: parent
-            spacing: Style.spacing.normal
-            Item { Layout.fillHeight: true }
-            MetricRow { icon: "memory"; label: "CPU"; value: SystemUsageService.cpuUsage; accent: SystemUsageService.cpuColor }
-            MetricRow { icon: "developer_board"; label: "Memory"; value: SystemUsageService.memPercent; accent: SystemUsageService.memColor }
-            MetricRow { icon: "hard_drive"; label: "Storage"; value: SystemUsageService.diskPercents["/"] || 0; accent: SystemUsageService.getDiskColor("/") }
-            MetricRow {
-              visible: UPower.displayDevice.isLaptopBattery
-              icon: "battery_full"
-              label: "Battery"
-              value: UPower.displayDevice.percentage * 100
-              accent: ThemeService.palette.mSecondary
+            spacing: Style.spacing.small
+
+            VerticalMetric {
+              icon: "memory"
+              value: SystemUsageService.cpuUsage
+              accent: SystemUsageService.cpuColor
             }
-            Item { Layout.fillHeight: true }
+            VerticalMetric {
+              icon: "developer_board"
+              value: SystemUsageService.memPercent
+              accent: SystemUsageService.memColor
+            }
+            VerticalMetric {
+              icon: "hard_drive"
+              value: SystemUsageService.diskPercents["/"] || 0
+              accent: SystemUsageService.getDiskColor("/")
+            }
           }
         }
       }
@@ -356,16 +454,28 @@ Item {
           elide: Text.ElideRight
         }
 
-        Item { Layout.fillHeight: true }
+        Item {
+          Layout.fillHeight: true
+        }
 
         ColumnLayout {
           Layout.fillWidth: true
           spacing: 1
           RowLayout {
             Layout.fillWidth: true
-            IText { text: root.formatDuration(MediaService.currentPosition); color: ThemeService.palette.mOnSurfaceVariant; font.pointSize: Style.font.size.small }
-            Item { Layout.fillWidth: true }
-            IText { text: MediaService.trackLength > 0 ? root.formatDuration(MediaService.trackLength) : "--:--"; color: ThemeService.palette.mOnSurfaceVariant; font.pointSize: Style.font.size.small }
+            IText {
+              text: root.formatDuration(MediaService.currentPosition)
+              color: ThemeService.palette.mOnSurfaceVariant
+              font.pointSize: Style.font.size.small
+            }
+            Item {
+              Layout.fillWidth: true
+            }
+            IText {
+              text: MediaService.trackLength > 0 ? root.formatDuration(MediaService.trackLength) : "--:--"
+              color: ThemeService.palette.mOnSurfaceVariant
+              font.pointSize: Style.font.size.small
+            }
           }
           IWavySlider {
             id: mediaProgress
@@ -383,13 +493,26 @@ Item {
               MediaService.isSeeking = false;
             }
           }
-          Binding { target: mediaProgress; property: "value"; value: root.mediaRatio; when: !mediaProgress.pressed; restoreMode: Binding.RestoreNone }
+          Binding {
+            target: mediaProgress
+            property: "value"
+            value: root.mediaRatio
+            when: !mediaProgress.pressed
+            restoreMode: Binding.RestoreNone
+          }
         }
 
         RowLayout {
           Layout.alignment: Qt.AlignHCenter
           spacing: Style.spacing.small
-          IIconButton { size: 32; radius: size / 2; icon: "skip_previous"; enabled: MediaService.canGoPrevious; colorBg: "transparent"; onClicked: MediaService.previous() }
+          IIconButton {
+            size: 32
+            radius: size / 2
+            icon: "skip_previous"
+            enabled: MediaService.canGoPrevious
+            colorBg: "transparent"
+            onClicked: MediaService.previous()
+          }
           IIconButton {
             size: 42
             radius: size / 2
@@ -399,7 +522,14 @@ Item {
             colorFg: ThemeService.palette.mOnPrimary
             onClicked: MediaService.playPause()
           }
-          IIconButton { size: 32; radius: size / 2; icon: "skip_next"; enabled: MediaService.canGoNext; colorBg: "transparent"; onClicked: MediaService.next() }
+          IIconButton {
+            size: 32
+            radius: size / 2
+            icon: "skip_next"
+            enabled: MediaService.canGoNext
+            colorBg: "transparent"
+            onClicked: MediaService.next()
+          }
         }
       }
     }
@@ -417,44 +547,73 @@ Item {
       id: chipRow
       anchors.centerIn: parent
       spacing: 4
-      IIcon { icon: chip.icon; color: ThemeService.palette.mPrimary; font.pointSize: Style.font.size.normal }
-      IText { text: chip.text; font.pointSize: Style.font.size.small; maximumLineCount: 1 }
+      IIcon {
+        icon: chip.icon
+        color: ThemeService.palette.mPrimary
+        font.pointSize: Style.font.size.normal
+      }
+      IText {
+        text: chip.text
+        font.pointSize: Style.font.size.small
+        maximumLineCount: 1
+      }
     }
   }
 
-  component MetricRow: Item {
+  component VerticalMetric: Item {
     id: metric
+
     property string icon: "monitoring"
-    property string label: ""
     property real value: 0
     property color accent: ThemeService.palette.mPrimary
-    Layout.fillWidth: true
-    implicitHeight: 36
 
-    RowLayout {
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    Layout.minimumWidth: 0
+
+    ColumnLayout {
       anchors.fill: parent
       spacing: Style.spacing.small
-      IIcon { icon: metric.icon; color: metric.accent; font.pointSize: Style.font.size.large }
-      ColumnLayout {
-        Layout.fillWidth: true
-        spacing: 3
-        RowLayout {
-          Layout.fillWidth: true
-          IText { Layout.fillWidth: true; text: metric.label; font.pointSize: Style.font.size.small; elide: Text.ElideRight }
-          IText { text: Math.round(metric.value) + "%"; color: metric.accent; font.pointSize: Style.font.size.small; font.weight: Font.Bold }
-        }
+
+      Item {
+        Layout.fillHeight: true
+      }
+
+      Rectangle {
+        Layout.alignment: Qt.AlignHCenter
+        Layout.fillHeight: true
+        Layout.minimumHeight: 72
+        Layout.preferredWidth: 8
+        radius: width / 2
+        color: ThemeService.palette.mSurfaceVariant
+        clip: true
+
         Rectangle {
-          Layout.fillWidth: true
-          Layout.preferredHeight: 4
-          radius: height / 2
-          color: ThemeService.palette.mSurfaceVariant
-          Rectangle {
-            width: parent.width * Math.max(0, Math.min(100, metric.value)) / 100
-            height: parent.height
-            radius: height / 2
-            color: metric.accent
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          height: parent.height * Math.max(0, Math.min(100, metric.value)) / 100
+          radius: width / 2
+          color: metric.accent
+
+          Behavior on height {
+            NumberAnimation {
+              duration: 180
+              easing.type: Easing.OutQuint
+            }
           }
         }
+      }
+
+      IIcon {
+        Layout.alignment: Qt.AlignHCenter
+        icon: metric.icon
+        color: metric.accent
+        font.pointSize: Style.font.size.larger
+      }
+
+      Item {
+        Layout.fillHeight: true
       }
     }
   }

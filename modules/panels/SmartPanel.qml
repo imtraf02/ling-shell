@@ -23,6 +23,8 @@ Item {
   // Top/bottom panels normally animate only their edge-facing dimension.
   // Opt in when a panel changes width with its current content.
   property bool animateContentWidth: false
+  // Disable when the content already animates its own height frame by frame.
+  property bool animateContentHeight: true
 
   // Button positioning (for BarPanel behavior)
   property var buttonItem: null
@@ -416,7 +418,7 @@ Item {
             if (!panelBackground.dimensionsInitialized && root._animateHeight)
               return 0;
             if (root.sizeAnimationComplete)
-              return Style.anim.durations.small;
+              return root.animateContentHeight ? Style.anim.durations.small : 0;
             return root.isOpening ? Style.anim.durations.normal : root.isClosing ? Style.anim.durations.small : Style.anim.durations.normal;
           }
           easing.type: Easing.BezierSpline
