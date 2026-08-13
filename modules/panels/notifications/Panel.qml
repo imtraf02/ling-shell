@@ -13,6 +13,7 @@ SmartPanel {
   id: root
 
   animateContentHeight: false
+  synchronizedCloseTransition: true
 
   readonly property int notifCount: NotificationService.list.reduce((acc, n) => n.closed ? acc : acc + 1, 0)
 

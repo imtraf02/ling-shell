@@ -66,7 +66,7 @@ Item {
         if (root.liveMode)
           LiveWallpaperService.setLiveWallpaper(currentItem.wallpaperPath, pathView.targetScreen.name);
         else
-          WallpaperService.changeWallpaper(currentItem.wallpaperPath, pathView.targetScreen.name);
+          WallpaperService.changeWallpaper(currentItem.wallpaperPath, Settings.wallpaper.setWallpaperOnAllMonitors ? undefined : pathView.targetScreen.name);
       }
     }
   }
@@ -328,7 +328,7 @@ Item {
           if (root.liveMode)
             LiveWallpaperService.setLiveWallpaper(delegateItem.wallpaperPath, pathView.targetScreen.name);
           else
-            WallpaperService.changeWallpaper(delegateItem.wallpaperPath, pathView.targetScreen.name);
+            WallpaperService.changeWallpaper(delegateItem.wallpaperPath, Settings.wallpaper.setWallpaperOnAllMonitors ? undefined : pathView.targetScreen.name);
           pathView.currentIndex = delegateItem.index;
         }
       }

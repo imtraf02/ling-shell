@@ -15,6 +15,7 @@ Singleton {
 
   property list<string> themeFiles: []
   property bool loading: false
+  property bool refreshPending: false
   property alias palette: adapter
 
   readonly property list<string> validMatugenSchemes: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot", "scheme-vibrant"]
@@ -53,6 +54,10 @@ Singleton {
   }
 
   function refresh() {
+    if (generateProcess.running) {
+      refreshPending = true;
+      return;
+    }
     root.loading = true;
     const theme = Settings.appearance.theme;
     if (theme.dynamic) {
@@ -118,8 +123,14 @@ Singleton {
 
     const matugenType = validMatugenSchemes.includes(type) ? type : "scheme-tonal-spot";
     const targetMode = mode === "light" ? "light" : "dark";
-    generateProcess.command = ["matugen", "image", wallpaper, "-j", "hex", "-m", targetMode, "-t", matugenType];
+    // Ling Shell runs Matugen without a terminal, so choose its highest-ranked
+    // source color instead of allowing Matugen to prompt interactively.
+    generateProcess.command = ["matugen", "image", wallpaper, "-j", "hex", "-m", targetMode, "-t", matugenType, "--source-color-index", "0"];
     generateProcess.running = true;
+  }
+
+  function requestRefresh() {
+    refreshTimer.restart();
   }
 
   function parseMatugen(json) {
@@ -145,16 +156,16 @@ Singleton {
     target: Settings.appearance.theme
 
     function onModeChanged() {
-      root.refresh();
+      root.requestRefresh();
     }
 
     function onDynamicChanged() {
-      root.refresh();
+      root.requestRefresh();
     }
 
     function onMatugenTypeChanged() {
       if (Settings.appearance.theme.dynamic) {
-        root.refresh();
+        root.requestRefresh();
       }
     }
 
@@ -175,7 +186,7 @@ Singleton {
     target: WallpaperService
     function onWallpaperChanged() {
       if (Settings.appearance.theme.dynamic)
-        root.refresh();
+        root.requestRefresh();
     }
   }
 
@@ -183,11 +194,11 @@ Singleton {
     target: LiveWallpaperService
     function onFrameChanged() {
       if (Settings.appearance.theme.dynamic)
-        root.refresh();
+        root.requestRefresh();
     }
     function onLiveWallpaperChanged() {
       if (Settings.appearance.theme.dynamic)
-        root.refresh();
+        root.requestRefresh();
     }
   }
 
@@ -195,7 +206,7 @@ Singleton {
     target: ProgramCheckerService
     function onMatugenAvailableChanged() {
       if (Settings.appearance.theme.dynamic)
-        root.refresh();
+        root.requestRefresh();
     }
   }
 
@@ -208,7 +219,7 @@ Singleton {
       } else {
         console.error("Find Theme Error:", stderr.text);
       }
-      root.refresh();
+      root.requestRefresh();
     }
     stdout: StdioCollector {}
     stderr: StdioCollector {}
@@ -230,9 +241,20 @@ Singleton {
         console.error("Matugen Error:", stderr.text);
         root.loading = false;
       }
+      if (root.refreshPending) {
+        root.refreshPending = false;
+        root.requestRefresh();
+      }
     }
     stdout: StdioCollector {}
     stderr: StdioCollector {}
+  }
+
+  Timer {
+    id: refreshTimer
+    interval: 125
+    repeat: false
+    onTriggered: root.refresh()
   }
 
   FileView {

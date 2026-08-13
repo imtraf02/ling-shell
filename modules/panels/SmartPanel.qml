@@ -25,6 +25,8 @@ Item {
   property bool animateContentWidth: false
   // Disable when the content already animates its own height frame by frame.
   property bool animateContentHeight: true
+  // Opt in when opacity and geometry must finish on the exact same frame.
+  property bool synchronizedCloseTransition: false
 
   // Button positioning (for BarPanel behavior)
   property var buttonItem: null
@@ -44,6 +46,7 @@ Item {
   property bool _closeFinalized: false
   property bool _closeWatchdogActive: false
   property bool _openWatchdogActive: false
+  property real _closeProgress: 0
 
   // Computed properties for animation direction
   readonly property bool _animateWidth: position === "left" || position === "right"
@@ -82,6 +85,7 @@ Item {
 
   function close() {
     PanelService.closedImmediately = false;
+    _closeProgress = 0;
     isClosing = true;
     sizeAnimationComplete = false;
     _closeFinalized = false;
@@ -94,9 +98,13 @@ Item {
     closeWatchdogTimer.restart();
 
     _opacityFadeComplete = (opacity === 0.0);
+
+    if (synchronizedCloseTransition)
+      closeTransition.restart();
   }
 
   function closeImmediately() {
+    closeTransition.stop();
     opacityTrigger.stop();
     _openWatchdogActive = false;
     openWatchdogTimer.stop();
@@ -109,6 +117,7 @@ Item {
     _opacityFadeComplete = false;
     _closeFinalized = true;
     isPanelOpen = false;
+    _closeProgress = 0;
     panelBackground.dimensionsInitialized = false;
 
     PanelService.closedImmediately = true;
@@ -141,6 +150,7 @@ Item {
       return;
 
     _closeFinalized = true;
+    closeTransition.stop();
     _closeWatchdogActive = false;
     closeWatchdogTimer.stop();
 
@@ -148,6 +158,7 @@ Item {
     isPanelOpen = false;
     isClosing = false;
     _opacityFadeComplete = false;
+    _closeProgress = 0;
     panelBackground.dimensionsInitialized = false;
 
     PanelService.closedPanel(root);
@@ -192,14 +203,14 @@ Item {
 
   opacity: {
     if (position === "top") {
-      return isClosing ? 0.0 : (isPanelVisible && sizeAnimationComplete ? 1.0 : 0.0);
+      return isClosing ? (synchronizedCloseTransition ? 1.0 - _closeProgress : 0.0) : (isPanelVisible && sizeAnimationComplete ? 1.0 : 0.0);
     } else {
       return isClosing || (isPanelVisible && sizeAnimationComplete) ? 1.0 : 0.0;
     }
   }
 
   Behavior on opacity {
-    enabled: !PanelService.closedImmediately && position === "top"
+    enabled: !PanelService.closedImmediately && position === "top" && !(root.synchronizedCloseTransition && root.isClosing)
     NumberAnimation {
       duration: Style.anim.durations.small
       easing.type: Easing.OutQuad
@@ -279,6 +290,20 @@ Item {
     }
   }
 
+  NumberAnimation {
+    id: closeTransition
+    target: root
+    property: "_closeProgress"
+    from: 0
+    to: 1
+    duration: Style.anim.durations.small
+    easing.type: Easing.InQuad
+    onFinished: {
+      if (root.isClosing)
+        Qt.callLater(root._finalizeClose);
+    }
+  }
+
   Item {
     id: panelContent
     anchors.fill: parent
@@ -298,14 +323,14 @@ Item {
 
       readonly property real currentWidth: {
         if (root._animateWidth) {
-          return root.isClosing ? 0 : (root.isPanelVisible ? targetWidth : 0);
+          return root.isClosing ? (root.synchronizedCloseTransition ? targetWidth * (1 - root._closeProgress) : 0) : (root.isPanelVisible ? targetWidth : 0);
         }
         return targetWidth;
       }
 
       readonly property real currentHeight: {
         if (root._animateHeight) {
-          return root.isClosing ? 0 : (root.isPanelVisible ? targetHeight : 0);
+          return root.isClosing ? (root.synchronizedCloseTransition ? targetHeight * (1 - root._closeProgress) : 0) : (root.isPanelVisible ? targetHeight : 0);
         }
         return targetHeight;
       }
@@ -389,7 +414,7 @@ Item {
       }
 
       Behavior on width {
-        enabled: !PanelService.closedImmediately && (root._animateWidth || (root.animateContentWidth && panelBackground.dimensionsInitialized))
+        enabled: !PanelService.closedImmediately && !(root.synchronizedCloseTransition && root.isClosing) && (root._animateWidth || (root.animateContentWidth && panelBackground.dimensionsInitialized))
         NumberAnimation {
           duration: {
             if (!panelBackground.dimensionsInitialized)
@@ -412,14 +437,19 @@ Item {
       }
 
       Behavior on height {
-        enabled: !PanelService.closedImmediately && (root._animateHeight || panelBackground.dimensionsInitialized)
+        enabled: !PanelService.closedImmediately && !(root.synchronizedCloseTransition && root.isClosing) && (root._animateHeight || panelBackground.dimensionsInitialized)
         NumberAnimation {
           duration: {
             if (!panelBackground.dimensionsInitialized && root._animateHeight)
               return 0;
+            // Closing must win over the live-content resize policy. `isClosing`
+            // changes before `sizeAnimationComplete`, so checking the latter
+            // first can accidentally turn the close transition into a 0ms snap.
+            if (root.isClosing)
+              return Style.anim.durations.small;
             if (root.sizeAnimationComplete)
               return root.animateContentHeight ? Style.anim.durations.small : 0;
-            return root.isOpening ? Style.anim.durations.normal : root.isClosing ? Style.anim.durations.small : Style.anim.durations.normal;
+            return Style.anim.durations.normal;
           }
           easing.type: Easing.BezierSpline
           easing.bezierCurve: root.isClosing ? Style.anim.curves.emphasized : Style.anim.curves.emphasizedDecel

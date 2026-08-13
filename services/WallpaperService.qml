@@ -4,6 +4,7 @@ import QtQuick
 import Qt.labs.folderlistmodel
 import Quickshell
 import qs.common
+import qs.services
 import qs.utils
 
 Singleton {
@@ -168,12 +169,20 @@ Singleton {
 
   function changeWallpaper(path, screenName) {
     if (screenName !== undefined) {
-      _setWallpaper(screenName, path);
+      _setStaticWallpaper(screenName, path);
     } else {
       for (let i = 0; i < Quickshell.screens.length; i++) {
-        _setWallpaper(Quickshell.screens[i].name, path);
+        _setStaticWallpaper(Quickshell.screens[i].name, path);
       }
     }
+  }
+
+  function _setStaticWallpaper(screenName, path) {
+    // A live video layer sits above the static image. Clear it first, even
+    // when the chosen image is already the saved static wallpaper.
+    if (LiveWallpaperService.hasLiveWallpaper(screenName))
+      LiveWallpaperService.clearLiveWallpaper(screenName);
+    _setWallpaper(screenName, path);
   }
 
   function _setWallpaper(screenName, path) {
