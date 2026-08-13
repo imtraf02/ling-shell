@@ -16,8 +16,6 @@ Singleton {
   property list<string> themeFiles: []
   property bool loading: false
   property bool refreshPending: false
-  property bool matugenVersionChecked: false
-  property bool matugenSupportsSourceColorIndex: false
   property alias palette: adapter
 
   readonly property list<string> validMatugenSchemes: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot", "scheme-vibrant"]
@@ -117,12 +115,6 @@ Singleton {
       root.loading = false;
       return;
     }
-    if (!matugenVersionChecked) {
-      if (!matugenVersionProcess.running)
-        matugenVersionProcess.running = true;
-      root.loading = false;
-      return;
-    }
     const wallpaper = LiveWallpaperService.hasFrame(Screen.name) ? LiveWallpaperService.framePath(Screen.name) : WallpaperService.getWallpaper(Screen.name);
     if (!wallpaper) {
       root.loading = false;
@@ -131,10 +123,7 @@ Singleton {
 
     const matugenType = validMatugenSchemes.includes(type) ? type : "scheme-tonal-spot";
     const targetMode = mode === "light" ? "light" : "dark";
-    const selectionArgs = matugenSupportsSourceColorIndex
-      ? ["--source-color-index", "0"]
-      : ["--fallback-color", palette.mPrimary.toString()];
-    generateProcess.command = ["matugen", "image", wallpaper, "-j", "hex", "-m", targetMode, "-t", matugenType].concat(selectionArgs);
+    generateProcess.command = ["matugen", "image", wallpaper, "-j", "hex", "-m", targetMode, "-t", matugenType, "--source-color-index", "0", "--old-json-output"];
     generateProcess.running = true;
   }
 
@@ -254,20 +243,6 @@ Singleton {
         root.refreshPending = false;
         root.requestRefresh();
       }
-    }
-    stdout: StdioCollector {}
-    stderr: StdioCollector {}
-  }
-
-  Process {
-    id: matugenVersionProcess
-    command: ["matugen", "--version"]
-    onExited: exitCode => {
-      const match = stdout.text.match(/matugen\s+(\d+)/i);
-      matugenSupportsSourceColorIndex = exitCode === 0 && match !== null && Number(match[1]) >= 4;
-      matugenVersionChecked = true;
-      if (Settings.appearance.theme.dynamic)
-        root.requestRefresh();
     }
     stdout: StdioCollector {}
     stderr: StdioCollector {}

@@ -3,11 +3,16 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    matugen = {
+      url = "github:InioX/matugen";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
+    matugen,
     ...
   }: let
     eachSystem = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.linux;
@@ -24,6 +29,7 @@
     overlays = {
       default = final: prev: {
         ling-shell = final.callPackage ./nix/package.nix {
+          matugen = matugen.packages.${final.stdenv.hostPlatform.system}.default;
           version = let
             mkDate = longDate:
               final.lib.concatStringsSep "-" [
