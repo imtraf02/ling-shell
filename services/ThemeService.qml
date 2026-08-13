@@ -123,9 +123,9 @@ Singleton {
 
     const matugenType = validMatugenSchemes.includes(type) ? type : "scheme-tonal-spot";
     const targetMode = mode === "light" ? "light" : "dark";
-    // Ling Shell runs Matugen without a terminal, so choose its highest-ranked
-    // source color instead of allowing Matugen to prompt interactively.
-    generateProcess.command = ["matugen", "image", wallpaper, "-j", "hex", "-m", targetMode, "-t", matugenType, "--source-color-index", "0"];
+    // Matugen 3.x runs without a terminal in the shell service. Supplying the
+    // current primary color lets it resolve multi-color images non-interactively.
+    generateProcess.command = ["matugen", "image", wallpaper, "-j", "hex", "-m", targetMode, "-t", matugenType, "--fallback-color", palette.mPrimary.toString()];
     generateProcess.running = true;
   }
 
